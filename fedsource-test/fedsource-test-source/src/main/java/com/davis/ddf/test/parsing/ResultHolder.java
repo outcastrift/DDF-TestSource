@@ -187,11 +187,9 @@ public class ResultHolder {
             response.setDateOccurred(theDate);
         }
         if (lat != null ) {
-            LOGGER.debug("Lat = {}",lat.get(position));
             response.setLatitude(lat.get(position));
         }
         if (lng != null ) {
-            LOGGER.debug("Lng = {}",lng.get(position));
 
             response.setLongitude(lng.get(position));
         }
