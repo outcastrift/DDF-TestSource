@@ -168,10 +168,12 @@ public class SourceEndpoint {
    */
   @GET
   @Path("/getSourceResults")
-  public Response getResultsForSource(@Context UriInfo requestUriInfo, @QueryParam("startDate") String startDate,
-                                      @QueryParam("endDate") String endDate, @QueryParam("topLeftLatLong") String
-                                                topLeftLatLong, @QueryParam("bottomRightLatLong") String
-                                                bottomRightLatLong, @QueryParam("amount") String amount
+  public Response getResultsForSource(@Context UriInfo requestUriInfo,
+                                      @QueryParam("startDate") String startDate,
+                                      @QueryParam("endDate") String endDate,
+                                      @QueryParam("topLeftLatLong") String topLeftLatLong,
+                                      @QueryParam("bottomRightLatLong") String bottomRightLatLong,
+                                      @QueryParam("amount") String amount
 
   ) {
 
@@ -258,8 +260,11 @@ public class SourceEndpoint {
     return value;
   }
 
-  private ArrayList<UniversalFederatedSourceResponse> generateDataForResponse(int amount, Date start, Date end,
-                                                                              String topLeft, String bottomRight) {
+  private ArrayList<UniversalFederatedSourceResponse> generateDataForResponse(int amount,
+                                                                              Date start,
+                                                                              Date end,
+                                                                              String topLeft,
+                                                                              String bottomRight) {
 
 
     String latSegments[] = StringUtils.split(topLeft);
@@ -336,11 +341,11 @@ public class SourceEndpoint {
     ArrayList<UniversalFederatedSourceResponse> results = new ArrayList<>();
 
     while (amount > 0) {
-      logger.debug("Entering always successful lat. Origin = {} Bound = {}",bottomRightLat,topLeftLat);
+      //logger.debug("Entering always successful lat. Origin = {} Bound = {}",bottomRightLat,topLeftLat);
 
       double lat = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
       lat = Double.parseDouble(decFormat.format(lat));
-      logger.debug("Entering always successful lng. Origin = {} Bound = {}",topLeftLng,bottomRightLng);
+      //logger.debug("Entering always successful lng. Origin = {} Bound = {}",topLeftLng,bottomRightLng);
 
       double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
       lng = Double.parseDouble(decFormat.format(lng));
@@ -410,7 +415,7 @@ public class SourceEndpoint {
         try {
           result = createRandomWktPolygon(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
         } catch (Exception e) {
-          logger.debug("Wkt Creation Failed For POLYGON");
+          logger.error("Wkt Creation Failed For POLYGON");
         }
       }
       break;
@@ -418,7 +423,7 @@ public class SourceEndpoint {
         try {
           result = createRandomWktMultiPolygon(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
         } catch (Exception e) {
-          logger.debug("Wkt Creation Failed For MULTIPOLYGON");
+          logger.error("Wkt Creation Failed For MULTIPOLYGON");
         }
       }
       break;
@@ -426,8 +431,7 @@ public class SourceEndpoint {
         try {
           result = createRandomWktPoint(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
         } catch (Exception e) {
-          logger.debug("Wkt Creation Failed For POINT");
-          logger.warn("Exception = {}",e);
+          logger.error("Wkt Creation Failed For POINT");
 
         }
       }
@@ -436,7 +440,7 @@ public class SourceEndpoint {
         try {
           result = createRandomWktMultiPoint(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
         } catch (Exception e) {
-          logger.debug("Wkt Creation Failed For MULTIPOINT");
+          logger.error("Wkt Creation Failed For MULTIPOINT");
         }
       }
       break;
@@ -444,7 +448,7 @@ public class SourceEndpoint {
         try {
           result = createRandomWktLine(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
         } catch (Exception e) {
-          logger.debug("Wkt Creation Failed For LINESTRING");
+          logger.error("Wkt Creation Failed For LINESTRING");
         }
       }
       break;
@@ -452,12 +456,11 @@ public class SourceEndpoint {
         try {
           result = createRandomWktMultiLine(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
         } catch (Exception e) {
-          logger.debug("Wkt Creation Failed For MULTILINESTRING");
+          logger.error("Wkt Creation Failed For MULTILINESTRING");
         }
       }
       break;
     }
-    logger.debug("WKT Result = {}",result);
     return result;
   }
 
@@ -544,16 +547,16 @@ public class SourceEndpoint {
   private String createRandomWktPoint(Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double
           bottomRightLng) {
     String result = null;
-    logger.debug("Entering generate lat. Origin = {} Bound = {}",bottomRightLat,topLeftLat);
+    //logger.debug("Entering generate lat. Origin = {} Bound = {}",bottomRightLat,topLeftLat);
     double lat = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
-    logger.debug("Exit generate lat. lat = {} ",lat);
+    //logger.debug("Exit generate lat. lat = {} ",lat);
     lat = Double.parseDouble(decFormat.format(lat));
-    logger.debug("Lat after decimal format lat = {} ",lat);
-    logger.debug("Entering generate lng. Origin = {} Bound = {}",bottomRightLng,topLeftLng);
+    //logger.debug("Lat after decimal format lat = {} ",lat);
+    //logger.debug("Entering generate lng. Origin = {} Bound = {}",bottomRightLng,topLeftLng);
     double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
-    logger.debug("Exit generate lng. lng = {} ",lng);
+    //logger.debug("Exit generate lng. lng = {} ",lng);
     lng = Double.parseDouble(decFormat.format(lng));
-    logger.debug("Lng after decimal format lng = {} ",lat);
+    //logger.debug("Lng after decimal format lng = {} ",lat);
     result = "POINT(" + lng + " " + lat + ")";
     return result;
   }
