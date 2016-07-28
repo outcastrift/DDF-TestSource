@@ -5,6 +5,9 @@
     <option name="id" value="1469051114267" />
     <option name="name" value="default" />
   </component>
+  <component name="EntryPointsManager">
+    <entry_points version="2.0" />
+  </component>
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="Osmorc" url="file://$PROJECT_DIR$/fedsource-test/fedsource-test-endpoint" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/fedsource-test/fedsource-test-source" />
