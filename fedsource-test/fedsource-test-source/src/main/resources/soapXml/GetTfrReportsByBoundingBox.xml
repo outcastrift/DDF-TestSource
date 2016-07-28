@@ -1,0 +1,18 @@
+<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:open="http://open.v21.ws">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <open:getCIDNEReportsByBoundingBox soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+            <Module xsi:type="xsd:string">${Module}</Module>
+            <ReportType xsi:type="xsd:string">${ReportType}</ReportType>
+            <Format xsi:type="xsd:string">${Format}</Format>
+            <Version xsi:type="xsd:string">${Version}</Version>
+            <StartDate xsi:type="xsd:string">${StartDate}</StartDate>
+            <EndDate xsi:type="xsd:string">${EndDate}</EndDate>
+            <DateType xsi:type="xsd:string">${DateType}</DateType>
+            <TopLeftLatLong xsi:type="xsd:string">${TopLeftLatLong}</TopLeftLatLong>
+            <BottomRightLatLong xsi:type="xsd:string">${BottomRightLatLong}</BottomRightLatLong>
+            <MaxReturn xsi:type="xsd:string">${MaxReturn}</MaxReturn>
+            <ShowDeprecated xsi:type="xsd:string">${ShowDeprecated}</ShowDeprecated>
+        </open:getCIDNEReportsByBoundingBox>
+    </soapenv:Body>
+</soapenv:Envelope>

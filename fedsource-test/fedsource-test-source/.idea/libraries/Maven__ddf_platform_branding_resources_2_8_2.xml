@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: ddf.platform:branding-resources:2.8.2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/ddf/platform/branding-resources/2.8.2/branding-resources-2.8.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/ddf/platform/branding-resources/2.8.2/branding-resources-2.8.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/ddf/platform/branding-resources/2.8.2/branding-resources-2.8.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

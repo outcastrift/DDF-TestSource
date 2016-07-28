@@ -1,0 +1,7 @@
+eventTypes.add(@@Terrorist Activity@@);
+eventTypes.add(@@Traitor@@);
+eventTypes.add(@@Extremism:Race@@);
+eventTypes.add(@@Extremism:Religion@@);
+eventTypes.add(@@Extremism:Sexism@@);
+eventTypes.add(@@InsiderThreat@@);
+eventTypes.add(@@Criminal@@);

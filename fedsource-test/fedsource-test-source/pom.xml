@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+
+  <parent>
+    <groupId>com.davis</groupId>
+    <artifactId>Fedsearch-Test-Source</artifactId>
+    <version>1.0</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <version>1.0</version>
+  <artifactId>rest-configurable-source</artifactId>
+  <packaging>bundle</packaging>
+  <name>Configurable Rest Source</name>
+  <dependencies>
+    <!--CORE OSGI-->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <version>${osgi-core-version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- LOGGING -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <!--START DDF-->
+    <dependency>
+      <groupId>ddf.content.core</groupId>
+      <artifactId>content-core-api</artifactId>
+      <version>${primary.ddf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ddf.catalog.core</groupId>
+      <artifactId>catalog-core-api</artifactId>
+      <version>${primary.ddf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ddf.catalog.core</groupId>
+      <artifactId>catalog-core-api-impl</artifactId>
+      <version>${primary.ddf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ddf.catalog.core</groupId>
+      <artifactId>catalog-core-commons</artifactId>
+      <scope>provided</scope>
+      <version>${primary.ddf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ddf.catalog.opensearch</groupId>
+      <artifactId>catalog-opensearch-source</artifactId>
+      <scope>provided</scope>
+      <version>${primary.ddf.version}</version>
+    </dependency>
+    <!--END DDF-->
+    <!--START GENERAL -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${apache.commons-lang3.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <scope>compile</scope>
+      <version>${google-guava-version}</version>
+    </dependency>
+    <!--END GENERAL -->
+
+    <!--START JSON-->
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <scope>compile</scope>
+      <version>${gson-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>${org-json-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
+      <version>${json.path.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.minidev</groupId>
+      <artifactId>json-smart</artifactId>
+      <version>${json.smart.version}</version>
+    </dependency>
+    <!--END JSON-->
+
+    <!--START NETWORK CALLS-->
+    <dependency>
+      <groupId>io.mikael</groupId>
+      <artifactId>urlbuilder</artifactId>
+      <version>2.0.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>${http-client-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>3.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okio</groupId>
+      <artifactId>okio</artifactId>
+      <version>1.9.0</version>
+    </dependency>
+    <!--END NETWORK CALLS-->
+
+
+    <!--START TESTING-->
+    <dependency>
+      <groupId>com.jayway.restassured</groupId>
+      <artifactId>rest-assured-osgi</artifactId>
+      <version>${com.jayway.rest-assured.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${fsterxml-jackson-version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${fsterxml-jackson-version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-core-asl</artifactId>
+      <version>${codehaus-jackson-version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-asl</artifactId>
+      <version>${codehaus-jackson-version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+      <version>${slf4j-log4j12.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.mikesamuel.osgi</groupId>
+      <artifactId>json-sanitizer-osgi</artifactId>
+      <scope>test</scope>
+      <version>${json.sanitizer.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+      <scope>test</scope>
+      <version>${hamcrest-all.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+      <version>${mockito.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-bundle-jaxrs</artifactId>
+      <scope>test</scope>
+      <version>${cxf-bundle-jaxrs-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+      <version>${junit.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-cql</artifactId>
+      <version>15.0</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!--END TESTING-->
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.5.1</version>
+        <configuration>
+          <source>${jdk.version}</source>
+          <target>${jdk.version}</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.3.7</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>
+              ${project.groupId}.${project.artifactId}
+            </Bundle-SymbolicName>
+            <Embed-Dependency>
+              json-path,
+              json-smart,
+              json,
+              gson,
+              okhttp,
+              okio,
+              commons-lang3,
+              urlbuilder
+            </Embed-Dependency>
+            <Embed-Transitive>true</Embed-Transitive>
+            <Import-Package>
+              org.jdom2;resolution:="optional",
+              org.codice.ddf.cxf;resolution:="optional",
+              com.rometools.rome.*;resolution:="optional",
+              !android.util,
+              *
+            </Import-Package>
+            <Export-Package>
+              com.davis.ddf.test.*,
+              ddf.catalog.source.opensearch,
+              ddf.catalog.util.impl
+            </Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+
+
+    </plugins>
+  </build>
+
+</project>

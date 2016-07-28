@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: ddf.platform:platform-configuration:2.8.2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/ddf/platform/platform-configuration/2.8.2/platform-configuration-2.8.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/ddf/platform/platform-configuration/2.8.2/platform-configuration-2.8.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/ddf/platform/platform-configuration/2.8.2/platform-configuration-2.8.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

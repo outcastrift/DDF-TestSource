@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+    xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+           http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+           http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+           http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+
+
+
+  <reference id="mimeTypeMapper"
+      interface="ddf.mime.MimeTypeMapper"/>
+  <reference id="metacardTypeRegistry"
+      interface="ddf.catalog.data.MetacardTypeRegistry"/>
+  <reference id="catalogFramework"
+      interface="ddf.catalog.CatalogFramework"/>
+
+
+  <cm:managed-service-factory id="managed-service-factory"
+      factory-pid="com.davis.ddf.test.fedSource.UniversalFederatedSource"
+      interface="ddf.catalog.source.FederatedSource">
+    <cm:managed-component class="com.davis.ddf.test.fedSource.UniversalFederatedSource">
+      <cm:managed-properties persistent-id=""
+          update-strategy="container-managed" />
+    </cm:managed-component>
+  </cm:managed-service-factory>
+
+
+
+</blueprint>

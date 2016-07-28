@@ -1,0 +1,4 @@
+reportLinks.add(@@www.itdoesntexist.com@@);
+reportLinks.add(@@www.thisisnthere.com@@);
+reportLinks.add(@@www.dontbothertrying.org@@);
+reportLinks.add(@@www.yahoowontanswer.net@@);
