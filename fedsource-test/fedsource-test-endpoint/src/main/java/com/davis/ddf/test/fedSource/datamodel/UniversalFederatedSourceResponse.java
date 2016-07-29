@@ -7,6 +7,7 @@ import java.util.Date;
  * Created by hduser on 7/17/15.
  */
 public class UniversalFederatedSourceResponse {
+
     private String location;
 
     /**
@@ -265,7 +266,6 @@ public class UniversalFederatedSourceResponse {
 
     private String addToMetadataResultMap() {
         StringBuilder stringBuilder = null;
-        String displaySerial = null;
         stringBuilder = new StringBuilder();
 
         stringBuilder.append("<Result " + String.valueOf(this.getDisplaySerial()) + ">");

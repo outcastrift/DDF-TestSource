@@ -153,65 +153,74 @@ public class UniversalFederatedSourceParser extends DefaultHandler {
         ResultHolder results = new ResultHolder();
         if (source.getSsWktStringParam() != null && !source.getSsWktStringParam().equalsIgnoreCase("null")
                 &&!source.getSsWktStringParam().trim().equalsIgnoreCase("")) {
-            LOGGER.info("SSwktStringParam {}",source.getSsWktStringParam());
+            LOGGER.info("getSsWktStringParam {}", source.getSsWktStringParam());
             List<String> wktArray = JsonPath.read(document, source.getSsWktStringParam());
+            LOGGER.info("wktArray size =  {}", wktArray.size());
+
             results.setLocation(wktArray);
         }
         if (source.getSsReportLink() != null && !source.getSsReportLink().equalsIgnoreCase("null")
                 &&!source.getSsReportLink().trim().equalsIgnoreCase("")) {
+            LOGGER.info("getSsReportLink {}", source.getSsReportLink());
             List<String> reportArray = JsonPath.read(document, source.getSsReportLink());
             results.setReportLink(reportArray);
         }
         if (source.getSsDisplayTitle() != null && !source.getSsDisplayTitle().equalsIgnoreCase("null")
                 &&!source.getSsDisplayTitle().trim().equalsIgnoreCase("")) {
+            LOGGER.info("getSsDisplayTitle {}", source.getSsDisplayTitle());
             List<String> displayTitleArray = JsonPath.read(document, source.getSsDisplayTitle());
             results.setTitle(displayTitleArray);
         }
         if (source.getSsDisplaySerial() != null && !source.getSsDisplaySerial().equalsIgnoreCase("null")
                 &&!source.getSsDisplaySerial().trim().equalsIgnoreCase("")) {
+            LOGGER.info("getSsDisplaySerial {}", source.getSsDisplaySerial());
             List<String> displaySerialArray = JsonPath.read(document, source.getSsDisplaySerial());
         results.setSerial(displaySerialArray);
 
         }
         if (source.getSsSummary() != null && !source.getSsSummary().equalsIgnoreCase("null")
                 &&!source.getSsSummary().trim().equalsIgnoreCase("")) {
+            LOGGER.info("getSsSummary {}", source.getSsSummary());
             List<String> summaryArray = JsonPath.read(document, source.getSsSummary());
         results.setSummary(summaryArray);
 
         }
         if (source.getSsOriginatorUnit() != null && !source.getSsOriginatorUnit().equalsIgnoreCase("null")
                 &&!source.getSsOriginatorUnit().trim().equalsIgnoreCase("")) {
+            LOGGER.info("getSsOriginatorUnit {}", source.getSsOriginatorUnit());
             List<String> orginatorArray = JsonPath.read(document, source.getSsOriginatorUnit());
             results.setUnit(orginatorArray);
 
         }
         if (source.getSsPrimaryEventType() != null && !source.getSsPrimaryEventType().equalsIgnoreCase("null")
                 &&!source.getSsPrimaryEventType().trim().equalsIgnoreCase("")) {
+            LOGGER.info("getSsPrimaryEventType {}", source.getSsPrimaryEventType());
             List<String> primaryEventArray = JsonPath.read(document, source.getSsPrimaryEventType());
          results.setPrimaryEvent(primaryEventArray);
         }
         if (source.getSsClassification() != null && !source.getSsClassification().equalsIgnoreCase("null")
                 &&!source.getSsClassification().trim().equalsIgnoreCase("")) {
+            LOGGER.info("getSsClassification {}", source.getSsClassification());
             List<String> classificationArray = JsonPath.read(document, source.getSsClassification());
            results.setClassification(classificationArray);
 
         }
         if (source.getSsDateOccurred() != null && !source.getSsDateOccurred().equalsIgnoreCase("null")
                 &&!source.getSsDateOccurred().trim().equalsIgnoreCase("")) {
-
+            LOGGER.info("getSsDateOccurred {}", source.getSsDateOccurred());
             List<String> dateArray = JsonPath.read(document, source.getSsDateOccurred());
            results.setDate(dateArray);
 
         }
         if (source.getSsLatitude() != null && !source.getSsLatitude().equalsIgnoreCase("null")
                 &&!source.getSsLatitude().trim().equalsIgnoreCase("")) {
-
+            LOGGER.info("getSsLatitude {}", source.getSsLatitude());
             List<Double> latArray = JsonPath.read(document, source.getSsLatitude());
             results.setLat(latArray);
-
         }
         if (source.getSsLongitude() != null && !source.getSsLongitude().equalsIgnoreCase("null")
                 &&!source.getSsLongitude().trim().equalsIgnoreCase("")) {
+            LOGGER.info("getSsLongitude {}", source.getSsLongitude());
             List<Double> lngArray = JsonPath.read(document, source.getSsLongitude());
            results.setLng(lngArray);
         }
@@ -223,7 +232,7 @@ public class UniversalFederatedSourceParser extends DefaultHandler {
     public String extractJSONPath(String jsonString, String jsonPath) throws Exception {
         Object jsonPathResult = JsonPath.read(jsonString, jsonPath);
         if (null == jsonPathResult) {
-            LOGGER.debug("Invalid Json Path Provided");
+            LOGGER.debug("Invalid Json Path Provided for Path {}",jsonPath);
             throw new Exception("Invalid JSON path provided!");
         } else if (jsonPathResult instanceof List && ((List<?>) jsonPathResult).isEmpty()) {
             LOGGER.debug("JsonPath result returned a empty list.");

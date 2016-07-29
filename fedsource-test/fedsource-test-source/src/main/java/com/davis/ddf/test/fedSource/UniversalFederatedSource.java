@@ -4,7 +4,6 @@ import com.davis.ddf.test.client.TrustingOkHttpClient;
 import com.davis.ddf.test.fedSource.datamodel.UniversalFederatedSourceResponse;
 import com.davis.ddf.test.fedSource.datamodel.metacards.UniversalFederatedSourceMetacard;
 import com.davis.ddf.test.fedSource.datamodel.metacards.UniversalFederatedSourceMetacardType;
-import com.davis.ddf.test.parsing.UniversalFederatedSourceParser;
 import com.davis.ddf.test.service.SourceService;
 import com.davis.ddf.test.service.restService.RestGetService;
 
@@ -154,9 +153,8 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
 
     try {
       if (mode == REST) {
-        if ((ssClientCertPath != null )
-                && (!ssClientCertPath.trim().equalsIgnoreCase(""))
-                && (!ssClientCertPath.trim().equalsIgnoreCase("null"))) {
+        if ((ssClientCertPath != null) && (!ssClientCertPath.trim().equalsIgnoreCase("")) && (!ssClientCertPath.trim
+                ().equalsIgnoreCase("null"))) {
           client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15, 15, getSsClientCertPath(),
                   ssClientCertPassword);
         }
@@ -212,28 +210,6 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
 
   public void setSsClientCertPath(String ssClientCertPath) {
     this.ssClientCertPath = ssClientCertPath;
-  }
-
-  /**
-   * Transform date string.
-   *
-   * @param date       the date
-   * @param dateFormat the date format
-   * @return the string
-   */
-  public static String transformDateTfr(Date date, SimpleDateFormat dateFormat) {
-    String transformedDate = null;
-    Calendar c = Calendar.getInstance();
-    TimeZone localTimeZone = c.getTimeZone();
-    TimeZone afgTimeZone = TimeZone.getTimeZone("Asia/Kabul");
-    long msFromEpochQuery = date.getTime();
-    int localOffsetFromUTC = localTimeZone.getRawOffset();
-    int afghanOffsetFromUTC = afgTimeZone.getRawOffset();
-    Calendar afghanCal = Calendar.getInstance(afgTimeZone);
-    afghanCal.setTimeInMillis(date.getTime());
-    afghanCal.add(Calendar.MILLISECOND, (-1 * localOffsetFromUTC));
-    afghanCal.add(Calendar.MILLISECOND, afghanOffsetFromUTC);
-    return dateFormat.format(afghanCal.getTime());
   }
 
   public String getSsContainerPath() {
@@ -449,7 +425,6 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
   public SourceResponse query(QueryRequest queryRequest) throws UnsupportedQueryException {
     try {
       List<Result> results = new ArrayList<Result>();
-      String methodName = "query";
       LOGGER.debug("*******Entering Federated Source Query********");
       if (LOGGER.isDebugEnabled()) {
 
@@ -460,7 +435,6 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
           LOGGER.debug(key + ", " + props.get(key));
         }
       }
-      SourceResponseImpl response = null;
       Serializable metacardId = queryRequest.getPropertyValue(Metacard.ID);
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug("METACARDID: " + metacardId);
@@ -479,7 +453,7 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
       ArrayList<UniversalFederatedSourceResponse> operationsUniversalFederatedSourceResponseReports = null;
       if (mode == SAX) {
         LOGGER.debug("SAX mode enabled entering queryWithSax ");
-      }else if (mode == REST) {
+      } else if (mode == REST) {
         LOGGER.debug("REST mode enabled entering queryWithParams ");
         operationsUniversalFederatedSourceResponseReports = queryWithParams(query, contextualFilter, temporalFilter,
                 spatialFilter);
@@ -492,18 +466,32 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
       results = createResultList(operationsUniversalFederatedSourceResponseReports);
       elapsed = System.currentTimeMillis() - elapsed;
       LOGGER.debug("query returning " + results.size() + " results in " + elapsed + " milliseconds");
-      response = new SourceResponseImpl(queryRequest, results);
+      SourceResponseImpl  response = new SourceResponseImpl(queryRequest, results);
       response.setHits(results.size());
-      //NOTE added brackets to this if
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("RETURNING " + response.toString());
-      }
       return response;
     } catch (Throwable t) {
       LOGGER.warn("Unable to query source: {}", t);
     }
-    LOGGER.debug("Returning null for configured source");
+    LOGGER.info("Returning null for configured source");
     return null;
+  }
+
+  protected ArrayList<UniversalFederatedSourceResponse> queryWithParams(Query query, ContextualSearch
+          contextualSearch, TemporalFilter temporalFilter, SpatialFilter spatialFilter) {
+    if (restGetService == null) {
+      restGetService = new RestGetService(this, mode, client);
+      LOGGER.debug("Created RestGetService with BaseUrl of {}", ssServiceUrl);
+    }
+
+    LOGGER.debug("Inside Query With Params");
+    List<UniversalFederatedSourceResponse> results = new ArrayList<UniversalFederatedSourceResponse>();
+    results = getRestResults((ArrayList<UniversalFederatedSourceResponse>) results, restGetService, query,
+            contextualSearch, temporalFilter, spatialFilter);
+
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("queryTfr Returning " + results);
+    }
+    return (ArrayList<UniversalFederatedSourceResponse>) results;
   }
 
   /**
@@ -518,7 +506,6 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
       LOGGER.debug("CREATING RESULT LIST");
     }
     List<Result> results = new ArrayList<Result>();
-
     try {
 
       if (LOGGER.isDebugEnabled()) {
@@ -545,9 +532,6 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
           if (mode == SAX) {
             metadataString = "<metadata>" + StringEscapeUtils.escapeXml11(fedSourceResponse.getMetaData()) +
                     "</metadata>";
-                       /* if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug(metadataString);
-                        }*/
             metaCardData.setMetadata("<metadata>" + StringEscapeUtils.escapeXml11(metadataString) + "</metadata>");
           } else {
 
@@ -615,9 +599,11 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
             metaCardData.setAttribute(UniversalFederatedSourceMetacardType.REPORT_LINK, "No Supplied Link");
           }
           if (fedSourceResponse.getLocation() != null) {
+            LOGGER.debug("Setting to WKT TYPE");
             metaCardData.setLocation(fedSourceResponse.getLocation());
           } else {
             if (fedSourceResponse.getLongitude() != 0.0 && fedSourceResponse.getLatitude() != 0.0) {
+              LOGGER.debug("Setting with LAT LONG");
               metaCardData.setLocation("POINT (" + Double.parseDouble(decimalFormatter.format(fedSourceResponse
                       .getLongitude())) + " " + Double.parseDouble(decimalFormatter.format(fedSourceResponse
                       .getLatitude())) + ")");
@@ -627,34 +613,34 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
 
           if (LOGGER.isDebugEnabled()) {
             if (metaCardData.getId() != null) {
-              LOGGER.debug("Id: " + metaCardData.getId());
+              LOGGER.trace("Id: " + metaCardData.getId());
             }
             if (metaCardData.getMetadata() != null) {
-              LOGGER.debug("Metadata: " + metaCardData.getMetadata());
+              LOGGER.trace("Metadata: " + metaCardData.getMetadata());
             }
             if (metaCardData.getContentTypeName() != null) {
-              LOGGER.debug("ContentTypeName: " + metaCardData.getContentTypeName());
+              LOGGER.trace("ContentTypeName: " + metaCardData.getContentTypeName());
             }
             if (metaCardData.getContentTypeVersion() != null) {
-              LOGGER.debug("ContentTypeVersion: " + metaCardData.getContentTypeVersion());
+              LOGGER.trace("ContentTypeVersion: " + metaCardData.getContentTypeVersion());
             }
             if (metaCardData.getTitle() != null) {
-              LOGGER.debug("Title: " + metaCardData.getTitle());
+              LOGGER.trace("Title: " + metaCardData.getTitle());
             }
             if (metaCardData.getEffectiveDate() != null) {
-              LOGGER.debug("Effective: " + metaCardData.getEffectiveDate().toString());
+              LOGGER.trace("Effective: " + metaCardData.getEffectiveDate().toString());
             }
             if (metaCardData.getCreatedDate() != null) {
-              LOGGER.debug("Created: " + metaCardData.getCreatedDate().toString());
+              LOGGER.trace("Created: " + metaCardData.getCreatedDate().toString());
             }
             if (metaCardData.getModifiedDate() != null) {
-              LOGGER.debug("Modified: " + metaCardData.getModifiedDate().toString());
+              LOGGER.trace("Modified: " + metaCardData.getModifiedDate().toString());
             }
             if (metaCardData.getLocation() != null) {
-              LOGGER.debug("Location: " + metaCardData.getLocation());
+              LOGGER.trace("Location: " + metaCardData.getLocation());
             }
             if (metaCardData.getAttribute(UniversalFederatedSourceMetacardType.SUMMARY) != null) {
-              LOGGER.debug("Summary:" + metaCardData.getAttribute(UniversalFederatedSourceMetacardType.SUMMARY)
+              LOGGER.trace("Summary:" + metaCardData.getAttribute(UniversalFederatedSourceMetacardType.SUMMARY)
                       .toString());
             }
           }
@@ -677,156 +663,6 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
       t.printStackTrace();
     }
     return results;
-  }
-
-  protected ArrayList<UniversalFederatedSourceResponse> queryWithParams(Query query, ContextualSearch
-          contextualSearch, TemporalFilter temporalFilter, SpatialFilter spatialFilter) {
-    if (restGetService == null) {
-      restGetService = new RestGetService(this, mode, client);
-      LOGGER.debug("Created RestGetService with BaseUrl of {}", ssServiceUrl);
-    }
-
-    LOGGER.debug("Inside Query With Params");
-    List<UniversalFederatedSourceResponse> results = new ArrayList<UniversalFederatedSourceResponse>();
-    results = getRestResults((ArrayList<UniversalFederatedSourceResponse>) results, restGetService, query,
-            contextualSearch, temporalFilter, spatialFilter);
-
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("queryTfr Returning " + results);
-    }
-    return (ArrayList<UniversalFederatedSourceResponse>) results;
-  }
-
-  /**
-   * Gets ssShortName.
-   *
-   * @return the ssShortName
-   */
-  public String getSsShortName() {
-    return ssShortName;
-  }
-
-  /**
-   * Sets ssShortName.
-   *
-   * @param ssShortName the ssShortName
-   */
-  public void setSsShortName(String ssShortName) {
-    this.ssShortName = ssShortName;
-  }
-
-  /**
-   * Gets content types.
-   *
-   * @return the content types
-   */
-  public Set<ContentType> getContentTypes() {
-
-    this.contentTypes = new HashSet<ContentType>();
-
-    return contentTypes;
-  }
-
-  /**
-   * Gets version.
-   *
-   * @return the version
-   */
-  public String getVersion() {
-    if (LOGGER.isDebugEnabled()) {
-      //  LOGGER.debug("Returning version:" + version);
-    }
-    return version;
-  }
-
-  /**
-   * Sets version.
-   *
-   * @param v the v
-   */
-  public void setVersion(String v) {
-    version = v;
-  }
-
-  /**
-   * Gets title.
-   *
-   * @return the title
-   */
-  public String getTitle() {
-    if (LOGGER.isDebugEnabled()) {
-      //   LOGGER.debug("Returning tite:" + title);
-    }
-    return ssShortName;
-  }
-
-  /**
-   * Gets ssDescription.
-   *
-   * @return the ssDescription
-   */
-  public String getDescription() {
-    if (LOGGER.isDebugEnabled()) {
-      //  LOGGER.debug("Returning ssDescription: " + ssDescription);
-    }
-    return ssDescription;
-  }
-
-  /**
-   * Gets organization.
-   *
-   * @return the organization
-   */
-  public String getOrganization() {
-    if (LOGGER.isDebugEnabled()) {
-      //  LOGGER.debug("Returning org:" + org);
-    }
-    return org;
-  }
-
-  /**
-   * Gets id.
-   *
-   * @return the id
-   */
-  public String getId() {
-
-    return ssShortName;
-  }
-
-  /**
-   * Sets id.
-   *
-   * @param id the id
-   */
-  public void setId(String id) {
-    this.sourceId = id;
-  }
-
-  /**
-   * Used by DDF to log from here
-   */
-  private void logElement(Element e) {
-    LOGGER.info(e.getTagName() + " " + e.getNodeName() + ": " + e.getTextContent());
-    NodeList nl = e.getChildNodes();
-    for (int i = 0; i < nl.getLength(); i++) {
-      logNode(nl.item(i));
-    }
-  }
-
-  /**
-   * Used by DDF to log from here
-   */
-  private void logNode(Node n) {
-    if (n instanceof Element) {
-      logElement((Element) n);
-    } else {
-      LOGGER.info(n.getNodeName() + ":" + n.getNodeValue());
-      NodeList nl = n.getChildNodes();
-      for (int i = 0; i < nl.getLength(); i++) {
-        logNode(nl.item(i));
-      }
-    }
   }
 
   private ArrayList<UniversalFederatedSourceResponse> getRestResults(ArrayList<UniversalFederatedSourceResponse>
@@ -995,6 +831,158 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
       LOGGER.debug("UniversalFederatedSource  RETURNED {} results", results.size());
     }
     return results;
+  }
+
+  /**
+   * Transform date string.
+   *
+   * @param date       the date
+   * @param dateFormat the date format
+   * @return the string
+   */
+  public static String transformDateTfr(Date date, SimpleDateFormat dateFormat) {
+    Calendar c = Calendar.getInstance();
+    TimeZone localTimeZone = c.getTimeZone();
+    TimeZone afgTimeZone = TimeZone.getTimeZone("Asia/Kabul");
+    int localOffsetFromUTC = localTimeZone.getRawOffset();
+    int afghanOffsetFromUTC = afgTimeZone.getRawOffset();
+    Calendar afghanCal = Calendar.getInstance(afgTimeZone);
+    afghanCal.setTimeInMillis(date.getTime());
+    afghanCal.add(Calendar.MILLISECOND, (-1 * localOffsetFromUTC));
+    afghanCal.add(Calendar.MILLISECOND, afghanOffsetFromUTC);
+    return dateFormat.format(afghanCal.getTime());
+  }
+
+  /**
+   * Gets ssShortName.
+   *
+   * @return the ssShortName
+   */
+  public String getSsShortName() {
+    return ssShortName;
+  }
+
+  /**
+   * Sets ssShortName.
+   *
+   * @param ssShortName the ssShortName
+   */
+  public void setSsShortName(String ssShortName) {
+    this.ssShortName = ssShortName;
+  }
+
+  /**
+   * Gets content types.
+   *
+   * @return the content types
+   */
+  public Set<ContentType> getContentTypes() {
+
+    this.contentTypes = new HashSet<ContentType>();
+
+    return contentTypes;
+  }
+
+  /**
+   * Gets version.
+   *
+   * @return the version
+   */
+  public String getVersion() {
+    if (LOGGER.isDebugEnabled()) {
+      //  LOGGER.debug("Returning version:" + version);
+    }
+    return version;
+  }
+
+  /**
+   * Sets version.
+   *
+   * @param v the v
+   */
+  public void setVersion(String v) {
+    version = v;
+  }
+
+  /**
+   * Gets title.
+   *
+   * @return the title
+   */
+  public String getTitle() {
+    if (LOGGER.isDebugEnabled()) {
+      //   LOGGER.debug("Returning tite:" + title);
+    }
+    return ssShortName;
+  }
+
+  /**
+   * Gets ssDescription.
+   *
+   * @return the ssDescription
+   */
+  public String getDescription() {
+    if (LOGGER.isDebugEnabled()) {
+      //  LOGGER.debug("Returning ssDescription: " + ssDescription);
+    }
+    return ssDescription;
+  }
+
+  /**
+   * Gets organization.
+   *
+   * @return the organization
+   */
+  public String getOrganization() {
+    if (LOGGER.isDebugEnabled()) {
+      //  LOGGER.debug("Returning org:" + org);
+    }
+    return org;
+  }
+
+  /**
+   * Gets id.
+   *
+   * @return the id
+   */
+  public String getId() {
+
+    return ssShortName;
+  }
+
+  /**
+   * Sets id.
+   *
+   * @param id the id
+   */
+  public void setId(String id) {
+    this.sourceId = id;
+  }
+
+  /**
+   * Used by DDF to log from here
+   */
+  private void logElement(Element e) {
+    LOGGER.info(e.getTagName() + " " + e.getNodeName() + ": " + e.getTextContent());
+    NodeList nl = e.getChildNodes();
+    for (int i = 0; i < nl.getLength(); i++) {
+      logNode(nl.item(i));
+    }
+  }
+
+  /**
+   * Used by DDF to log from here
+   */
+  private void logNode(Node n) {
+    if (n instanceof Element) {
+      logElement((Element) n);
+    } else {
+      LOGGER.info(n.getNodeName() + ":" + n.getNodeValue());
+      NodeList nl = n.getChildNodes();
+      for (int i = 0; i < nl.getLength(); i++) {
+        logNode(nl.item(i));
+      }
+    }
   }
 
   private HttpUrl finalizeUrl(HttpUrl.Builder builder) {
