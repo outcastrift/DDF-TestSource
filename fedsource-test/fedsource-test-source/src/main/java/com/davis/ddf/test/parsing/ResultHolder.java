@@ -196,6 +196,9 @@ public class ResultHolder {
         if (reportLink != null ) {
             response.setReportLink(reportLink.get(position));
         }
+        if(location != null){
+            response.setLocation(location.get(position));
+        }
         return response;
     }
 

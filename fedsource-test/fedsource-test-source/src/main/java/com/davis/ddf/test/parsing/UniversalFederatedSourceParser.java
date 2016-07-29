@@ -153,74 +153,74 @@ public class UniversalFederatedSourceParser extends DefaultHandler {
         ResultHolder results = new ResultHolder();
         if (source.getSsWktStringParam() != null && !source.getSsWktStringParam().equalsIgnoreCase("null")
                 &&!source.getSsWktStringParam().trim().equalsIgnoreCase("")) {
-            LOGGER.info("getSsWktStringParam {}", source.getSsWktStringParam());
+            LOGGER.trace("getSsWktStringParam {}", source.getSsWktStringParam());
             List<String> wktArray = JsonPath.read(document, source.getSsWktStringParam());
-            LOGGER.info("wktArray size =  {}", wktArray.size());
+            LOGGER.trace("wktArray size =  {}", wktArray.size());
 
             results.setLocation(wktArray);
         }
         if (source.getSsReportLink() != null && !source.getSsReportLink().equalsIgnoreCase("null")
                 &&!source.getSsReportLink().trim().equalsIgnoreCase("")) {
-            LOGGER.info("getSsReportLink {}", source.getSsReportLink());
+            LOGGER.trace("getSsReportLink {}", source.getSsReportLink());
             List<String> reportArray = JsonPath.read(document, source.getSsReportLink());
             results.setReportLink(reportArray);
         }
         if (source.getSsDisplayTitle() != null && !source.getSsDisplayTitle().equalsIgnoreCase("null")
                 &&!source.getSsDisplayTitle().trim().equalsIgnoreCase("")) {
-            LOGGER.info("getSsDisplayTitle {}", source.getSsDisplayTitle());
+            LOGGER.trace("getSsDisplayTitle {}", source.getSsDisplayTitle());
             List<String> displayTitleArray = JsonPath.read(document, source.getSsDisplayTitle());
             results.setTitle(displayTitleArray);
         }
         if (source.getSsDisplaySerial() != null && !source.getSsDisplaySerial().equalsIgnoreCase("null")
                 &&!source.getSsDisplaySerial().trim().equalsIgnoreCase("")) {
-            LOGGER.info("getSsDisplaySerial {}", source.getSsDisplaySerial());
+            LOGGER.trace("getSsDisplaySerial {}", source.getSsDisplaySerial());
             List<String> displaySerialArray = JsonPath.read(document, source.getSsDisplaySerial());
         results.setSerial(displaySerialArray);
 
         }
         if (source.getSsSummary() != null && !source.getSsSummary().equalsIgnoreCase("null")
                 &&!source.getSsSummary().trim().equalsIgnoreCase("")) {
-            LOGGER.info("getSsSummary {}", source.getSsSummary());
+            LOGGER.trace("getSsSummary {}", source.getSsSummary());
             List<String> summaryArray = JsonPath.read(document, source.getSsSummary());
         results.setSummary(summaryArray);
 
         }
         if (source.getSsOriginatorUnit() != null && !source.getSsOriginatorUnit().equalsIgnoreCase("null")
                 &&!source.getSsOriginatorUnit().trim().equalsIgnoreCase("")) {
-            LOGGER.info("getSsOriginatorUnit {}", source.getSsOriginatorUnit());
+            LOGGER.trace("getSsOriginatorUnit {}", source.getSsOriginatorUnit());
             List<String> orginatorArray = JsonPath.read(document, source.getSsOriginatorUnit());
             results.setUnit(orginatorArray);
 
         }
         if (source.getSsPrimaryEventType() != null && !source.getSsPrimaryEventType().equalsIgnoreCase("null")
                 &&!source.getSsPrimaryEventType().trim().equalsIgnoreCase("")) {
-            LOGGER.info("getSsPrimaryEventType {}", source.getSsPrimaryEventType());
+            LOGGER.trace("getSsPrimaryEventType {}", source.getSsPrimaryEventType());
             List<String> primaryEventArray = JsonPath.read(document, source.getSsPrimaryEventType());
          results.setPrimaryEvent(primaryEventArray);
         }
         if (source.getSsClassification() != null && !source.getSsClassification().equalsIgnoreCase("null")
                 &&!source.getSsClassification().trim().equalsIgnoreCase("")) {
-            LOGGER.info("getSsClassification {}", source.getSsClassification());
+            LOGGER.trace("getSsClassification {}", source.getSsClassification());
             List<String> classificationArray = JsonPath.read(document, source.getSsClassification());
            results.setClassification(classificationArray);
 
         }
         if (source.getSsDateOccurred() != null && !source.getSsDateOccurred().equalsIgnoreCase("null")
                 &&!source.getSsDateOccurred().trim().equalsIgnoreCase("")) {
-            LOGGER.info("getSsDateOccurred {}", source.getSsDateOccurred());
+            LOGGER.trace("getSsDateOccurred {}", source.getSsDateOccurred());
             List<String> dateArray = JsonPath.read(document, source.getSsDateOccurred());
            results.setDate(dateArray);
 
         }
         if (source.getSsLatitude() != null && !source.getSsLatitude().equalsIgnoreCase("null")
                 &&!source.getSsLatitude().trim().equalsIgnoreCase("")) {
-            LOGGER.info("getSsLatitude {}", source.getSsLatitude());
+            LOGGER.trace("getSsLatitude {}", source.getSsLatitude());
             List<Double> latArray = JsonPath.read(document, source.getSsLatitude());
             results.setLat(latArray);
         }
         if (source.getSsLongitude() != null && !source.getSsLongitude().equalsIgnoreCase("null")
                 &&!source.getSsLongitude().trim().equalsIgnoreCase("")) {
-            LOGGER.info("getSsLongitude {}", source.getSsLongitude());
+            LOGGER.trace("getSsLongitude {}", source.getSsLongitude());
             List<Double> lngArray = JsonPath.read(document, source.getSsLongitude());
            results.setLng(lngArray);
         }
