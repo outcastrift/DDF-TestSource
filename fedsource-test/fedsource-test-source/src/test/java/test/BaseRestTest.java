@@ -1,6 +1,5 @@
 package test;
 
-import com.jayway.restassured.config.SSLConfig;
 
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
@@ -15,7 +14,6 @@ public class BaseRestTest {
   private static final Logger logger = LoggerFactory.getLogger(BaseRestTest.class);
   private final static String WADL_ADDRESS = GET_SOURCE_RESULTS + "?_wadl";
   protected static boolean serverUp = false;
-  protected static SSLConfig sslConfig;
 
   @BeforeClass
   public static void init() {

@@ -27,7 +27,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="DDF-Creations" target="1.8" />
+      <module name="DDF-TestSource" target="1.8" />
       <module name="Fedsearch-Test-Source" target="1.8" />
       <module name="rest-configurable-source" target="1.8" />
       <module name="rest-source-test-endpoint" target="1.8" />

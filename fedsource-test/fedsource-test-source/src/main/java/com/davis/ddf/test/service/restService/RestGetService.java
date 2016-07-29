@@ -10,9 +10,7 @@ package com.davis.ddf.test.service.restService;
 
 
 import com.davis.ddf.test.fedSource.UniversalFederatedSource;
-import io.mikael.urlbuilder.UrlBuilder;
 import java.io.IOException;
-import java.net.URL;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -22,15 +20,12 @@ import org.slf4j.LoggerFactory;
 
 
 import java.util.ArrayList;
-import java.util.Iterator;
-
 import com.davis.ddf.test.fedSource.datamodel.UniversalFederatedSourceResponse;
 import com.davis.ddf.test.service.SourceService;
 import com.davis.ddf.test.parsing.UniversalFederatedSourceParser;
 
 
 public class RestGetService implements SourceService {
-   // protected final static String ENDPOINT_ADDRESS = "https://localhost:8993/services/test/getSourceResults";
     private static final Logger LOGGER = LoggerFactory.getLogger(UniversalFederatedSource.class);
     int mode;
     private String url;
@@ -97,21 +92,6 @@ public class RestGetService implements SourceService {
         }
         //Time to create POJOs
         finalResultsList = parser.getObjectsFromJson(pathResult);
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Printing REST results");
-            //I am creating this again while in debug because if I don't im just going to get a ConcurrentModification Exception.
-            ArrayList<UniversalFederatedSourceResponse> clonedListToPrint = parser.getObjectsFromJson(pathResult);
-            Iterator<UniversalFederatedSourceResponse> itr = clonedListToPrint.iterator();
-            UniversalFederatedSourceResponse rr = null;
-            int c = 0;
-            while (itr.hasNext()) {
-                rr = itr.next();
-                LOGGER.debug("Result " + String.valueOf(c + 1) + " Serial Number [" + rr.getDisplaySerial() + "]");
-                c = c + 1;
-            }
-            //reclaim some of the wasted memory
-            clonedListToPrint = null;
-        }
         LOGGER.debug("Finished Printing REST Results Received a Total of " + String.valueOf(finalResultsList.size()) + " results.");
         return finalResultsList;
     }

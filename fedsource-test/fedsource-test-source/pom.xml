@@ -85,11 +85,6 @@
       <version>${gson-version}</version>
     </dependency>
     <dependency>
-      <groupId>org.json</groupId>
-      <artifactId>json</artifactId>
-      <version>${org-json-version}</version>
-    </dependency>
-    <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
       <version>${json.path.version}</version>
@@ -102,16 +97,6 @@
     <!--END JSON-->
 
     <!--START NETWORK CALLS-->
-    <dependency>
-      <groupId>io.mikael</groupId>
-      <artifactId>urlbuilder</artifactId>
-      <version>2.0.7</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>${http-client-version}</version>
-    </dependency>
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp</artifactId>
@@ -127,64 +112,10 @@
 
     <!--START TESTING-->
     <dependency>
-      <groupId>com.jayway.restassured</groupId>
-      <artifactId>rest-assured-osgi</artifactId>
-      <version>${com.jayway.rest-assured.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>${fsterxml-jackson-version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>${fsterxml-jackson-version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
-      <version>${codehaus-jackson-version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>${codehaus-jackson-version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <scope>test</scope>
       <version>${slf4j-log4j12.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.mikesamuel.osgi</groupId>
-      <artifactId>json-sanitizer-osgi</artifactId>
-      <scope>test</scope>
-      <version>${json.sanitizer.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-all</artifactId>
-      <scope>test</scope>
-      <version>${hamcrest-all.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
-      <version>${mockito.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-bundle-jaxrs</artifactId>
-      <scope>test</scope>
-      <version>${cxf-bundle-jaxrs-version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -198,22 +129,13 @@
       <version>15.0</version>
       <scope>test</scope>
     </dependency>
-
     <!--END TESTING-->
 
   </dependencies>
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.5.1</version>
-        <configuration>
-          <source>${jdk.version}</source>
-          <target>${jdk.version}</target>
-        </configuration>
-      </plugin>
+
 
       <plugin>
         <groupId>org.apache.felix</groupId>
@@ -240,7 +162,7 @@
               org.jdom2;resolution:="optional",
               org.codice.ddf.cxf;resolution:="optional",
               com.rometools.rome.*;resolution:="optional",
-              !android.util,
+              !android.*,
               *
             </Import-Package>
             <Export-Package>

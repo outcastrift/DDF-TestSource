@@ -33,7 +33,7 @@ public class BaseQueryTest extends BaseRestTest {
 
   public static Gson gson;
 
-  
+
   @Before
   public void setup() throws CQLException, ParseException {
     statesGeoFilter = CQL.toFilter("INTERSECTS(anyGeo, POLYGON ((-127.96874999999997 24.52713482259776," + " " +

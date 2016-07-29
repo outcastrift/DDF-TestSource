@@ -5,14 +5,11 @@
     <option name="id" value="1469051114267" />
     <option name="name" value="default" />
   </component>
-  <component name="EntryPointsManager">
-    <entry_points version="2.0" />
-  </component>
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="Osmorc" url="file://$PROJECT_DIR$/fedsource-test/fedsource-test-endpoint" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/fedsource-test/fedsource-test-source" />
   </component>
-  <component name="IdProvider" IDEtalkID="8EF14F4BD36990E91527542E5F02098A" />
+  <component name="IdProvider" IDEtalkID="00ECF7CC8FDC23D1CE0F4D8E8B5E4BF0" />
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
