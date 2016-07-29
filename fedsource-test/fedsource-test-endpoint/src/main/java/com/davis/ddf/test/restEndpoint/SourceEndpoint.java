@@ -3,6 +3,14 @@ package com.davis.ddf.test.restEndpoint;
 import com.davis.ddf.test.fedSource.datamodel.UniversalFederatedSourceResponse;
 import com.davis.ddf.test.groovySource.datamodel.GroovyResponseObject;
 import com.davis.ddf.test.restEndpoint.jsonapi.JsonApiResponse;
+import com.spatial4j.core.context.jts.JtsSpatialContext;
+import com.spatial4j.core.context.jts.JtsSpatialContextFactory;
+import com.spatial4j.core.context.jts.ValidationRule;
+import com.spatial4j.core.exception.InvalidShapeException;
+import com.spatial4j.core.shape.Shape;
+import com.spatial4j.core.shape.SpatialRelation;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTReader;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -405,7 +413,7 @@ public class SourceEndpoint {
         try {
           result = createRandomWktPolygon(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
         } catch (Exception e) {
-          logger.error("Wkt Creation Failed For POLYGON");
+          logger.error("Wkt Creation Failed For POLYGON {}",e);
         }
       }
       break;
@@ -482,27 +490,79 @@ public class SourceEndpoint {
     Random random = new Random();
     return list.get(random.nextInt(list.size()));
   }
-
+  //Verified and tested this method creates valid WKT Polygons
   private String createRandomWktPolygon(Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double
-          bottomRightLng) {
+          bottomRightLng) throws com.vividsolutions.jts.io.ParseException, ParseException {
     StringBuilder result = new StringBuilder();
-    int numberOfPoints = ThreadLocalRandom.current().nextInt(80) + 1;
     double lat = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
     lat = Double.parseDouble(decFormat.format(lat));
     double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
     lng = Double.parseDouble(decFormat.format(lng));
     result.append("POLYGON ((");
-    result.append(lng + " " + lat + ",");
-    for (int x = 0; x < numberOfPoints; x++) {
-      if (x % 2 == 0) {
+    //upper left
+    result.append(lng + " " + lat + ", ");
+    //upper Right
+    result.append(generateUpperRight(lng) + " " + lat + ", ");
+    //Lower right
+    result.append(generateUpperRight(lng) + " " + generateLowerRight(lat) +", ");
+    //lower left
+    result.append(lng + " " + generateLowerLeft(lat) +", ");
 
-        result.append(lng + x + " " + lat + ",");
-      } else {
-        result.append(lng + " " + lat + x + ",");
-      }
-    }
     result.append(lng + " " + lat +" ))");
-    return result.toString();
+    String wkt = result.toString();
+    return wkt;
+  }
+  private double generateLowerLeft(double lat){
+    double newLat= lat-3.0;
+    if(newLat > 90){
+      newLat =90;
+    }else if (newLat < -90){
+      newLat =-90;
+    }
+    return newLat;
+  }
+  private double generateUpperRight(double lng){
+    double newLong= lng+3.0;
+    if(newLong > 180){
+      newLong =180;
+    }else if (newLong < -180){
+      newLong =-180;
+    }
+    return newLong;
+  }
+  private double generateLowerRight(double lat){
+    double newLat= lat-3.0;
+    if(newLat > 90){
+      newLat =90;
+    }else if (newLat < -90){
+      newLat =-90;
+    }
+    return newLat;
+  }
+  private String repairPolygon(String wkt) throws ParseException, com.vividsolutions.jts.io.ParseException {
+    JtsSpatialContextFactory factory = new JtsSpatialContextFactory();
+    factory.validationRule = ValidationRule.repairBuffer0;
+    factory.validationRule = ValidationRule.repairConvexHull;
+    JtsSpatialContext ctx = factory.newSpatialContext();
+    Shape s = null;
+    String result = null;
+    try {
+      s = ctx.makeShapeFromGeometry(new WKTReader().read(wkt));
+      result = ctx.toString(s);
+    } catch (InvalidShapeException e) {
+
+    }
+    JtsSpatialContextFactory factory2 = new JtsSpatialContextFactory();
+    JtsSpatialContext context2 = factory2.newSpatialContext();
+    Shape d = context2.makeShapeFromGeometry(new WKTReader().read(result));
+
+    return d.toString();
+  }
+
+  private Double genRandomDoubleInRange(Double origin, Double bounds){
+    double result = ThreadLocalRandom.current().nextDouble(origin, bounds);
+    result = Double.parseDouble(decFormat.format(result));
+    return result;
   }
 
   private String createRandomWktMultiPolygon(Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double
@@ -512,11 +572,12 @@ public class SourceEndpoint {
 
     result.append("MULTIPOLYGON (");
     for (int y = 0; y < numberOfPolygons; y++) {
+      StringBuilder inner = new StringBuilder();
       double lat = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
       lat = Double.parseDouble(decFormat.format(lat));
       double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
       lng = Double.parseDouble(decFormat.format(lng));
-      result.append("(");
+      inner.append("((");
       result.append(lng + " " + lat + ",");
       int numberOfPoints = ThreadLocalRandom.current().nextInt(80) + 1;
       for (int x = 0; x < numberOfPoints; x++) {
@@ -526,14 +587,15 @@ public class SourceEndpoint {
           result.append(lng + " " + lat + x + ",");
         }
       }
-      result.append(lng + " " + lat);
-      result.append(")");
+      inner.append(lng + " " + lat);
+      inner.append("))");
+      result.append(inner.toString());
     }
 
     result.append(")");
     return result.toString();
   }
-
+  //Verified and tested this method produces valid points
   private String createRandomWktPoint(Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double
           bottomRightLng) {
     String result = null;
@@ -550,7 +612,7 @@ public class SourceEndpoint {
     result = "POINT(" + lng + " " + lat + ")";
     return result;
   }
-
+  //Verified this method produces valid multipoints.
   private String createRandomWktMultiPoint(Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double
           bottomRightLng) {
     StringBuilder result = new StringBuilder();
@@ -560,21 +622,20 @@ public class SourceEndpoint {
     double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
     lng = Double.parseDouble(decFormat.format(lng));
     result.append("MULTIPOINT (");
-    result.append("(" + lng + " " + lat + "),");
+    result.append("(" + lng + " " + lat + "), ");
     for (int x = 0; x < numberOfPoints; x++) {
-      if (x % 2 == 0) {
-
-        result.append("(" + lng + x + " " + lat + "),");
-      } else {
-        result.append("(" + lng + " " + lat + x + "),");
-      }
+      double latInner = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
+      latInner = Double.parseDouble(decFormat.format(latInner));
+      double lngInner = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
+      lngInner = Double.parseDouble(decFormat.format(lngInner));
+      result.append("(" + lngInner + " " + latInner + "), ");
     }
     String fix = result.toString();
-    fix = fix.substring(0, fix.length() - 1);
+    fix = fix.substring(0, fix.length() - 2);
     fix = fix + ")";
     return fix;
   }
-
+  //Verified this method returns valid line.
   private String createRandomWktLine(Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double
           bottomRightLng) {
     StringBuilder result = new StringBuilder();
