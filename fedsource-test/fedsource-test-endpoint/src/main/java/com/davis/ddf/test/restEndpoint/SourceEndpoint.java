@@ -280,8 +280,8 @@ public class SourceEndpoint {
     //Y is lat
     //X is lon
     ArrayList<UniversalFederatedSourceResponse> results = new ArrayList<UniversalFederatedSourceResponse>();
-    String startDate = transformDateTfr(start, dateFormat);
-    String endDate = transformDateTfr(end, dateFormat);
+    String startDate = transformDate(start, dateFormat);
+    String endDate = transformDate(end, dateFormat);
     Date s = null;
     Date e = null;
     try {
@@ -308,26 +308,16 @@ public class SourceEndpoint {
    * @param dateFormat the date format
    * @return the string
    */
-  public static String transformDateTfr(Date date, SimpleDateFormat dateFormat) {
-    //  LOGGER.debug("Transforming query dates to AFG time");
-    String transformedDate = null;
+  public static String transformDate(Date date, SimpleDateFormat dateFormat) {
     Calendar c = Calendar.getInstance();
     TimeZone localTimeZone = c.getTimeZone();
     TimeZone afgTimeZone = TimeZone.getTimeZone("Asia/Kabul");
-    //Returns the number of milliseconds since January 1, 1970, 00:00:00 for query date
-    long msFromEpochQuery = date.getTime();
-    //gives you the current offset in ms from GMT at the current date
     int localOffsetFromUTC = localTimeZone.getRawOffset();
     int afghanOffsetFromUTC = afgTimeZone.getRawOffset();
-    //  LOGGER.debug("local offset is " + localOffsetFromUTC);
-    //  LOGGER.debug("AFG offset is " + afghanOffsetFromUTC);
-    //create a new calendar in GMT timezone, set to this date and add the offset
     Calendar afghanCal = Calendar.getInstance(afgTimeZone);
     afghanCal.setTimeInMillis(date.getTime());
     afghanCal.add(Calendar.MILLISECOND, (-1 * localOffsetFromUTC));
     afghanCal.add(Calendar.MILLISECOND, afghanOffsetFromUTC);
-    //  LOGGER.debug("Original Date: " + date);
-    //  LOGGER.debug("Created AFG date as [" + dateFormat.format(afghanCal.getTime()) + "]");
     return dateFormat.format(afghanCal.getTime());
   }
 
@@ -374,13 +364,13 @@ public class SourceEndpoint {
                                                                   Double bottomRightLng,
                                                                   Date start,
                                                                   Date end) {
-    logger.debug("topLeftLat {}",topLeftLat);
+    /*logger.debug("topLeftLat {}",topLeftLat);
     logger.debug("topLeftLng {}",topLeftLng);
     logger.debug("bottomRightLat {}",bottomRightLat);
-    logger.debug("bottomRightLng {}",bottomRightLng);
+    logger.debug("bottomRightLng {}",bottomRightLng);*/
     UniversalFederatedSourceResponse uniResponse = new UniversalFederatedSourceResponse();
     int whichGeom = ThreadLocalRandom.current().nextInt(5);
-    logger.info("Array Number = {}", whichGeom);
+    //logger.info("Array Number = {}", whichGeom);
     String wktString = constructWktString(whichGeom,
             topLeftLat,
             topLeftLng,

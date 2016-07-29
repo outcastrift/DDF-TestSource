@@ -71,7 +71,7 @@ public class RestGetService implements SourceService {
       } catch (IOException e) {
         e.printStackTrace();
       }
-      LOGGER.debug("String response = {}",response);
+      LOGGER.debug("Successfully got response from source.");
         //transform to JSON
         String pathResult = null;
         try {

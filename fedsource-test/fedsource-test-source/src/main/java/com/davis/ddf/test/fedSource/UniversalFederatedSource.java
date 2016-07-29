@@ -2,9 +2,12 @@ package com.davis.ddf.test.fedSource;
 
 import com.davis.ddf.test.client.TrustingOkHttpClient;
 import com.davis.ddf.test.fedSource.datamodel.UniversalFederatedSourceResponse;
-import java.util.HashMap;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
+import com.davis.ddf.test.fedSource.datamodel.metacards.UniversalFederatedSourceMetacard;
+import com.davis.ddf.test.fedSource.datamodel.metacards.UniversalFederatedSourceMetacardType;
+import com.davis.ddf.test.parsing.UniversalFederatedSourceParser;
+import com.davis.ddf.test.service.SourceService;
+import com.davis.ddf.test.service.restService.RestGetService;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.opengis.geometry.DirectPosition;
 import org.opengis.geometry.Geometry;
@@ -28,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -52,29 +56,24 @@ import ddf.catalog.operation.impl.SourceResponseImpl;
 import ddf.catalog.resource.ResourceNotFoundException;
 import ddf.catalog.resource.ResourceNotSupportedException;
 import ddf.catalog.source.IngestException;
-import ddf.catalog.source.RemoteSource;
 import ddf.catalog.source.SourceMonitor;
 import ddf.catalog.source.UnsupportedQueryException;
 import ddf.catalog.source.opensearch.ContextualSearch;
 import ddf.catalog.source.opensearch.OpenSearchSiteUtil;
 import ddf.catalog.util.Describable;
 import ddf.mime.MimeTypeMapper;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
 
-import com.davis.ddf.test.fedSource.datamodel.metacards.UniversalFederatedSourceMetacard;
-import com.davis.ddf.test.fedSource.datamodel.metacards.UniversalFederatedSourceMetacardType;
-import com.davis.ddf.test.parsing.UniversalFederatedSourceParser;
-import com.davis.ddf.test.service.restService.RestGetService;
-import com.davis.ddf.test.service.SourceService;
-import com.davis.ddf.test.service.soapService.UniversalFederatedSourceSoapService;
-
-public class UniversalFederatedSource
-    implements ddf.catalog.source.FederatedSource, Describable {
+public class UniversalFederatedSource implements ddf.catalog.source.FederatedSource, Describable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(UniversalFederatedSource.class);
   private static final String DEFAULT_TYPE = UniversalFederatedSourceMetacardType.NAME;
   private static final long EXPIRATION_OFFSET = 3600000;
   private static int SAX = 1;
   private static int REST = 2;
+  public String ssClientCertPath;
+  public String ssClientCertPassword;
   /**
    * Spring set variables
    **/
@@ -98,8 +97,6 @@ public class UniversalFederatedSource
   private String ssServiceUrl;
   private String ssDescription = "Tfr TfrResponseObjects Federated Source";
   private String ssShortName;
-  public String ssClientCertPath;
-  public String ssClientCertPassword;
   private boolean ssShouldConvertToBBox;
 
   /**
@@ -113,8 +110,6 @@ public class UniversalFederatedSource
   private Set<ContentType> contentTypes;
   private SimpleDateFormat dateFormat;
   private String DEFAULT_TYPE_VERSION = DEFAULT_TYPE + version;
-  private int contentMode = UniversalFederatedSourceParser.JSON;
-  private UniversalFederatedSourceSoapService soapService;
   private RestGetService restGetService;
   private OkHttpClient client;
   private CatalogFramework catalogFramework;
@@ -153,17 +148,19 @@ public class UniversalFederatedSource
    *
    * @throws IngestException the ingest exception
    */
-  public UniversalFederatedSource() throws IngestException {
+  public UniversalFederatedSource() {
+    mode = REST;
     setupOSGIServices();
 
     try {
       if (mode == REST) {
-        if(!ssClientCertPath.trim().equalsIgnoreCase("") &&
-                !ssClientCertPath.trim().equalsIgnoreCase("null")
-                && ssClientCertPath != null){
-          client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15,15,getSsClientCertPath(),ssClientCertPassword);
+        if ((ssClientCertPath != null )
+                && (!ssClientCertPath.trim().equalsIgnoreCase(""))
+                && (!ssClientCertPath.trim().equalsIgnoreCase("null"))) {
+          client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15, 15, getSsClientCertPath(),
+                  ssClientCertPassword);
         }
-        client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15,15,"certs/tstark-cert.p12","changeit");
+        client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15, 15, "certs/tstark-cert.p12", "changeit");
       }
       try {
 
@@ -193,52 +190,50 @@ public class UniversalFederatedSource
     }
   }
 
-  /**
-   * Transform date string.
-   *
-   * @param date the date
-   * @param dateFormat the date format
-   * @return the string
-   */
-  public static String transformDateTfr(Date date, SimpleDateFormat dateFormat) {
-    //  LOGGER.debug("Transforming query dates to AFG time");
-    String transformedDate = null;
-    Calendar c = Calendar.getInstance();
-    TimeZone localTimeZone = c.getTimeZone();
-    TimeZone afgTimeZone = TimeZone.getTimeZone("Asia/Kabul");
-    //Returns the number of milliseconds since January 1, 1970, 00:00:00 for query date
-    long msFromEpochQuery = date.getTime();
-    //gives you the current offset in ms from GMT at the current date
-    int localOffsetFromUTC = localTimeZone.getRawOffset();
-    int afghanOffsetFromUTC = afgTimeZone.getRawOffset();
-    //  LOGGER.debug("local offset is " + localOffsetFromUTC);
-    //  LOGGER.debug("AFG offset is " + afghanOffsetFromUTC);
-    //create a new calendar in GMT timezone, set to this date and add the offset
-    Calendar afghanCal = Calendar.getInstance(afgTimeZone);
-    afghanCal.setTimeInMillis(date.getTime());
-    afghanCal.add(Calendar.MILLISECOND, (-1 * localOffsetFromUTC));
-    afghanCal.add(Calendar.MILLISECOND, afghanOffsetFromUTC);
-    //  LOGGER.debug("Original Date: " + date);
-    //  LOGGER.debug("Created AFG date as [" + dateFormat.format(afghanCal.getTime()) + "]");
-    return dateFormat.format(afghanCal.getTime());
-  }
-
   private void setupOSGIServices() {
     BundleContext bc = FrameworkUtil.getBundle(UniversalFederatedSource.class).getBundleContext();
     //Service reference in order to populate our service
     ServiceReference serviceReference = bc.getServiceReference(MimeTypeMapper.class.getName());
     //get the service
     mimeTypeMapper = (MimeTypeMapper) bc.getService(serviceReference);
-
     //Service reference in order to populate our service
-    ServiceReference serviceReference2 =
-        bc.getServiceReference(MetacardTypeRegistry.class.getName());
+    ServiceReference serviceReference2 = bc.getServiceReference(MetacardTypeRegistry.class.getName());
     //get the service
     metacardTypeRegistry = (MetacardTypeRegistry) bc.getService(serviceReference2);
     //Service reference in order to populate our service
     ServiceReference serviceReference3 = bc.getServiceReference(CatalogFramework.class.getName());
     //get the service
     catalogFramework = (CatalogFramework) bc.getService(serviceReference3);
+  }
+
+  public String getSsClientCertPath() {
+    return ssClientCertPath;
+  }
+
+  public void setSsClientCertPath(String ssClientCertPath) {
+    this.ssClientCertPath = ssClientCertPath;
+  }
+
+  /**
+   * Transform date string.
+   *
+   * @param date       the date
+   * @param dateFormat the date format
+   * @return the string
+   */
+  public static String transformDateTfr(Date date, SimpleDateFormat dateFormat) {
+    String transformedDate = null;
+    Calendar c = Calendar.getInstance();
+    TimeZone localTimeZone = c.getTimeZone();
+    TimeZone afgTimeZone = TimeZone.getTimeZone("Asia/Kabul");
+    long msFromEpochQuery = date.getTime();
+    int localOffsetFromUTC = localTimeZone.getRawOffset();
+    int afghanOffsetFromUTC = afgTimeZone.getRawOffset();
+    Calendar afghanCal = Calendar.getInstance(afgTimeZone);
+    afghanCal.setTimeInMillis(date.getTime());
+    afghanCal.add(Calendar.MILLISECOND, (-1 * localOffsetFromUTC));
+    afghanCal.add(Calendar.MILLISECOND, afghanOffsetFromUTC);
+    return dateFormat.format(afghanCal.getTime());
   }
 
   public String getSsContainerPath() {
@@ -377,10 +372,6 @@ public class UniversalFederatedSource
     this.ssServiceUrl = ssServiceUrl;
   }
 
-  public void setSsDescription(String ssDescription) {
-    this.ssDescription = ssDescription;
-  }
-
   public void init() {
     LOGGER.debug("UniversalFederatedSource.init() called!");
   }
@@ -392,15 +383,15 @@ public class UniversalFederatedSource
   /**
    * Retrieve resource resource response.
    *
-   * @param uri the uri
+   * @param uri                   the uri
    * @param stringSerializableMap the string serializable map
    * @return the resource response
-   * @throws IOException the io exception
-   * @throws ResourceNotFoundException the resource not found exception
+   * @throws IOException                   the io exception
+   * @throws ResourceNotFoundException     the resource not found exception
    * @throws ResourceNotSupportedException the resource not supported exception
    */
-  public ResourceResponse retrieveResource(URI uri, Map<String, Serializable> stringSerializableMap)
-      throws IOException, ResourceNotFoundException, ResourceNotSupportedException {
+  public ResourceResponse retrieveResource(URI uri, Map<String, Serializable> stringSerializableMap) throws
+          IOException, ResourceNotFoundException, ResourceNotSupportedException {
     return null;
   }
 
@@ -424,8 +415,7 @@ public class UniversalFederatedSource
    */
   public Set<String> getOptions(Metacard metacard) {
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("OpenSearch Source \"{}\" does not support resource retrieval options.",
-          this.ssShortName);
+      LOGGER.debug("OpenSearch Source \"{}\" does not support resource retrieval options.", this.ssShortName);
     }
     return Collections.emptySet();
   }
@@ -486,16 +476,13 @@ public class UniversalFederatedSource
       SpatialFilter spatialFilter = visitor.getSpatialSearch();
       long elapsed = System.currentTimeMillis();
 
-      ArrayList<UniversalFederatedSourceResponse>
-          operationsUniversalFederatedSourceResponseReports = null;
+      ArrayList<UniversalFederatedSourceResponse> operationsUniversalFederatedSourceResponseReports = null;
       if (mode == SAX) {
         LOGGER.debug("SAX mode enabled entering queryWithSax ");
-        operationsUniversalFederatedSourceResponseReports =
-            queryWithSax(query, contextualFilter, temporalFilter, spatialFilter);
-      } else if (mode == REST) {
+      }else if (mode == REST) {
         LOGGER.debug("REST mode enabled entering queryWithParams ");
-        operationsUniversalFederatedSourceResponseReports =
-            queryWithParams(query, contextualFilter, temporalFilter, spatialFilter);
+        operationsUniversalFederatedSourceResponseReports = queryWithParams(query, contextualFilter, temporalFilter,
+                spatialFilter);
         LOGGER.debug("REST :: exiting queryWithParams ");
       }
 
@@ -504,8 +491,7 @@ public class UniversalFederatedSource
       }
       results = createResultList(operationsUniversalFederatedSourceResponseReports);
       elapsed = System.currentTimeMillis() - elapsed;
-      LOGGER.debug(
-          "query returning " + results.size() + " results in " + elapsed + " milliseconds");
+      LOGGER.debug("query returning " + results.size() + " results in " + elapsed + " milliseconds");
       response = new SourceResponseImpl(queryRequest, results);
       response.setHits(results.size());
       //NOTE added brackets to this if
@@ -526,8 +512,7 @@ public class UniversalFederatedSource
    * @param universalFederatedSourceResponses the response objects
    * @return the list
    */
-  private List<Result> createResultList(
-      ArrayList<UniversalFederatedSourceResponse> universalFederatedSourceResponses) {
+  private List<Result> createResultList(ArrayList<UniversalFederatedSourceResponse> universalFederatedSourceResponses) {
 
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("CREATING RESULT LIST");
@@ -537,10 +522,8 @@ public class UniversalFederatedSource
     try {
 
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug(
-            "Obtained "
-                + universalFederatedSourceResponses.size()
-                + " UniversalFederatedSourceResponse Objects");
+        LOGGER.debug("Obtained " + universalFederatedSourceResponses.size() + " UniversalFederatedSourceResponse " +
+                "Objects");
       }
 
       String hitTitle = null;
@@ -560,19 +543,16 @@ public class UniversalFederatedSource
 
           String metadataString = null;
           if (mode == SAX) {
-            metadataString = "<metadata>"
-                + StringEscapeUtils.escapeXml11(fedSourceResponse.getMetaData())
-                + "</metadata>";
+            metadataString = "<metadata>" + StringEscapeUtils.escapeXml11(fedSourceResponse.getMetaData()) +
+                    "</metadata>";
                        /* if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug(metadataString);
                         }*/
-            metaCardData.setMetadata(
-                "<metadata>" + StringEscapeUtils.escapeXml11(metadataString) + "</metadata>");
+            metaCardData.setMetadata("<metadata>" + StringEscapeUtils.escapeXml11(metadataString) + "</metadata>");
           } else {
 
-            metadataString = "<metadata>"
-                + StringEscapeUtils.escapeXml11(fedSourceResponse.getMetaData())
-                + "</metadata>";
+            metadataString = "<metadata>" + StringEscapeUtils.escapeXml11(fedSourceResponse.getMetaData()) +
+                    "</metadata>";
             if (LOGGER.isDebugEnabled()) {
               LOGGER.debug(metadataString);
             }
@@ -596,63 +576,53 @@ public class UniversalFederatedSource
           metaCardData.setContentTypeName(DEFAULT_TYPE);
           metaCardData.setContentTypeVersion(DEFAULT_TYPE_VERSION);
           if (fedSourceResponse.getClassification() != null) {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.CLASSIFICATION,
-                fedSourceResponse.getClassification());
+            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.CLASSIFICATION, fedSourceResponse
+                    .getClassification());
           } else {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.CLASSIFICATION,
-                "Unknown");
+            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.CLASSIFICATION, "Unknown");
           }
           if (fedSourceResponse.getSummary() != null) {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.SUMMARY,
-                fedSourceResponse.getSummary());
+            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.SUMMARY, fedSourceResponse.getSummary());
           } else {
             metaCardData.setAttribute(UniversalFederatedSourceMetacardType.SUMMARY, "No ssSummary");
           }
           if (fedSourceResponse.getLatitude() != null) {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.LAT,
-                fedSourceResponse.getLatitude());
+            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.LAT, fedSourceResponse.getLatitude());
           } else {
             metaCardData.setAttribute(UniversalFederatedSourceMetacardType.LAT, 0.0);
           }
           if (fedSourceResponse.getLongitude() != null) {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.LON,
-                fedSourceResponse.getLongitude());
+            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.LON, fedSourceResponse.getLongitude());
           } else {
             metaCardData.setAttribute(UniversalFederatedSourceMetacardType.LON, 0.0);
           }
           if (fedSourceResponse.getOriginatorUnit() != null) {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.UNIT,
-                fedSourceResponse.getOriginatorUnit());
+            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.UNIT, fedSourceResponse.getOriginatorUnit());
           } else {
             metaCardData.setAttribute(UniversalFederatedSourceMetacardType.UNIT, "Unknown Unit");
           }
           if (fedSourceResponse.getPrimaryEventType() != null) {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.EVENT_TYPE,
-                fedSourceResponse.getPrimaryEventType());
+            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.EVENT_TYPE, fedSourceResponse
+                    .getPrimaryEventType());
           } else {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.EVENT_TYPE,
-                "Unknown Event Type");
+            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.EVENT_TYPE, "Unknown Event Type");
           }
           //  metaCardData.setResourceURI(new URI(UniversalFederatedSourceResponse.getSsReportLink()));
           if (fedSourceResponse.getReportLink() != null) {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.REPORT_LINK,
-                fedSourceResponse.getReportLink());
+            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.REPORT_LINK, fedSourceResponse
+                    .getReportLink());
           } else {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.REPORT_LINK,
-                "No Supplied Link");
+            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.REPORT_LINK, "No Supplied Link");
           }
-          if(fedSourceResponse.getLocation() != null){
+          if (fedSourceResponse.getLocation() != null) {
             metaCardData.setLocation(fedSourceResponse.getLocation());
-          }else{
+          } else {
             if (fedSourceResponse.getLongitude() != 0.0 && fedSourceResponse.getLatitude() != 0.0) {
-              metaCardData.setLocation("POINT ("
-                  + Double.parseDouble(decimalFormatter.format(fedSourceResponse.getLongitude()))
-                  + " "
-                  + Double.parseDouble(decimalFormatter.format(fedSourceResponse.getLatitude()))
-                  + ")");
+              metaCardData.setLocation("POINT (" + Double.parseDouble(decimalFormatter.format(fedSourceResponse
+                      .getLongitude())) + " " + Double.parseDouble(decimalFormatter.format(fedSourceResponse
+                      .getLatitude())) + ")");
             }
           }
-
 
 
           if (LOGGER.isDebugEnabled()) {
@@ -684,9 +654,7 @@ public class UniversalFederatedSource
               LOGGER.debug("Location: " + metaCardData.getLocation());
             }
             if (metaCardData.getAttribute(UniversalFederatedSourceMetacardType.SUMMARY) != null) {
-              LOGGER.debug(
-                  "Summary:" + metaCardData.getAttribute(
-                      UniversalFederatedSourceMetacardType.SUMMARY)
+              LOGGER.debug("Summary:" + metaCardData.getAttribute(UniversalFederatedSourceMetacardType.SUMMARY)
                       .toString());
             }
           }
@@ -711,52 +679,20 @@ public class UniversalFederatedSource
     return results;
   }
 
-  protected ArrayList<UniversalFederatedSourceResponse> queryWithParams(Query query,
-      ContextualSearch contextualSearch,
-      TemporalFilter temporalFilter,
-      SpatialFilter spatialFilter) {
+  protected ArrayList<UniversalFederatedSourceResponse> queryWithParams(Query query, ContextualSearch
+          contextualSearch, TemporalFilter temporalFilter, SpatialFilter spatialFilter) {
     if (restGetService == null) {
       restGetService = new RestGetService(this, mode, client);
       LOGGER.debug("Created RestGetService with BaseUrl of {}", ssServiceUrl);
     }
 
     LOGGER.debug("Inside Query With Params");
-    List<UniversalFederatedSourceResponse> results =
-        new ArrayList<UniversalFederatedSourceResponse>();
-    results =
-        getRestResults((ArrayList<UniversalFederatedSourceResponse>) results, restGetService, query,
+    List<UniversalFederatedSourceResponse> results = new ArrayList<UniversalFederatedSourceResponse>();
+    results = getRestResults((ArrayList<UniversalFederatedSourceResponse>) results, restGetService, query,
             contextualSearch, temporalFilter, spatialFilter);
 
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("queryTfr Returning " + results);
-    }
-    return (ArrayList<UniversalFederatedSourceResponse>) results;
-  }
-
-  /**
-   * Query tfr with sax array list.
-   *
-   * @param query the query
-   * @param contextualSearch the contextual search
-   * @param temporalFilter the temporal filter
-   * @param spatialFilter the spatial filter
-   * @return the array list
-   */
-  protected ArrayList<UniversalFederatedSourceResponse> queryWithSax(Query query,
-      ContextualSearch contextualSearch,
-      TemporalFilter temporalFilter,
-      SpatialFilter spatialFilter) {
-    if (soapService == null) {
-      soapService = new UniversalFederatedSourceSoapService(ssServiceUrl, contentMode);
-    }
-    List<UniversalFederatedSourceResponse> results =
-        new ArrayList<UniversalFederatedSourceResponse>();
-    results =
-        getRestResults((ArrayList<UniversalFederatedSourceResponse>) results, soapService, query,
-            contextualSearch, temporalFilter, spatialFilter);
-
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("querySax Returning " + results);
     }
     return (ArrayList<UniversalFederatedSourceResponse>) results;
   }
@@ -893,13 +829,9 @@ public class UniversalFederatedSource
     }
   }
 
-  private ArrayList<UniversalFederatedSourceResponse> getRestResults(
-      ArrayList<UniversalFederatedSourceResponse> results,
-      SourceService service,
-      Query query,
-      ContextualSearch contextualSearch,
-      TemporalFilter temporalFilter,
-      SpatialFilter spatialFilter) {
+  private ArrayList<UniversalFederatedSourceResponse> getRestResults(ArrayList<UniversalFederatedSourceResponse>
+                                                                             results, SourceService service, Query
+          query, ContextualSearch contextualSearch, TemporalFilter temporalFilter, SpatialFilter spatialFilter) {
     HttpUrl httpUrl = HttpUrl.parse(ssServiceUrl);
 
     HttpUrl.Builder httpBuilder = httpUrl.newBuilder();
@@ -919,10 +851,8 @@ public class UniversalFederatedSource
       //if contextual isn't null then print that to the log
       //this works
       if (contextualSearch != null) {
-        LOGGER.debug("Contextual Search = "
-            + contextualSearch.getSelectors()
-            + " search phrase "
-            + contextualSearch.getSearchPhrase());
+        LOGGER.debug("Contextual Search = " + contextualSearch.getSelectors() + " search phrase " + contextualSearch
+                .getSearchPhrase());
         searchParams = contextualSearch.getSearchPhrase();
       } /*else {
                 //if its null make it 1
@@ -936,13 +866,12 @@ public class UniversalFederatedSource
         startDate = transformDateTfr(temporalFilter.getStartDate(), dateFormat);
         endDate = transformDateTfr(temporalFilter.getEndDate(), dateFormat);
         //if we are in debug then print some variables
-        //NOTE removed another check for null on start and end date, these will always be available if the TemporalFilter isnt null.
+        //NOTE removed another check for null on start and end date, these will always be available if the
+        // TemporalFilter isnt null.
         if (LOGGER.isDebugEnabled()) {
           LOGGER.debug("UI START: " + temporalFilter.getStartDate());
-          LOGGER.debug("UI START: "
-              + dateFormat.format(temporalFilter.getStartDate())
-              + "UI END: "
-              + dateFormat.format(temporalFilter.getEndDate()));
+          LOGGER.debug("UI START: " + dateFormat.format(temporalFilter.getStartDate()) + "UI END: " + dateFormat
+                  .format(temporalFilter.getEndDate()));
           //  LOGGER.debug("AFG START: " + startDate + "AFG END: " + endDate);
 
         }
@@ -953,8 +882,7 @@ public class UniversalFederatedSource
       } else {
         //if temporal filter is null then do the exact same thing
         //NOTE changed this, was unnecessarily checking for null again
-        LOGGER.info(
-            "Temporal Filter was null setting start date to 1970 and end date to the current day and time");
+        LOGGER.info("Temporal Filter was null setting start date to 1970 and end date to the current day and time");
         Calendar c = Calendar.getInstance();
         c.set(1970, 0, 1);
         startDate = dateFormat.format(c.getTime());
@@ -962,8 +890,7 @@ public class UniversalFederatedSource
         endDate = dateFormat.format(c.getTime());
       }
       //Add variable to queryParams and append a &
-      if (ssTemporalSearchParamStart != null && !ssTemporalSearchParamStart.equalsIgnoreCase(
-          "null")) {
+      if (ssTemporalSearchParamStart != null && !ssTemporalSearchParamStart.equalsIgnoreCase("null")) {
         httpBuilder.addQueryParameter(ssTemporalSearchParamStart, startDate);
         //queryParams.add(ssTemporalSearchParamStart + "=" + startDate + "&");
       }
@@ -997,17 +924,13 @@ public class UniversalFederatedSource
             double[] coords = dp.getCoordinate();
             //NOTE wrapped this in If in debug
             if (LOGGER.isDebugEnabled()) {
-              LOGGER.debug("Creating bbox from "
-                  + coords[0]
-                  + ", "
-                  + coords[1]
-                  + ", "
-                  + sdf.getDistanceInMeters());
+              LOGGER.debug("Creating bbox from " + coords[0] + ", " + coords[1] + ", " + sdf.getDistanceInMeters());
             }
-            //create bounding box coordinates from the coordinates array and the spatial distance in meters from the spatialDistanceFilter
+            //create bounding box coordinates from the coordinates array and the spatial distance in meters from the
+            // spatialDistanceFilter
             //createBBoxFromPointRadius = minX, minY, maxX, maxY
-            double[] bboxCoords = OpenSearchSiteUtil.createBBoxFromPointRadius(coords[0], coords[1],
-                sdf.getDistanceInMeters());
+            double[] bboxCoords = OpenSearchSiteUtil.createBBoxFromPointRadius(coords[0], coords[1], sdf
+                    .getDistanceInMeters());
             //create string builder for top left
             topLeftLatLong = new StringBuilder();
             //create string builder for bottom right
@@ -1017,15 +940,11 @@ public class UniversalFederatedSource
             //appending the Max Y variable //append Space  //then the Min Y variable
             bottomRightLatLong.append(bboxCoords[1]).append(" ").append(bboxCoords[2]);
             //Add variable to queryParams and append a &
-            if (ssSpatialSearchParamLat != null && !ssSpatialSearchParamLat.equalsIgnoreCase(
-                "null")) {
-              httpBuilder.addQueryParameter(ssSpatialSearchParamLat,
-                  String.valueOf(topLeftLatLong));
+            if (ssSpatialSearchParamLat != null && !ssSpatialSearchParamLat.equalsIgnoreCase("null")) {
+              httpBuilder.addQueryParameter(ssSpatialSearchParamLat, String.valueOf(topLeftLatLong));
             }
-            if (ssSpatialSearchParamLong != null && !ssSpatialSearchParamLong.equalsIgnoreCase(
-                "null")) {
-              httpBuilder.addQueryParameter(ssSpatialSearchParamLong,
-                  String.valueOf(bottomRightLatLong));
+            if (ssSpatialSearchParamLong != null && !ssSpatialSearchParamLong.equalsIgnoreCase("null")) {
+              httpBuilder.addQueryParameter(ssSpatialSearchParamLong, String.valueOf(bottomRightLatLong));
             }
           } catch (Exception ex) {
             LOGGER.error(ex.getMessage());
@@ -1048,18 +967,13 @@ public class UniversalFederatedSource
             topLeftLatLong.append(bboxCoords[3]).append(" ").append(bboxCoords[0]);
             //appending the Max Y variable //append Space  //then the Min Y variable
             bottomRightLatLong.append(bboxCoords[1]).append(" ").append(bboxCoords[2]);
-            if (ssSpatialSearchParamLat != null && !ssSpatialSearchParamLat.equalsIgnoreCase(
-                "null")) {
-              httpBuilder.addQueryParameter(ssSpatialSearchParamLat,
-                  String.valueOf(topLeftLatLong));
+            if (ssSpatialSearchParamLat != null && !ssSpatialSearchParamLat.equalsIgnoreCase("null")) {
+              httpBuilder.addQueryParameter(ssSpatialSearchParamLat, String.valueOf(topLeftLatLong));
             }
-            if (ssSpatialSearchParamLong != null && !ssSpatialSearchParamLong.equalsIgnoreCase(
-                "null")) {
-              httpBuilder.addQueryParameter(ssSpatialSearchParamLong,
-                  String.valueOf(bottomRightLatLong));
+            if (ssSpatialSearchParamLong != null && !ssSpatialSearchParamLong.equalsIgnoreCase("null")) {
+              httpBuilder.addQueryParameter(ssSpatialSearchParamLong, String.valueOf(bottomRightLatLong));
             }
-          }
-          else {
+          } else {
             LOGGER.warn("WKT ({}) not supported for SPATIAL search, use POLYGON.", wktStr);
           }
         }
@@ -1115,17 +1029,12 @@ public class UniversalFederatedSource
     return builder.build();
   }
 
-
-  public String getSsClientCertPath() {
-    return ssClientCertPath;
-  }
-
-  public void setSsClientCertPath(String ssClientCertPath) {
-    this.ssClientCertPath = ssClientCertPath;
-  }
-
   public String getSsDescription() {
     return ssDescription;
+  }
+
+  public void setSsDescription(String ssDescription) {
+    this.ssDescription = ssDescription;
   }
 
   public String getSsWktStringParam() {
@@ -1143,6 +1052,7 @@ public class UniversalFederatedSource
   public void setSsShouldConvertToBBox(boolean ssShouldConvertToBBox) {
     this.ssShouldConvertToBBox = ssShouldConvertToBBox;
   }
+
   public String getSsClientCertPassword() {
     return ssClientCertPassword;
   }

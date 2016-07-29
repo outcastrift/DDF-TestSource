@@ -9,15 +9,6 @@
            http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
 
 
-
-  <reference id="mimeTypeMapper"
-      interface="ddf.mime.MimeTypeMapper"/>
-  <reference id="metacardTypeRegistry"
-      interface="ddf.catalog.data.MetacardTypeRegistry"/>
-  <reference id="catalogFramework"
-      interface="ddf.catalog.CatalogFramework"/>
-
-
   <cm:managed-service-factory id="managed-service-factory"
       factory-pid="com.davis.ddf.test.fedSource.UniversalFederatedSource"
       interface="ddf.catalog.source.FederatedSource">

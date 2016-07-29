@@ -9,9 +9,9 @@
           <property key="Import-Package" value="org.jdom2;resolution:=&quot;optional&quot;,org.codice.ddf.cxf;resolution:=&quot;optional&quot;,com.rometools.rome.*;resolution:=&quot;optional&quot;,!android.*,*" />
           <property key="Export-Package" value="com.davis.ddf.test.*,ddf.catalog.source.opensearch,ddf.catalog.util.impl" />
           <property key="Bundle-Name" value="Configurable Rest Source" />
-          <property key="Bundle-ClassPath" value=".,json-path-2.1.0.jar,json-smart-2.2.jar,gson-2.3.1.jar,okhttp-3.3.1.jar,okio-1.9.0.jar,commons-lang3-3.4.jar" />
-          <property key="Include-Resource" value="json-path-2.1.0.jar=$MAVEN_REPOSITORY$/com/jayway/jsonpath/json-path/2.1.0/json-path-2.1.0.jar,json-smart-2.2.jar=$MAVEN_REPOSITORY$/net/minidev/json-smart/2.2/json-smart-2.2.jar,gson-2.3.1.jar=$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.3.1/gson-2.3.1.jar,okhttp-3.3.1.jar=$MAVEN_REPOSITORY$/com/squareup/okhttp3/okhttp/3.3.1/okhttp-3.3.1.jar,okio-1.9.0.jar=$MAVEN_REPOSITORY$/com/squareup/okio/okio/1.9.0/okio-1.9.0.jar,commons-lang3-3.4.jar=$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.4/commons-lang3-3.4.jar" />
-          <property key="Embedded-Artifacts" value="json-path-2.1.0.jar;g=&quot;com.jayway.jsonpath&quot;;a=&quot;json-path&quot;;v=&quot;2.1.0&quot;,json-smart-2.2.jar;g=&quot;net.minidev&quot;;a=&quot;json-smart&quot;;v=&quot;2.2&quot;,gson-2.3.1.jar;g=&quot;com.google.code.gson&quot;;a=&quot;gson&quot;;v=&quot;2.3.1&quot;,okhttp-3.3.1.jar;g=&quot;com.squareup.okhttp3&quot;;a=&quot;okhttp&quot;;v=&quot;3.3.1&quot;,okio-1.9.0.jar;g=&quot;com.squareup.okio&quot;;a=&quot;okio&quot;;v=&quot;1.9.0&quot;,commons-lang3-3.4.jar;g=&quot;org.apache.commons&quot;;a=&quot;commons-lang3&quot;;v=&quot;3.4&quot;" />
+          <property key="Bundle-ClassPath" value=".,json-path-2.1.0.jar,json-smart-2.2.jar,json-20140107.jar,gson-2.3.1.jar,okhttp-3.3.1.jar,okio-1.9.0.jar,commons-lang3-3.4.jar" />
+          <property key="Include-Resource" value="json-path-2.1.0.jar=$MAVEN_REPOSITORY$/com/jayway/jsonpath/json-path/2.1.0/json-path-2.1.0.jar,json-smart-2.2.jar=$MAVEN_REPOSITORY$/net/minidev/json-smart/2.2/json-smart-2.2.jar,json-20140107.jar=$MAVEN_REPOSITORY$/org/json/json/20140107/json-20140107.jar,gson-2.3.1.jar=$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.3.1/gson-2.3.1.jar,okhttp-3.3.1.jar=$MAVEN_REPOSITORY$/com/squareup/okhttp3/okhttp/3.3.1/okhttp-3.3.1.jar,okio-1.9.0.jar=$MAVEN_REPOSITORY$/com/squareup/okio/okio/1.9.0/okio-1.9.0.jar,commons-lang3-3.4.jar=$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.4/commons-lang3-3.4.jar" />
+          <property key="Embedded-Artifacts" value="json-path-2.1.0.jar;g=&quot;com.jayway.jsonpath&quot;;a=&quot;json-path&quot;;v=&quot;2.1.0&quot;,json-smart-2.2.jar;g=&quot;net.minidev&quot;;a=&quot;json-smart&quot;;v=&quot;2.2&quot;,json-20140107.jar;g=&quot;org.json&quot;;a=&quot;json&quot;;v=&quot;20140107&quot;,gson-2.3.1.jar;g=&quot;com.google.code.gson&quot;;a=&quot;gson&quot;;v=&quot;2.3.1&quot;,okhttp-3.3.1.jar;g=&quot;com.squareup.okhttp3&quot;;a=&quot;okhttp&quot;;v=&quot;3.3.1&quot;,okio-1.9.0.jar;g=&quot;com.squareup.okio&quot;;a=&quot;okio&quot;;v=&quot;1.9.0&quot;,commons-lang3-3.4.jar;g=&quot;org.apache.commons&quot;;a=&quot;commons-lang3&quot;;v=&quot;3.4&quot;" />
         </additionalProperties>
         <additionalJARContents />
       </configuration>
@@ -135,6 +135,7 @@
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.4" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.1" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:15.0" level="project" />
+    <orderEntry type="library" name="Maven: org.json:json:20140107" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.3.1" level="project" />
     <orderEntry type="library" name="Maven: com.jayway.jsonpath:json-path:2.1.0" level="project" />
     <orderEntry type="library" name="Maven: net.minidev:json-smart:2.2" level="project" />
