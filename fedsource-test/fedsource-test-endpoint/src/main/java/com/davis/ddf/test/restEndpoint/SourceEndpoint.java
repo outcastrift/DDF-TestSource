@@ -429,7 +429,8 @@ public class SourceEndpoint {
         }
       }
       break;
-      case LINESTRING: {
+      //Removed because these lines look like ass on the map, until i can customize better they are staying off.
+      /*case LINESTRING: {
         try {
           result = createRandomWktLine(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
         } catch (Exception e) {
@@ -445,6 +446,7 @@ public class SourceEndpoint {
         }
       }
       break;
+      */
       default:{
         try {
           result = createRandomWktPoint(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
@@ -494,18 +496,35 @@ public class SourceEndpoint {
     lat = Double.parseDouble(decFormat.format(lat));
     double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
     lng = Double.parseDouble(decFormat.format(lng));
+    double decision = genRandomLevel();
     result.append("POLYGON ((");
     //upper left
     result.append(lng + " " + lat + ", ");
     //upper Right
-    result.append(generateUpperRight(lng) + " " + lat + ", ");
+    result.append(generateUpperRight(lng,decision) + " " + lat + ", ");
     //Lower right
-    result.append(generateUpperRight(lng) + " " + generateLowerRight(lat) + ", ");
+    result.append(generateUpperRight(lng,decision) + " " + generateLowerRight(lat,decision) + ", ");
     //lower left
-    result.append(lng + " " + generateLowerLeft(lat) + ", ");
+    result.append(lng + " " + generateLowerLeft(lat,decision) + ", ");
     result.append(lng + " " + lat + " ))");
     String wkt = result.toString();
     return wkt;
+  }
+  private double genRandomLevel(){
+    double result = 0.0;
+    int decide =ThreadLocalRandom.current().nextInt(4);
+    if(decide == 0){
+      result = 0.27;
+    }else if(decide ==1){
+      result = 0.1;
+    }
+    else if(decide ==2){
+      result = 0.2;
+    }
+    else if(decide ==3){
+      result = 0.3;
+    }
+    return result;
   }
   //Verified and tested this method creates valid WKT MultiPolygons
   private String createRandomWktMultiPolygon(Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double
@@ -521,15 +540,16 @@ public class SourceEndpoint {
       lat = Double.parseDouble(decFormat.format(lat));
       double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
       lng = Double.parseDouble(decFormat.format(lng));
+      double levelOf = genRandomLevel();
       inner.append("((");
       //upper left
       inner.append(lng + " " + lat + ", ");
       //upper Right
-      inner.append(generateUpperRight(lng) + " " + lat + ", ");
+      inner.append(generateUpperRight(lng,levelOf) + " " + lat + ", ");
       //Lower right
-      inner.append(generateUpperRight(lng) + " " + generateLowerRight(lat) + ", ");
+      inner.append(generateUpperRight(lng,levelOf) + " " + generateLowerRight(lat,levelOf) + ", ");
       //lower left
-      inner.append(lng + " " + generateLowerLeft(lat) + ", ");
+      inner.append(lng + " " + generateLowerLeft(lat,levelOf) + ", ");
       inner.append(lng + " " + lat + " )),");
       String wkt = inner.toString();
       result.append(wkt);
@@ -643,8 +663,8 @@ public class SourceEndpoint {
     return fix;
   }
 
-  private double generateUpperRight(double lng) {
-    double newLong = lng + 3.0;
+  private double generateUpperRight(double lng,double amount) {
+    double newLong = lng + amount;
     if (newLong > 180) {
       newLong = 180;
     } else if (newLong < -180) {
@@ -653,8 +673,8 @@ public class SourceEndpoint {
     return newLong;
   }
 
-  private double generateLowerRight(double lat) {
-    double newLat = lat - 3.0;
+  private double generateLowerRight(double lat,double amount) {
+    double newLat = lat - amount;
     if (newLat > 90) {
       newLat = 90;
     } else if (newLat < -90) {
@@ -663,8 +683,8 @@ public class SourceEndpoint {
     return newLat;
   }
 
-  private double generateLowerLeft(double lat) {
-    double newLat = lat - 3.0;
+  private double generateLowerLeft(double lat,double amount) {
+    double newLat = lat - amount;
     if (newLat > 90) {
       newLat = 90;
     } else if (newLat < -90) {
