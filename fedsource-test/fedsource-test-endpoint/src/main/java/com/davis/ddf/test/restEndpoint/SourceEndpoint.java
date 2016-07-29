@@ -553,7 +553,7 @@ public class SourceEndpoint {
   private String createRandomWktLine(Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double
           bottomRightLng) {
     StringBuilder result = new StringBuilder();
-    int numberOfPoints = ThreadLocalRandom.current().nextInt(20) + 1;
+    int numberOfPoints = ThreadLocalRandom.current().nextInt(4) + 1;
     double lat = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
     lat = Double.parseDouble(decFormat.format(lat));
     double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
@@ -561,11 +561,12 @@ public class SourceEndpoint {
     result.append("LINESTRING (");
     result.append(lng + " " + lat + ",");
     for (int x = 0; x < numberOfPoints; x++) {
-      if (x % 2 == 0) {
+      int upOrDown = ThreadLocalRandom.current().nextInt(50);
+      if (upOrDown % 2 == 0) {
+        result.append((lng+(lng*0.3))  + " " + lat + ",");
 
-        result.append(lng + x + " " + lat + ",");
       } else {
-        result.append(lng + " " + lat + x + ",");
+        result.append(lng + " " + (lat+(lat*0.3))  + ",");
       }
     }
     String fix = result.toString();
@@ -573,7 +574,7 @@ public class SourceEndpoint {
     fix = fix + ")";
     return fix;
   }
-
+  //Verified and tested this method creates valid MultiLineStrings
   private String createRandomWktMultiLine(Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double
           bottomRightLng) {
     StringBuilder result = new StringBuilder();
@@ -583,7 +584,7 @@ public class SourceEndpoint {
     for (int y = 0; y < numberOfLines; y++) {
       StringBuilder innerLoop = new StringBuilder();
       innerLoop.append("(");
-      int numberOfPoints = ThreadLocalRandom.current().nextInt(20) + 1;
+      int numberOfPoints = ThreadLocalRandom.current().nextInt(4) + 1;
       double lat = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
       lat = Double.parseDouble(decFormat.format(lat));
       double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
@@ -591,11 +592,11 @@ public class SourceEndpoint {
 
       innerLoop.append(lng + " " + lat + ", ");
       for (int x = 0; x < numberOfPoints; x++) {
-        if (x % 2 == 0) {
-
-          innerLoop.append(lng + x + " " + lat + ", ");
+        int upOrDown = ThreadLocalRandom.current().nextInt(50);
+        if (upOrDown % 2 == 0) {
+          innerLoop.append(lng+(lng*0.3) + " " + lat + ", ");
         } else {
-          innerLoop.append(lng + " " + lat + x + ", ");
+          innerLoop.append(lng + " " + (lat+(lat*0.3)) + ", ");
         }
       }
       String fix = innerLoop.toString();
