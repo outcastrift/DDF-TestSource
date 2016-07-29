@@ -347,7 +347,7 @@ public class SourceEndpoint {
     logger.debug("bottomRightLat {}",bottomRightLat);
     logger.debug("bottomRightLng {}",bottomRightLng);*/
     UniversalFederatedSourceResponse uniResponse = new UniversalFederatedSourceResponse();
-    int whichGeom = ThreadLocalRandom.current().nextInt(5);
+    int whichGeom = ThreadLocalRandom.current().nextInt(6);
     //logger.info("Array Number = {}", whichGeom);
     String wktString = constructWktString(whichGeom, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
     uniResponse.setLocation(wktString);
@@ -474,7 +474,7 @@ public class SourceEndpoint {
     String wkt = result.toString();
     return wkt;
   }
-
+  //Verified and tested this method creates valid WKT MultiPolygons
   private String createRandomWktMultiPolygon(Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double
           bottomRightLng) {
     StringBuilder result = new StringBuilder();
@@ -497,14 +497,14 @@ public class SourceEndpoint {
       inner.append(generateUpperRight(lng) + " " + generateLowerRight(lat) + ", ");
       //lower left
       inner.append(lng + " " + generateLowerLeft(lat) + ", ");
-      inner.append(lng + " " + lat + " ))");
+      inner.append(lng + " " + lat + " )),");
       String wkt = inner.toString();
       result.append(wkt);
     }
-
-
-    result.append(")");
-    return result.toString();
+    String fix = result.toString();
+    fix = fix.substring(0,fix.length()-1);
+    fix = fix + ")";
+    return fix;
   }
 
   //Verified and tested this method produces valid points
@@ -589,22 +589,24 @@ public class SourceEndpoint {
       double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
       lng = Double.parseDouble(decFormat.format(lng));
 
-      innerLoop.append(lng + " " + lat + ",");
+      innerLoop.append(lng + " " + lat + ", ");
       for (int x = 0; x < numberOfPoints; x++) {
         if (x % 2 == 0) {
 
-          innerLoop.append(lng + x + " " + lat + ",");
+          innerLoop.append(lng + x + " " + lat + ", ");
         } else {
-          innerLoop.append(lng + " " + lat + x + ",");
+          innerLoop.append(lng + " " + lat + x + ", ");
         }
       }
       String fix = innerLoop.toString();
-      fix = fix.substring(0, fix.length() - 1);
-      fix = fix + ")";
+      fix = fix.substring(0, fix.length() - 2);
+      fix = fix + "), ";
       result.append(fix);
     }
-    result.append(")");
-    return result.toString();
+    String fix = result.toString();
+    fix = fix.substring(0, fix.length() - 2);
+    fix = fix + ")";
+    return fix;
   }
 
   private double generateUpperRight(double lng) {
