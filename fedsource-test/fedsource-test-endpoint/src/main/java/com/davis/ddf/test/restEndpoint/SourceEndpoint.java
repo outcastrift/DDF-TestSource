@@ -353,7 +353,8 @@ public class SourceEndpoint {
     uniResponse.setLocation(wktString);
     Date sigactDate = generateRandomDate(start, end);
     uniResponse.setClassification("UNCLASSIFIED");
-    uniResponse.setDisplayTitle("SIGACT-" + sigactDate);
+
+    uniResponse.setDisplayTitle(generateTitleBasedOnGeometry(wktString,sigactDate));
     uniResponse.setDateOccurred(sigactDate);
     uniResponse.setDisplaySerial(String.valueOf(topLeftLat) + String.valueOf(bottomRightLng) + String.valueOf(lat) +
             String.valueOf(lng));
@@ -367,6 +368,30 @@ public class SourceEndpoint {
     return uniResponse;
   }
 
+  private String generateTitleBasedOnGeometry(String geom, Date date){
+    String name =null;
+    if(geom.contains("MULTIPOINT")){
+      name = "SIGACT-COLLECTION"+date;
+    }else if (geom.contains("POINT")){
+      name ="SIGACT-" + date;
+    }
+    else if (geom.contains("MULTILINESTRING")){
+    name="ROUTE-COLLECTION-"+date;
+    }
+    else if (geom.contains("LINESTRING")){
+      name="ROUTE-"+date;
+
+    }
+    else if (geom.contains("MULTIPOLYGON")){
+      name="NAI-COLLECTION-"+date;
+
+    }
+    else if (geom.contains("POLYGON")){
+      name="NAI-"+date;
+
+    }
+    return name;
+  }
   public String constructWktString(int wktType, Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double
           bottomRightLng) {
     String result = null;
@@ -420,6 +445,14 @@ public class SourceEndpoint {
         }
       }
       break;
+      default:{
+        try {
+          result = createRandomWktPoint(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
+        } catch (Exception e) {
+          logger.error("Wkt Creation Failed For Default Type of Point");
+
+        }
+      }
     }
     return result;
   }

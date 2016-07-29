@@ -596,11 +596,9 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
             metaCardData.setAttribute(UniversalFederatedSourceMetacardType.REPORT_LINK, "No Supplied Link");
           }
           if (fedSourceResponse.getLocation() != null) {
-            LOGGER.debug("Setting to WKT TYPE");
             metaCardData.setLocation(fedSourceResponse.getLocation());
           } else {
             if (fedSourceResponse.getLongitude() != 0.0 && fedSourceResponse.getLatitude() != 0.0) {
-              LOGGER.debug("Setting with LAT LONG");
               metaCardData.setLocation("POINT (" + Double.parseDouble(decimalFormatter.format(fedSourceResponse
                       .getLongitude())) + " " + Double.parseDouble(decimalFormatter.format(fedSourceResponse
                       .getLatitude())) + ")");
