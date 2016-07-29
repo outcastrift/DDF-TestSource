@@ -13,7 +13,8 @@
 
     <AD description="Should polygon queries be converted to BBox" name="Should Convert to BBox"
         id="ssShouldConvertToBBox" required="false" type="Boolean" default="false"/>
-
+    <AD description="Absolute path to the client certificate .p12 file." type="String"
+        id="ssClientCertPath" required="true" default=""/>
     <AD description="The majority of sources will return results within a array.
        $	The root element to query. This starts all path expressions.
        @	The current node being processed by a filter predicate.
@@ -26,21 +27,31 @@
        [?(&lt;expression&gt;)]	Filter expression. Expression must evaluate to a boolean value."
         name="Container Object Path" id="ssContainerPath" required="true" type="String"
         default="$.data[*]"/>
+
+
     <AD description="The query portion of the URL that corresponds to text search. "
         name="Contextual Search Parameter" id="ssContextSearchParam" required="true" type="String"
         default="amount"/>
+
+
     <AD description="The query portion of the URL that corresponds to start date of the search"
         name="Temporal Search Parameters : Start" id="ssTemporalSearchParamStart" required="true"
         type="String"
         default="startDate"/>
+
+
     <AD description="The query portion of the URL that corresponds to end date of the search"
         name="Temporal Search Parameters : End" id="ssTemporalSearchParamEnd" required="true"
         type="String"
         default="endDate"/>
+
+
     <AD description="The query portion of the URL that corresponds to upper left corner of a bounding box search"
         name="Spatial Search Parameter : Latitude" id="ssSpatialSearchParamLat" required="true"
         type="String"
         default="topLeftLatLong"/>
+
+
     <AD description="The query portion of the URL that corresponds to bottom right corner of a bounding box search"
         name="Spatial Search Parameter : Longitude" id="ssSpatialSearchParamLong" required="true"
         type="String"
@@ -51,29 +62,41 @@
             Report Link = The link to where this information came from. "
         name="Metacard Data Fields : Report Link" id="ssReportLink" required="true" type="String"
         default="$[*].reportLink"/>
+
+
     <AD description="Metacard Data Fields : Match these fields to correspond to elements within the returned object if the element does not exist type the word null.
             Display Title For the Metacard "
         name="Metacard Data Fields : Display Title" id="ssDisplayTitle" required="true" type="String"
         default="$[*].displayTitle"/>
+
+
     <AD description="Metacard Data Fields : Match these fields to correspond to elements within the returned object if the element does not exist type the word null.
             Display Serial For the Metacard"
         name="Metacard Data Fields : Display Serial" id="ssDisplaySerial" required="true"
         type="String"
         default="$[*].displaySerial"/>
+
+
     <AD description="Metacard Data Fields : Match these fields to correspond to elements within the returned object if the element does not exist type the word null.
            Summary For the Metacard"
         name="Metacard Data Fields : Summary" id="ssSummary" required="true" type="String"
         default="$[*].summary"/>
+
+
     <AD description="Metacard Data Fields : Match these fields to correspond to elements within the returned object if the element does not exist type the word null.
             Originating Unit For the Metacard"
         name="Metacard Data Fields : Originating Unit" id="ssOriginatorUnit" required="true"
         type="String"
         default="$[*].originatorUnit"/>
+
+
     <AD description="Metacard Data Fields : Match these fields to correspond to elements within the returned object if the element does not exist type the word null.
             Primary Event Type For the Metacard"
         name="Metacard Data Fields : Primary Event Type" id="ssPrimaryEventType" required="true"
         type="String"
         default="$[*].primaryEventType"/>
+
+
     <AD description="Metacard Data Fields : Match these fields to correspond to elements within the returned object if the element does not exist type the word null.
             Classification For the Metacard"
         name="Metacard Data Fields : Classification" id="ssClassification" required="true"
@@ -81,13 +104,17 @@
         default="$[*].classification"/>
 
     <AD description="Metacard Data Fields : Match these fields to correspond to elements within the returned object if the element does not exist type the word null.
-           WKT String Location  For the Metacard"
-        name="Metacard Data Fields : WKT String (If you use this field lat-lon will not be used in the metacard location)" id="ssWktStringParam" required="true" type="String"
-        default="$[*].location"/>
+           WKT String Location  For the Metacard  (If you use this field lat-lon will not be used in the metacard location)"
+        name="Metacard Data Fields : WKT String" id="ssWktStringParam" required="true" type="String"
+        default=""/>
+
+
     <AD description="Metacard Data Fields : Match these fields to correspond to elements within the returned object if the element does not exist type the word null.
            Latitude For the Metacard"
         name="Metacard Data Fields : Latitude" id="ssLatitude" required="true" type="String"
         default="$[*].latitude"/>
+
+
     <AD description="Metacard Data Fields : Match these fields to correspond to elements within the returned object if the element does not exist type the word null.
             Longitude For the Metacard"
         name="Metacard Data Fields : Longitude" id="ssLongitude" required="true" type="String"

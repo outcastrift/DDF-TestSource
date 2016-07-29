@@ -98,6 +98,8 @@ public class UniversalFederatedSource
   private String ssServiceUrl;
   private String ssDescription = "Tfr TfrResponseObjects Federated Source";
   private String ssShortName;
+  public String ssClientCertPath;
+  public String ssClientCertPassword;
   private boolean ssShouldConvertToBBox;
 
   /**
@@ -156,6 +158,11 @@ public class UniversalFederatedSource
 
     try {
       if (mode == REST) {
+        if(!ssClientCertPath.trim().equalsIgnoreCase("") &&
+                !ssClientCertPath.trim().equalsIgnoreCase("null")
+                && ssClientCertPath != null){
+          client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15,15,getSsClientCertPath(),ssClientCertPassword);
+        }
         client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15,15,"certs/tstark-cert.p12","changeit");
       }
       try {
@@ -1108,6 +1115,19 @@ public class UniversalFederatedSource
     return builder.build();
   }
 
+
+  public String getSsClientCertPath() {
+    return ssClientCertPath;
+  }
+
+  public void setSsClientCertPath(String ssClientCertPath) {
+    this.ssClientCertPath = ssClientCertPath;
+  }
+
+  public String getSsDescription() {
+    return ssDescription;
+  }
+
   public String getSsWktStringParam() {
     return ssWktStringParam;
   }
@@ -1123,4 +1143,12 @@ public class UniversalFederatedSource
   public void setSsShouldConvertToBBox(boolean ssShouldConvertToBBox) {
     this.ssShouldConvertToBBox = ssShouldConvertToBBox;
   }
+  public String getSsClientCertPassword() {
+    return ssClientCertPassword;
+  }
+
+  public void setSsClientCertPassword(String ssClientCertPassword) {
+    this.ssClientCertPassword = ssClientCertPassword;
+  }
+
 }

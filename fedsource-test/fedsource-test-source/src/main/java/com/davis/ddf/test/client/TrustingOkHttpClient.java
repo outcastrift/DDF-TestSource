@@ -1,5 +1,6 @@
 package com.davis.ddf.test.client;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,8 +36,14 @@ public class TrustingOkHttpClient {
         ks = KeyStore.getInstance("PKCS12");
         //ks = KeyStore.getInstance(KeyStore.getDefaultType());
         // get user password and file input stream
+        if(TrustingOkHttpClient.class.getClassLoader().getResourceAsStream(keyStorePath) == null){
+          File initialFile = new File(keyStorePath);
+          in = new FileInputStream(initialFile);
+        }else{
+          in = TrustingOkHttpClient.class.getClassLoader().getResourceAsStream(keyStorePath);
+        }
+
         char[] password = clientCertPassword.toCharArray();
-        in = TrustingOkHttpClient.class.getClassLoader().getResourceAsStream(keyStorePath);
         ks.load(in, password);
       } catch (KeyStoreException | NoSuchAlgorithmException | IOException | CertificateException e) {
         e.printStackTrace();
@@ -53,8 +60,10 @@ public class TrustingOkHttpClient {
     }
 
 
-  public OkHttpClient getUnsafeOkHttpClient(int readTimeout,int connectTimeout,
-      String clientCertPath,String certPassword) {
+  public OkHttpClient getUnsafeOkHttpClient(int readTimeout,
+                                            int connectTimeout,
+                                            String clientCertPath,
+                                            String certPassword) {
     try {
       // Create a trust manager that does not validate certificate chains
       final TrustManager[] trustAllCerts = new TrustManager[] {
