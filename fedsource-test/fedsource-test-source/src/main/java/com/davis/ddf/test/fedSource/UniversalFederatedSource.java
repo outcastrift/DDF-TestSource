@@ -537,10 +537,7 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
 
             metadataString = "<metadata>" + StringEscapeUtils.escapeXml11(fedSourceResponse.getMetaData()) +
                     "</metadata>";
-            if (LOGGER.isDebugEnabled()) {
-              LOGGER.debug(metadataString);
-            }
-
+            LOGGER.trace(metadataString);
             metaCardData.setMetadata(metadataString);
           }
           Calendar c = Calendar.getInstance();
@@ -680,41 +677,23 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
     StringBuilder topLeftLatLong = null;
     StringBuilder bottomRightLatLong = null;
     try {
-      //Debug statement
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("Creating Filters");
-      }
-      //if contextual isn't null then print that to the log
-      //this works
+      LOGGER.debug("Creating Filters");
       if (contextualSearch != null) {
         LOGGER.debug("Contextual Search = " + contextualSearch.getSelectors() + " search phrase " + contextualSearch
                 .getSearchPhrase());
         searchParams = contextualSearch.getSearchPhrase();
-      } /*else {
-                //if its null make it 1
-                LOGGER.debug("Contextual search is null setting to 1");
-                searchParams = "1";
-            }*/
-
-      //if temporal filter isn't null then do all of this
+      }
       if (temporalFilter != null) {
         //sets the date to a specific format "yyyy-MM-dd'T'HH:mm:ssZ"
         startDate = transformDateTfr(temporalFilter.getStartDate(), dateFormat);
         endDate = transformDateTfr(temporalFilter.getEndDate(), dateFormat);
-        //if we are in debug then print some variables
-        //NOTE removed another check for null on start and end date, these will always be available if the
-        // TemporalFilter isnt null.
+
         if (LOGGER.isDebugEnabled()) {
           LOGGER.debug("UI START: " + temporalFilter.getStartDate());
           LOGGER.debug("UI START: " + dateFormat.format(temporalFilter.getStartDate()) + "UI END: " + dateFormat
                   .format(temporalFilter.getEndDate()));
-          //  LOGGER.debug("AFG START: " + startDate + "AFG END: " + endDate);
-
         }
-        //if in debug then print the start and end to the log
-        if (LOGGER.isDebugEnabled()) {
-          LOGGER.debug("START: " + startDate + " END: " + endDate);
-        }
+        LOGGER.debug("START: " + startDate + " END: " + endDate);
       } else {
         //if temporal filter is null then do the exact same thing
         //NOTE changed this, was unnecessarily checking for null again
@@ -738,7 +717,7 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
         //get the location string in Well known text
         String wktStr = spatialFilter.getGeometryWkt();
         //Print it to the log.
-        LOGGER.debug("wktStr: " + wktStr);
+        LOGGER.trace("wktStr: " + wktStr);
         //if the spatial filter is a Distance Filter do all of this
         if (spatialFilter instanceof SpatialDistanceFilter) {
           try {
@@ -747,23 +726,20 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
             //get the geometry object
             Geometry geo = sdf.getGeometry();
             //print it
-            LOGGER.debug("GEO: " + geo);
+            LOGGER.trace("GEO: " + geo);
             //get the Point
             Point point = (Point) geo;
             //print it
-            LOGGER.debug("POINT: " + point);
+            LOGGER.trace("POINT: " + point);
             //get the direstPosition
             DirectPosition dp = point.getDirectPosition();
             //print it
-            LOGGER.debug("DirectPosition: " + dp);
+            LOGGER.trace("DirectPosition: " + dp);
             //create a coordinates array based on the direct position
             double[] coords = dp.getCoordinate();
-            //NOTE wrapped this in If in debug
-            if (LOGGER.isDebugEnabled()) {
-              LOGGER.debug("Creating bbox from " + coords[0] + ", " + coords[1] + ", " + sdf.getDistanceInMeters());
-            }
-            //create bounding box coordinates from the coordinates array and the spatial distance in meters from the
-            // spatialDistanceFilter
+            LOGGER.trace("Creating bbox from " + coords[0] + ", " + coords[1] + ", " + sdf.getDistanceInMeters());
+
+
             //createBBoxFromPointRadius = minX, minY, maxX, maxY
             double[] bboxCoords = OpenSearchSiteUtil.createBBoxFromPointRadius(coords[0], coords[1], sdf
                     .getDistanceInMeters());
@@ -789,7 +765,7 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
         //if we are not a instance of Spatial Distance Filter
         else {
           if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("WKTSTR: " + wktStr);
+            LOGGER.trace("WKTSTR: " + wktStr);
           }
           if (wktStr.contains("POLYGON")) {
             String[] polyAry = OpenSearchSiteUtil.createPolyAryFromWKT(wktStr);
@@ -798,7 +774,6 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
             //creating array with bounding box
             //{minX, minY, maxX, maxY};
             double[] bboxCoords = OpenSearchSiteUtil.createBBoxFromPolygon(polyAry);
-            //NOTE Changed these stringbuilder constructions to one line.
             //appending the Max X variable  //append Space   //then the Min X variable
             topLeftLatLong.append(bboxCoords[3]).append(" ").append(bboxCoords[0]);
             //appending the Max Y variable //append Space  //then the Min Y variable
@@ -810,7 +785,7 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
               httpBuilder.addQueryParameter(ssSpatialSearchParamLong, String.valueOf(bottomRightLatLong));
             }
           } else {
-            LOGGER.warn("WKT ({}) not supported for SPATIAL search, use POLYGON.", wktStr);
+            LOGGER.trace("WKT ({}) not supported for SPATIAL search, use POLYGON.", wktStr);
           }
         }
       }
@@ -819,7 +794,6 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
       }
 
       //Make the call to the service
-
       LOGGER.debug("CALLING getResultsForQuery(" + httpUrl.url().toString() + ")");
 
       results = service.getResultsForQuery(httpBuilder.build());
@@ -828,7 +802,7 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
       ex.printStackTrace();
     }
     if (results != null) {
-      LOGGER.debug("UniversalFederatedSource  RETURNED {} results", results.size());
+      LOGGER.info("UniversalFederatedSource  RETURNED {} results", results.size());
     }
     return results;
   }
@@ -983,38 +957,6 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
         logNode(nl.item(i));
       }
     }
-  }
-
-  private HttpUrl finalizeUrl(HttpUrl.Builder builder) {
-
-    int port = 0;
-    String ssServiceUrl = "https://localhost:8993/services/test/getSourceResults";
-    HttpUrl a = HttpUrl.parse(ssServiceUrl);
-
-    String[] parseUrl = ssServiceUrl.split("/");
-    String protocol = parseUrl[0].substring(0, parseUrl[0].length() - 1);
-    String host = null;
-    if (parseUrl[2].contains(":")) {
-      String[] hostString = parseUrl[2].split(":");
-      host = hostString[0];
-      port = Integer.valueOf(hostString[1]);
-    } else {
-      host = parseUrl[2];
-    }
-    builder.scheme(protocol);
-    ArrayList<String> paths = new ArrayList<String>();
-    for (int x = 3; x < parseUrl.length; x++) {
-      paths.add(parseUrl[x]);
-    }
-    builder.host(host);
-    if (port > 0) {
-      builder.port(port);
-    }
-    for (String s : paths) {
-      builder.addPathSegment(s);
-    }
-
-    return builder.build();
   }
 
   public String getSsDescription() {
