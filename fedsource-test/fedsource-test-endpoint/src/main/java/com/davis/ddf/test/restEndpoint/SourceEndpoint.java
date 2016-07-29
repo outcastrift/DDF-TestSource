@@ -511,7 +511,7 @@ public class SourceEndpoint {
         result.append(lng + " " + lat + x + ",");
       }
     }
-    result.append("))");
+    result.append(lng + " " + lat +" ))");
     return result.toString();
   }
 
