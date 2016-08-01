@@ -141,7 +141,18 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
     setSsDisplayTitle(springVars.get("ssDisplayTitle"));
     setSsClientCertPath(springVars.get("ssClientCertPath"));
     setSsClientCertPassword(springVars.get("ssClientCertPassword"));
+    setSsWktStringParam(springVars.get("ssWktStringParam"));
+    mode = REST;
+    client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15,15,null,null);
+    try {
+      String dateFormatPattern = "yyyy-MM-dd'T'HH:mm:ssZ";
+      dateFormat = new SimpleDateFormat(dateFormatPattern);
+      isAvailable = true;
+      LOGGER.info("Successfully created UniversalFederatedSource");
 
+    } catch (Exception ex) {
+      LOGGER.error("Error  = {}",ex);
+    }
   }
 
   /**

@@ -1,8 +1,8 @@
 package test.query;
 
-import com.davis.ddf.test.fedSource.UniversalFederatedSource;
 import ddf.catalog.operation.Query;
 import ddf.catalog.operation.QueryRequest;
+import ddf.catalog.operation.SourceResponse;
 import ddf.catalog.operation.impl.QueryImpl;
 import ddf.catalog.operation.impl.QueryRequestImpl;
 import ddf.catalog.source.UnsupportedQueryException;
@@ -23,8 +23,10 @@ public class ContextualQueryTest extends BaseQueryTest {
 
         Query stateQuery = new QueryImpl(statesContextualFilter);
         QueryRequest stateRequest = new QueryRequestImpl(stateQuery);
+        SourceResponse sourceResponse = universalFederatedSource.query(stateRequest);
 
 
+        assertTrue(sourceResponse.getHits() > 0);
 
 
 
