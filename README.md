@@ -7,6 +7,11 @@
 ![Screenshot](https://raw.githubusercontent.com/outcastrift/DDF-Creations/master/yoda.png)
 
 
+#Simple Installation
+Just drop both jars into the deploy directory. Go to the configuration page either /admin or /system/console/configMgr
+go to the TestBedFederatedSource option. Create a new configuration with all of the default values. 
+Your finished. 
+
 ## Experiment : Test Bed Source
 
 This bundle shows a implementation of a REST service that is configured as Federated Source as well as a Source that can be hit via a Groovy Script configuration. 
