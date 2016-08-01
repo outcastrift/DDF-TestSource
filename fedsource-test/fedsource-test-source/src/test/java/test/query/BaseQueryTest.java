@@ -25,10 +25,10 @@ import test.BaseRestTest;
  */
 public class BaseQueryTest extends BaseRestTest {
 
-  public static Filter statesGeoFilter;
+  public static Filter geoFilter;
   public static Filter haitiGeoFilter;
   public static Filter timeSourceFilter;
-  public static Filter statesContextualFilter;
+  public static Filter contextualFilter;
   public static Filter floridaAndSmallPieceOfHaitiFilter;
 
   public static Gson gson;
@@ -36,7 +36,7 @@ public class BaseQueryTest extends BaseRestTest {
 
   @Before
   public void setup() throws CQLException, ParseException {
-    statesGeoFilter = CQL.toFilter("INTERSECTS(anyGeo, POLYGON ((-127.96874999999997 24.52713482259776," + " " +
+    geoFilter = CQL.toFilter("INTERSECTS(anyGeo, POLYGON ((-127.96874999999997 24.52713482259776," + " " +
             "-127.96874999999997 51.17934297928926," + " -57.65625000000003 51.17934297928926," + " " +
             "-57.65625000000003 24.52713482259776," + " -127.96874999999997 24.52713482259776)))");
     haitiGeoFilter = CQL.toFilter("INTERSECTS(anyGeo, POLYGON ((-80.41992187499999 15.36894989653473," + " " +
@@ -46,7 +46,7 @@ public class BaseQueryTest extends BaseRestTest {
             "19.47695020648844, -87.23144531249999 28.033197847676362," + " -68.642578125 28.033197847676362, " +
             "-68.642578125 19.47695020648844, -87.23144531249999 19.47695020648844)))");
     timeSourceFilter = CQL.toFilter("INTERSECTS(anyGeo , POLYGON((-180 -90, -180 90, 180 90, -180 -90)))");
-    statesContextualFilter = CQL.toFilter("anyText LIKE '15'");
+    contextualFilter = CQL.toFilter("anyText LIKE '15'");
     gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
 
   }

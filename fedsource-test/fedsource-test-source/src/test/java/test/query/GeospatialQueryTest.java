@@ -9,7 +9,6 @@ import ddf.catalog.source.UnsupportedQueryException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import org.geotools.filter.text.cql2.CQLException;
-import org.junit.Assume;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -20,30 +19,15 @@ import static org.junit.Assert.assertTrue;
  */
 public class GeospatialQueryTest extends BaseQueryTest {
     @Test
-    public void testQueryGeospatialUSA() throws CQLException, IOException, UnsupportedQueryException {
+    public void testQueryGeospatial() throws CQLException, IOException, UnsupportedQueryException {
 
-        Query stateQuery = new QueryImpl(statesGeoFilter);
-        QueryRequest stateRequest = new QueryRequestImpl(stateQuery);
+        Query stateQuery = new QueryImpl(geoFilter);
+        QueryRequest queryRequest = new QueryRequestImpl(stateQuery);
+        SourceResponse sourceResponse = universalFederatedSource.query(queryRequest);
 
-
-
-
-    }
-
-    @Test
-    public void testQueryGeospatialHaiti() throws CQLException, IOException, UnsupportedQueryException {
-        Query haitiQuery = new QueryImpl(haitiGeoFilter);
-        QueryRequest haitRequest = new QueryRequestImpl(haitiQuery);
-
-
-
+        assertTrue(sourceResponse.getHits() == 10);
 
 
     }
 
-    @Test
-    public void testQueryGeospatialUSAandHaiti() throws CQLException, IOException, UnsupportedQueryException, InterruptedException, URISyntaxException {
-
-
-    }
 }

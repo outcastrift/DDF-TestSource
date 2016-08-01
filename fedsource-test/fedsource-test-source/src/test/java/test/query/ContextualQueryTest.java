@@ -21,12 +21,11 @@ public class ContextualQueryTest extends BaseQueryTest {
     public void testContextualQuery() throws CQLException, IOException, UnsupportedQueryException {
 
 
-        Query stateQuery = new QueryImpl(statesContextualFilter);
+        Query stateQuery = new QueryImpl(contextualFilter);
         QueryRequest stateRequest = new QueryRequestImpl(stateQuery);
         SourceResponse sourceResponse = universalFederatedSource.query(stateRequest);
 
-
-        assertTrue(sourceResponse.getHits() > 0);
+        assertTrue(sourceResponse.getHits() == 15);
 
 
 
