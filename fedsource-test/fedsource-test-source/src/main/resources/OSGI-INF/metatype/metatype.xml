@@ -7,16 +7,20 @@
     <AD description="Name to display in the Search UI" name="Short Name" id="ssShortName"
         required="false"
         type="String" default="TestBedFederatedSource"/>
+
     <AD description="The full URL to the endpoint to query without the ? at the end."
         name="Endpoint Query URL" id="ssServiceUrl" required="true"
         type="String" default="https://localhost:8993/services/test/getSourceResults"/>
 
-    <AD description="Should polygon queries be converted to BBox" name="Should Convert to BBox"
-        id="ssShouldConvertToBBox" required="false" type="Boolean" default="false"/>
+    <!--CERT PATH-->
     <AD description="Absolute path to the client certificate .p12 file. Leave blank to not use this field." type="String"
         id="ssClientCertPath" required="true" default="" name="Client Certificate Path"/>
+    <!--CERT PASSWORD-->
     <AD description="Password for the client certificate.Leave blank to not use this field. " type="String"
         id="ssClientCertPassword" required="true" default="" name="Client Certificate Password"/>
+
+
+
     <AD description="The majority of sources will return results within a array.
        $	The root element to query. This starts all path expressions.
        @	The current node being processed by a filter predicate.

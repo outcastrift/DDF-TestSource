@@ -121,7 +121,6 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
    **/
   public UniversalFederatedSource(HashMap<String, String> springVars) {
     setSsShortName(springVars.get("ssShortName"));
-    setSsShouldConvertToBBox(Boolean.valueOf(springVars.get("ssShouldConvertToBBox")));
     setSsClassification(springVars.get("ssClassification"));
     setSsDateOccurred(springVars.get("ssDateOccurred"));
     setSsDisplaySerial(springVars.get("ssDisplaySerial"));
@@ -150,42 +149,17 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
   public UniversalFederatedSource() {
     mode = REST;
     setupOSGIServices();
-
     try {
-      if (mode == REST) {
-        if ((ssClientCertPath != null) && (!ssClientCertPath.trim().equalsIgnoreCase("")) && (!ssClientCertPath.trim
-                ().equalsIgnoreCase("null"))) {
-          client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15, 15, getSsClientCertPath(),
-                  ssClientCertPassword);
-        }
-        client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15, 15, "certs/tstark-cert.p12", "changeit");
-      }
-      try {
-
-        metacardTypeRegistry.register(new UniversalFederatedSourceMetacardType());
-      } catch (Exception ex) {
-        ex.printStackTrace();
-        LOGGER.error(ex.getMessage());
-      }
       String dateFormatPattern = "yyyy-MM-dd'T'HH:mm:ssZ";
       dateFormat = new SimpleDateFormat(dateFormatPattern);
-
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("CREATING Federated Source");
-      }
-      if (mimeTypeMapper == null) {
-        LOGGER.warn("mimeTypeMapper is NULL");
-      } else {
-        if (LOGGER.isDebugEnabled()) {
-          LOGGER.debug("mimeTypeMapper is : " + mimeTypeMapper.toString());
-        }
-      }
       isAvailable = true;
-      LOGGER.info("Success");
+      LOGGER.info("Successfully created UniversalFederatedSource");
+
     } catch (Exception ex) {
-      LOGGER.error(ex.getMessage());
-      ex.printStackTrace();
+      LOGGER.error("Error  = {}",ex);
     }
+
+
   }
 
   private void setupOSGIServices() {
@@ -194,167 +168,24 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
     ServiceReference serviceReference = bc.getServiceReference(MimeTypeMapper.class.getName());
     //get the service
     mimeTypeMapper = (MimeTypeMapper) bc.getService(serviceReference);
+
     //Service reference in order to populate our service
     ServiceReference serviceReference2 = bc.getServiceReference(MetacardTypeRegistry.class.getName());
     //get the service
     metacardTypeRegistry = (MetacardTypeRegistry) bc.getService(serviceReference2);
+    try {
+
+      metacardTypeRegistry.register(new UniversalFederatedSourceMetacardType());
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      LOGGER.error(ex.getMessage());
+    }
     //Service reference in order to populate our service
     ServiceReference serviceReference3 = bc.getServiceReference(CatalogFramework.class.getName());
     //get the service
     catalogFramework = (CatalogFramework) bc.getService(serviceReference3);
   }
 
-  public String getSsClientCertPath() {
-    return ssClientCertPath;
-  }
-
-  public void setSsClientCertPath(String ssClientCertPath) {
-    this.ssClientCertPath = ssClientCertPath;
-  }
-
-  public String getSsContainerPath() {
-    return ssContainerPath;
-  }
-
-  public void setSsContainerPath(String ssContainerPath) {
-    this.ssContainerPath = ssContainerPath;
-  }
-
-  public String getSsContextSearchParam() {
-    return ssContextSearchParam;
-  }
-
-  public void setSsContextSearchParam(String ssContextSearchParam) {
-    this.ssContextSearchParam = ssContextSearchParam;
-  }
-
-  public String getSsSpatialSearchParamLat() {
-    return ssSpatialSearchParamLat;
-  }
-
-  public void setSsSpatialSearchParamLat(String ssSpatialSearchParamLat) {
-    this.ssSpatialSearchParamLat = ssSpatialSearchParamLat;
-  }
-
-  public String getSsSpatialSearchParamLong() {
-    return ssSpatialSearchParamLong;
-  }
-
-  public void setSsSpatialSearchParamLong(String ssSpatialSearchParamLong) {
-    this.ssSpatialSearchParamLong = ssSpatialSearchParamLong;
-  }
-
-  public String getSsTemporalSearchParamEnd() {
-    return ssTemporalSearchParamEnd;
-  }
-
-  public void setSsTemporalSearchParamEnd(String ssTemporalSearchParamEnd) {
-    this.ssTemporalSearchParamEnd = ssTemporalSearchParamEnd;
-  }
-
-  public String getSsTemporalSearchParamStart() {
-    return ssTemporalSearchParamStart;
-  }
-
-  public void setSsTemporalSearchParamStart(String ssTemporalSearchParamStart) {
-    this.ssTemporalSearchParamStart = ssTemporalSearchParamStart;
-  }
-
-  public String getSsReportLink() {
-    return ssReportLink;
-  }
-
-  public void setSsReportLink(String ssReportLink) {
-    this.ssReportLink = ssReportLink;
-  }
-
-  public String getSsDisplayTitle() {
-    return ssDisplayTitle;
-  }
-
-  public void setSsDisplayTitle(String ssDisplayTitle) {
-    this.ssDisplayTitle = ssDisplayTitle;
-  }
-
-  public String getSsDisplaySerial() {
-    return ssDisplaySerial;
-  }
-
-  public void setSsDisplaySerial(String ssDisplaySerial) {
-    this.ssDisplaySerial = ssDisplaySerial;
-  }
-
-  public String getSsSummary() {
-    return ssSummary;
-  }
-
-  public void setSsSummary(String ssSummary) {
-    this.ssSummary = ssSummary;
-  }
-
-  public String getSsOriginatorUnit() {
-    return ssOriginatorUnit;
-  }
-
-  public void setSsOriginatorUnit(String ssOriginatorUnit) {
-    this.ssOriginatorUnit = ssOriginatorUnit;
-  }
-
-  public String getSsPrimaryEventType() {
-    return ssPrimaryEventType;
-  }
-
-  public void setSsPrimaryEventType(String ssPrimaryEventType) {
-    this.ssPrimaryEventType = ssPrimaryEventType;
-  }
-
-  public String getSsClassification() {
-    return ssClassification;
-  }
-
-  public void setSsClassification(String ssClassification) {
-    this.ssClassification = ssClassification;
-  }
-
-  public String getSsDateOccurred() {
-    return ssDateOccurred;
-  }
-
-  public void setSsDateOccurred(String ssDateOccurred) {
-    this.ssDateOccurred = ssDateOccurred;
-  }
-
-  public String getSsLatitude() {
-    return ssLatitude;
-  }
-
-  public void setSsLatitude(String ssLatitude) {
-    this.ssLatitude = ssLatitude;
-  }
-
-  public String getSsLongitude() {
-    return ssLongitude;
-  }
-
-  public void setSsLongitude(String ssLongitude) {
-    this.ssLongitude = ssLongitude;
-  }
-
-  public String getSsServiceUrl() {
-    return ssServiceUrl;
-  }
-
-  public void setSsServiceUrl(String ssServiceUrl) {
-    this.ssServiceUrl = ssServiceUrl;
-  }
-
-  public void init() {
-    LOGGER.debug("UniversalFederatedSource.init() called!");
-  }
-
-  public void destroy() {
-    LOGGER.debug("UniversalFederatedSource.destroy() called!");
-  }
 
   /**
    * Retrieve resource resource response.
@@ -423,7 +254,7 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
    * @throws UnsupportedQueryException the unsupported query exception
    */
   public SourceResponse query(QueryRequest queryRequest) throws UnsupportedQueryException {
-    try {
+   try {
       List<Result> results = new ArrayList<Result>();
       LOGGER.debug("*******Entering Federated Source Query********");
       if (LOGGER.isDebugEnabled()) {
@@ -466,7 +297,7 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
       results = createResultList(operationsUniversalFederatedSourceResponseReports);
       elapsed = System.currentTimeMillis() - elapsed;
       LOGGER.debug("query returning " + results.size() + " results in " + elapsed + " milliseconds");
-      SourceResponseImpl  response = new SourceResponseImpl(queryRequest, results);
+      SourceResponseImpl response = new SourceResponseImpl(queryRequest, results);
       response.setHits(results.size());
       return response;
     } catch (Throwable t) {
@@ -476,10 +307,14 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
     return null;
   }
 
+
+
+
   protected ArrayList<UniversalFederatedSourceResponse> queryWithParams(Query query, ContextualSearch
           contextualSearch, TemporalFilter temporalFilter, SpatialFilter spatialFilter) {
     if (restGetService == null) {
-      restGetService = new RestGetService(this, mode, client);
+
+      restGetService = new RestGetService(this, mode,client);
       LOGGER.debug("Created RestGetService with BaseUrl of {}", ssServiceUrl);
     }
 
@@ -840,6 +675,8 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
    * @param ssShortName the ssShortName
    */
   public void setSsShortName(String ssShortName) {
+    LOGGER.debug("Spring setting variable ssShortName to {}", ssShortName);
+
     this.ssShortName = ssShortName;
   }
 
@@ -962,6 +799,8 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
   }
 
   public void setSsDescription(String ssDescription) {
+    LOGGER.debug("Spring setting variable ssDescription to {}", ssDescription);
+
     this.ssDescription = ssDescription;
   }
 
@@ -970,15 +809,25 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
   }
 
   public void setSsWktStringParam(String ssWktStringParam) {
+    LOGGER.debug("Spring setting variable ssWktStringParam to {}", ssWktStringParam);
+
     this.ssWktStringParam = ssWktStringParam;
   }
 
-  public boolean isSsShouldConvertToBBox() {
-    return ssShouldConvertToBBox;
+
+  public String getSsClientCertPath() {
+    return ssClientCertPath;
   }
 
-  public void setSsShouldConvertToBBox(boolean ssShouldConvertToBBox) {
-    this.ssShouldConvertToBBox = ssShouldConvertToBBox;
+  public void setSsClientCertPath(String ssClientCertPath) {
+    LOGGER.debug("Spring setting variable ssClientCertPath to {}", ssClientCertPath);
+
+    this.ssClientCertPath = ssClientCertPath;
+
+      if(ssClientCertPassword != null) {
+        client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15, 15, getSsClientCertPath(), getSsClientCertPassword());
+      }
+
   }
 
   public String getSsClientCertPassword() {
@@ -986,7 +835,181 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
   }
 
   public void setSsClientCertPassword(String ssClientCertPassword) {
+    LOGGER.debug("Spring setting variable ssClientCertPassword to {}", ssClientCertPassword);
     this.ssClientCertPassword = ssClientCertPassword;
+
+      if(ssClientCertPath != null) {
+        client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15, 15, getSsClientCertPath(), getSsClientCertPassword());
+      }
+
+  }
+  public String getSsContainerPath() {
+    return ssContainerPath;
   }
 
+  public void setSsContainerPath(String ssContainerPath) {
+    LOGGER.debug("Spring setting variable ssContainerPath to {}", ssContainerPath);
+
+    this.ssContainerPath = ssContainerPath;
+  }
+
+  public String getSsContextSearchParam() {
+    return ssContextSearchParam;
+  }
+
+  public void setSsContextSearchParam(String ssContextSearchParam) {
+    LOGGER.debug("Spring setting variable ssContextSearchParam to {}", ssContextSearchParam);
+
+    this.ssContextSearchParam = ssContextSearchParam;
+  }
+
+  public String getSsSpatialSearchParamLat() {
+    return ssSpatialSearchParamLat;
+  }
+
+  public void setSsSpatialSearchParamLat(String ssSpatialSearchParamLat) {
+    LOGGER.debug("Spring setting variable ssSpatialSearchParamLat to {}", ssSpatialSearchParamLat);
+
+    this.ssSpatialSearchParamLat = ssSpatialSearchParamLat;
+  }
+
+  public String getSsSpatialSearchParamLong() {
+    return ssSpatialSearchParamLong;
+  }
+
+  public void setSsSpatialSearchParamLong(String ssSpatialSearchParamLong) {
+    LOGGER.debug("Spring setting variable ssSpatialSearchParamLong to {}", ssSpatialSearchParamLong);
+
+    this.ssSpatialSearchParamLong = ssSpatialSearchParamLong;
+  }
+
+  public String getSsTemporalSearchParamEnd() {
+    return ssTemporalSearchParamEnd;
+  }
+
+  public void setSsTemporalSearchParamEnd(String ssTemporalSearchParamEnd) {
+    LOGGER.debug("Spring setting variable ssTemporalSearchParamEnd to {}", ssTemporalSearchParamEnd);
+
+    this.ssTemporalSearchParamEnd = ssTemporalSearchParamEnd;
+  }
+
+  public String getSsTemporalSearchParamStart() {
+    return ssTemporalSearchParamStart;
+  }
+
+  public void setSsTemporalSearchParamStart(String ssTemporalSearchParamStart) {
+    LOGGER.debug("Spring setting variable ssTemporalSearchParamStart to {}", ssTemporalSearchParamStart);
+
+    this.ssTemporalSearchParamStart = ssTemporalSearchParamStart;
+  }
+
+  public String getSsReportLink() {
+    return ssReportLink;
+  }
+
+  public void setSsReportLink(String ssReportLink) {
+    LOGGER.debug("Spring setting variable ssReportLink to {}", ssReportLink);
+
+    this.ssReportLink = ssReportLink;
+  }
+
+  public String getSsDisplayTitle() {
+    return ssDisplayTitle;
+  }
+
+  public void setSsDisplayTitle(String ssDisplayTitle) {
+    LOGGER.debug("Spring setting variable ssDisplayTitle to {}", ssDisplayTitle);
+
+    this.ssDisplayTitle = ssDisplayTitle;
+  }
+
+  public String getSsDisplaySerial() {
+    return ssDisplaySerial;
+  }
+
+  public void setSsDisplaySerial(String ssDisplaySerial) {
+    LOGGER.debug("Spring setting variable ssDisplaySerial to {}", ssDisplaySerial);
+
+    this.ssDisplaySerial = ssDisplaySerial;
+  }
+
+  public String getSsSummary() {
+    return ssSummary;
+  }
+
+  public void setSsSummary(String ssSummary) {
+    LOGGER.debug("Spring setting variable ssSummary to {}", ssSummary);
+
+    this.ssSummary = ssSummary;
+  }
+
+  public String getSsOriginatorUnit() {
+    return ssOriginatorUnit;
+  }
+
+  public void setSsOriginatorUnit(String ssOriginatorUnit) {
+    LOGGER.debug("Spring setting variable ssOriginatorUnit to {}", ssOriginatorUnit);
+
+    this.ssOriginatorUnit = ssOriginatorUnit;
+  }
+
+  public String getSsPrimaryEventType() {
+    return ssPrimaryEventType;
+  }
+
+  public void setSsPrimaryEventType(String ssPrimaryEventType) {
+    LOGGER.debug("Spring setting variable ssPrimaryEventType to {}", ssPrimaryEventType);
+
+    this.ssPrimaryEventType = ssPrimaryEventType;
+  }
+
+  public String getSsClassification() {
+    return ssClassification;
+  }
+
+  public void setSsClassification(String ssClassification) {
+    LOGGER.debug("Spring setting variable ssClassification to {}", ssClassification);
+
+    this.ssClassification = ssClassification;
+  }
+
+  public String getSsDateOccurred() {
+    return ssDateOccurred;
+  }
+
+  public void setSsDateOccurred(String ssDateOccurred) {
+    LOGGER.debug("Spring setting variable ssDateOccurred to {}", ssDateOccurred);
+
+    this.ssDateOccurred = ssDateOccurred;
+  }
+
+  public String getSsLatitude() {
+    return ssLatitude;
+  }
+
+  public void setSsLatitude(String ssLatitude) {
+    LOGGER.debug("Spring setting variable ssLatitude to {}", ssLatitude);
+
+    this.ssLatitude = ssLatitude;
+  }
+
+  public String getSsLongitude() {
+    return ssLongitude;
+  }
+
+  public void setSsLongitude(String ssLongitude) {
+    LOGGER.debug("Spring setting variable ssLongitude to {}", ssLongitude);
+
+    this.ssLongitude = ssLongitude;
+  }
+
+  public String getSsServiceUrl() {
+    return ssServiceUrl;
+  }
+
+  public void setSsServiceUrl(String ssServiceUrl) {
+    LOGGER.debug("Spring setting variable ssServiceUrl to {}", ssServiceUrl);
+
+    this.ssServiceUrl = ssServiceUrl;
+  }
 }
