@@ -27,7 +27,6 @@ import okhttp3.Response;
 
 public class RestGetService implements SourceService {
   private static final Logger LOGGER = LoggerFactory.getLogger(UniversalFederatedSource.class);
-  int mode;
   UniversalFederatedSource source;
   private String url;
   private OkHttpClient client;
@@ -41,7 +40,6 @@ public class RestGetService implements SourceService {
     LOGGER.debug("Client = {}", client);
 
     this.url = source.getSsServiceUrl();
-    this.mode = mode;
     LOGGER.debug("Creating REST Service for " + this.url);
     parser = new UniversalFederatedSourceParser(mode, source);
 

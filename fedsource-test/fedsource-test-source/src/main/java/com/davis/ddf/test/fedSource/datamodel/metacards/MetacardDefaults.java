@@ -16,36 +16,36 @@ public class MetacardDefaults {
   /**
    * The Default metacard type.
    */
-  private final String DEFAULT_METACARD_TYPE = "string";
+  private static final String DEFAULT_METACARD_TYPE = "string";
   /**
    * The Default metacard version.
    */
-  private final String DEFAULT_METACARD_VERSION = "1.0";
+  private static final String DEFAULT_METACARD_VERSION = "1.0";
   /**
    * The Default metacard metadata.
    */
-  private final String DEFAULT_METACARD_METADATA = "<metadata></metadata>";
+  private static final String DEFAULT_METACARD_METADATA = "<metadata></metadata>";
   /**
    * The Default metacard resource size.
    */
-  private final String DEFAULT_METACARD_RESOURCE_SIZE = "100";
+  private static final String DEFAULT_METACARD_RESOURCE_SIZE = "100";
 
   /**
    * The Created date.
    */
-  private Date createdDate;
+  private static Date createdDate;
   /**
    * The Modified date.
    */
-  private Date modifiedDate;
+  private static Date modifiedDate;
   /**
    * The Expiration date.
    */
-  private Date expirationDate;
+  private static Date expirationDate;
   /**
    * The Effective date.
    */
-  private Date effectiveDate;
+  private static Date effectiveDate;
 
   /**
    * Instantiates a new Metacard defaults.

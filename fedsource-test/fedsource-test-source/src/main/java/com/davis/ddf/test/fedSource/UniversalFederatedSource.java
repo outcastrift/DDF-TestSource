@@ -139,6 +139,9 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
     setSsPrimaryEventType(springVars.get("ssPrimaryEventType"));
     setSsReportLink(springVars.get("ssReportLink"));
     setSsDisplayTitle(springVars.get("ssDisplayTitle"));
+    setSsClientCertPath(springVars.get("ssClientCertPath"));
+    setSsClientCertPassword(springVars.get("ssClientCertPassword"));
+
   }
 
   /**
@@ -255,17 +258,8 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
    */
   public SourceResponse query(QueryRequest queryRequest) throws UnsupportedQueryException {
    try {
-      List<Result> results = new ArrayList<Result>();
       LOGGER.debug("*******Entering Federated Source Query********");
-      if (LOGGER.isDebugEnabled()) {
 
-        Map<String, Serializable> props = queryRequest.getProperties();
-        Iterator<String> keys = props.keySet().iterator();
-        while (keys.hasNext()) {
-          String key = keys.next();
-          LOGGER.debug(key + ", " + props.get(key));
-        }
-      }
       Serializable metacardId = queryRequest.getPropertyValue(Metacard.ID);
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug("METACARDID: " + metacardId);
@@ -294,7 +288,7 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug("Received query: " + query);
       }
-      results = createResultList(operationsUniversalFederatedSourceResponseReports);
+     List<Result> results = createResultList(operationsUniversalFederatedSourceResponseReports);
       elapsed = System.currentTimeMillis() - elapsed;
       LOGGER.debug("query returning " + results.size() + " results in " + elapsed + " milliseconds");
       SourceResponseImpl response = new SourceResponseImpl(queryRequest, results);
