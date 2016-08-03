@@ -285,7 +285,6 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
       TemporalFilter temporalFilter = visitor.getTemporalSearch();
       SpatialFilter spatialFilter = visitor.getSpatialSearch();
       long elapsed = System.currentTimeMillis();
-
       ArrayList<UniversalFederatedSourceResponse> operationsUniversalFederatedSourceResponseReports = null;
       if (mode == SAX) {
         LOGGER.debug("SAX mode enabled entering queryWithSax ");
