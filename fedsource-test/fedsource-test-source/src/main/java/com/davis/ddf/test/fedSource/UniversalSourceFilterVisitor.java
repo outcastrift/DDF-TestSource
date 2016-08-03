@@ -1,5 +1,6 @@
 package com.davis.ddf.test.fedSource;
 
+import com.davis.ddf.test.filter.ContextualSearch;
 import com.vividsolutions.jts.geom.Coordinate;
 
 import org.geotools.filter.AttributeExpressionImpl;
@@ -37,7 +38,6 @@ import java.util.List;
 import ddf.catalog.impl.filter.SpatialDistanceFilter;
 import ddf.catalog.impl.filter.SpatialFilter;
 import ddf.catalog.impl.filter.TemporalFilter;
-import ddf.catalog.source.opensearch.ContextualSearch;
 
 /**
  * Created by hduser on 6/2/15.

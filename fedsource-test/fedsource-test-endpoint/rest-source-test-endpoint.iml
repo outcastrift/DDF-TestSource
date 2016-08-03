@@ -4,13 +4,13 @@
     <facet type="Osmorc" name="OSGi">
       <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="rest-source-test-endpoint-1.0.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="" bundleSymbolicName="com.davis.rest-source-test-endpoint" bundleVersion="1.0.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
-          <property key="Embed-Dependency" value="gson,commons-lang3,jts,commons-lang,spatial4j" />
+          <property key="Embed-Dependency" value="gson,commons-lang3,commons-lang" />
           <property key="Import-Package" value="*" />
           <property key="Export-Package" value="com.davis.ddf.test.*" />
           <property key="Bundle-Name" value="Configurable Rest Source:: Test Endpoint" />
-          <property key="Bundle-ClassPath" value=".,gson-2.3.1.jar,commons-lang3-3.4.jar,jts-1.13.jar,commons-lang-2.6.jar,spatial4j-0.5.jar" />
-          <property key="Include-Resource" value="gson-2.3.1.jar=$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.3.1/gson-2.3.1.jar,commons-lang3-3.4.jar=$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.4/commons-lang3-3.4.jar,jts-1.13.jar=$MAVEN_REPOSITORY$/com/vividsolutions/jts/1.13/jts-1.13.jar,commons-lang-2.6.jar=$MAVEN_REPOSITORY$/commons-lang/commons-lang/2.6/commons-lang-2.6.jar,spatial4j-0.5.jar=$MAVEN_REPOSITORY$/com/spatial4j/spatial4j/0.5/spatial4j-0.5.jar" />
-          <property key="Embedded-Artifacts" value="gson-2.3.1.jar;g=&quot;com.google.code.gson&quot;;a=&quot;gson&quot;;v=&quot;2.3.1&quot;,commons-lang3-3.4.jar;g=&quot;org.apache.commons&quot;;a=&quot;commons-lang3&quot;;v=&quot;3.4&quot;,jts-1.13.jar;g=&quot;com.vividsolutions&quot;;a=&quot;jts&quot;;v=&quot;1.13&quot;,commons-lang-2.6.jar;g=&quot;commons-lang&quot;;a=&quot;commons-lang&quot;;v=&quot;2.6&quot;,spatial4j-0.5.jar;g=&quot;com.spatial4j&quot;;a=&quot;spatial4j&quot;;v=&quot;0.5&quot;" />
+          <property key="Bundle-ClassPath" value=".,gson-2.3.1.jar,commons-lang3-3.4.jar,commons-lang-2.6.jar" />
+          <property key="Include-Resource" value="gson-2.3.1.jar=$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.3.1/gson-2.3.1.jar,commons-lang3-3.4.jar=$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.4/commons-lang3-3.4.jar,commons-lang-2.6.jar=$MAVEN_REPOSITORY$/commons-lang/commons-lang/2.6/commons-lang-2.6.jar" />
+          <property key="Embedded-Artifacts" value="gson-2.3.1.jar;g=&quot;com.google.code.gson&quot;;a=&quot;gson&quot;;v=&quot;2.3.1&quot;,commons-lang3-3.4.jar;g=&quot;org.apache.commons&quot;;a=&quot;commons-lang3&quot;;v=&quot;3.4&quot;,commons-lang-2.6.jar;g=&quot;commons-lang&quot;;a=&quot;commons-lang&quot;;v=&quot;2.6&quot;" />
         </additionalProperties>
         <additionalJARContents />
       </configuration>
@@ -32,13 +32,13 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: org.apache.cxf:cxf-rt-frontend-jaxrs:3.0.4" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.cxf:cxf-core:3.0.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.cxf:cxf-core:3.1.4" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.woodstox:woodstox-core-asl:4.2.1" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.woodstox:stax2-api:3.1.4" level="project" />
     <orderEntry type="library" name="Maven: org.apache.ws.xmlschema:xmlschema-core:2.2.1" level="project" />
-    <orderEntry type="library" name="Maven: javax.ws.rs:javax.ws.rs-api:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: javax.annotation:javax.annotation-api:1.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.cxf:cxf-rt-transports-http:3.0.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.cxf:cxf-rt-transports-http:3.1.4" level="project" />
+    <orderEntry type="library" name="Maven: javax.ws.rs:javax.ws.rs-api:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.jersey.core:jersey-common:2.22.1" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.jersey.bundles.repackaged:jersey-guava:2.22.1" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.hk2:hk2-api:2.4.0-b31" level="project" />
@@ -50,11 +50,8 @@
     <orderEntry type="library" name="Maven: org.glassfish.hk2:osgi-resource-locator:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.sun.jersey:jersey-client:1.8" level="project" />
     <orderEntry type="library" name="Maven: com.sun.jersey:jersey-core:1.8" level="project" />
-    <orderEntry type="library" name="Maven: com.vividsolutions:jts:1.13" level="project" />
-    <orderEntry type="library" name="Maven: com.spatial4j:spatial4j:0.5" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.osgi:org.osgi.core:5.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.shiro:shiro-core:1.2.3" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.5" level="project" />
     <orderEntry type="library" name="Maven: commons-beanutils:commons-beanutils:1.8.3" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.5" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.3.3" level="project" />
@@ -64,6 +61,7 @@
     <orderEntry type="library" name="Maven: com.google.guava:guava:15.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.4" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.5" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.3.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.slf4j:slf4j-log4j12:1.7.12" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: log4j:log4j:1.2.17" level="project" />

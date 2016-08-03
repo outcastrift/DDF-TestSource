@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <properties>
-        <primary.ddf.version>2.8.2</primary.ddf.version>
+        <primary.ddf.version>2.9.1</primary.ddf.version>
         <jdk.version>1.8</jdk.version>
         <json.sanitizer.version>1.1</json.sanitizer.version>
         <json.path.version>2.1.0</json.path.version>
@@ -29,7 +29,7 @@
         <osgi-core-version>5.0.0</osgi-core-version>
         <org-json-version>20140107</org-json-version>
         <http-client-version>4.5</http-client-version>
-        <google-guava-version>15.0</google-guava-version>
+        <google-guava-version>18.0</google-guava-version>
         <cxf-bundle-jaxrs-version>2.7.8</cxf-bundle-jaxrs-version>
         <org-glassfish-jersey-common-version>2.22.1</org-glassfish-jersey-common-version>
         <jersey-client-version>1.8</jersey-client-version>

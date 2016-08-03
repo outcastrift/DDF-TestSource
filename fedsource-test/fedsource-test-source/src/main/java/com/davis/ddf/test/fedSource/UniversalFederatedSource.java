@@ -4,6 +4,8 @@ import com.davis.ddf.test.client.TrustingOkHttpClient;
 import com.davis.ddf.test.fedSource.datamodel.UniversalFederatedSourceResponse;
 import com.davis.ddf.test.fedSource.datamodel.metacards.UniversalFederatedSourceMetacard;
 import com.davis.ddf.test.fedSource.datamodel.metacards.UniversalFederatedSourceMetacardType;
+import com.davis.ddf.test.filter.ContextualSearch;
+import com.davis.ddf.test.filter.OpenSearchSiteUtil;
 import com.davis.ddf.test.service.SourceService;
 import com.davis.ddf.test.service.restService.RestGetService;
 
@@ -57,8 +59,6 @@ import ddf.catalog.resource.ResourceNotSupportedException;
 import ddf.catalog.source.IngestException;
 import ddf.catalog.source.SourceMonitor;
 import ddf.catalog.source.UnsupportedQueryException;
-import ddf.catalog.source.opensearch.ContextualSearch;
-import ddf.catalog.source.opensearch.OpenSearchSiteUtil;
 import ddf.catalog.util.Describable;
 import ddf.mime.MimeTypeMapper;
 import okhttp3.HttpUrl;
