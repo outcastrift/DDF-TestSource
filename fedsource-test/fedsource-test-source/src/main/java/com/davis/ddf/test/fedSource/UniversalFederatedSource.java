@@ -829,8 +829,10 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
 
     this.ssClientCertPath = ssClientCertPath;
 
-      if(ssClientCertPassword != null) {
-        client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15, 15, getSsClientCertPath(), getSsClientCertPassword());
+      if(ssClientCertPassword != null && !ssClientCertPassword.equalsIgnoreCase("")) {
+        if (ssClientCertPath != null && !ssClientCertPath.equalsIgnoreCase("")) {
+          client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15, 15, getSsClientCertPath(), getSsClientCertPassword());
+        }
       }
 
   }
@@ -842,10 +844,11 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
   public void setSsClientCertPassword(String ssClientCertPassword) {
     LOGGER.debug("Spring setting variable ssClientCertPassword to {}", ssClientCertPassword);
     this.ssClientCertPassword = ssClientCertPassword;
-
-      if(ssClientCertPath != null) {
+    if(ssClientCertPassword != null && !ssClientCertPassword.equalsIgnoreCase("")) {
+      if (ssClientCertPath != null && !ssClientCertPath.equalsIgnoreCase("")) {
         client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15, 15, getSsClientCertPath(), getSsClientCertPassword());
       }
+    }
 
   }
   public String getSsContainerPath() {
