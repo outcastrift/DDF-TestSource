@@ -159,7 +159,8 @@
               okhttp,
               okio,
               commons-lang3,
-              urlbuilder
+              urlbuilder,
+              catalog-core-api-impl
             </Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
             <Import-Package>

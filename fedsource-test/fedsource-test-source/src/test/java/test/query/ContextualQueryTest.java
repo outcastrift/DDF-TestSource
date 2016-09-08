@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
  * restrictions apply. Created by Samuel Davis on 6/28/16. Class Description
  */
 public class ContextualQueryTest extends BaseQueryTest {
-    @Test
+    //@Test
     public void testContextualQuery() throws CQLException, IOException, UnsupportedQueryException {
 
 
