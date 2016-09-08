@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/DDF-TestSource.iml" filepath="$PROJECT_DIR$/DDF-TestSource.iml" />
-      <module fileurl="file://$PROJECT_DIR$/DDF-TestSource.iml" filepath="$PROJECT_DIR$/DDF-TestSource.iml" />
       <module fileurl="file://$PROJECT_DIR$/fedsource-test/Fedsearch-Test-Source.iml" filepath="$PROJECT_DIR$/fedsource-test/Fedsearch-Test-Source.iml" />
       <module fileurl="file://$PROJECT_DIR$/fedsource-test/fedsource-test-source/rest-configurable-source.iml" filepath="$PROJECT_DIR$/fedsource-test/fedsource-test-source/rest-configurable-source.iml" />
       <module fileurl="file://$PROJECT_DIR$/fedsource-test/fedsource-test-endpoint/rest-source-test-endpoint.iml" filepath="$PROJECT_DIR$/fedsource-test/fedsource-test-endpoint/rest-source-test-endpoint.iml" />
