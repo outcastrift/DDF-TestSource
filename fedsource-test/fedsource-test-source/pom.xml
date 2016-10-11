@@ -172,8 +172,7 @@
             </Import-Package>
             <Export-Package>
               com.davis.ddf.test.*,
-              ddf.catalog.source.opensearch,
-              ddf.catalog.util.impl
+              ddf.catalog.source.opensearch
             </Export-Package>
           </instructions>
         </configuration>
