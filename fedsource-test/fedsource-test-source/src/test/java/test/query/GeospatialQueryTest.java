@@ -18,7 +18,7 @@ import static org.junit.Assert.assertTrue;
  * restrictions apply. Created by Samuel Davis on 6/28/16. Class Description
  */
 public class GeospatialQueryTest extends BaseQueryTest {
-    @Test
+    //@Test
     public void testQueryGeospatial() throws CQLException, IOException, UnsupportedQueryException {
 
         Query stateQuery = new QueryImpl(geoFilter);

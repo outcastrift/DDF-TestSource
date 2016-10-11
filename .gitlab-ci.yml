@@ -28,5 +28,7 @@ release-job:
      paths:
        - 'DDF-TestSource/fedsource-test/fedsource-test-source/target/*.jar'
        - 'DDF-TestSource/fedsource-test/fedsource-test-endpoint/target/*.jar'
+       - 'fedsource-test/fedsource-test-source/target/*.jar'
+       - 'fedsource-test/fedsource-test-endpoint/target/*.jar'
   only:
     - master
