@@ -112,7 +112,7 @@
     <AD description="Metacard Data Fields : Match these fields to correspond to elements within the returned object if the element does not exist type the word null.
            WKT String Location  For the Metacard  (If you use this field lat-lon will not be used in the metacard location)"
         name="Metacard Data Fields : WKT String" id="ssWktStringParam" required="true" type="String"
-        default=""/>
+        default="$[*].location"/>
 
 
     <AD description="Metacard Data Fields : Match these fields to correspond to elements within the returned object if the element does not exist type the word null.

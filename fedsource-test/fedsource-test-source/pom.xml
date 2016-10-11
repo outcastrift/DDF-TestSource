@@ -184,8 +184,7 @@
               *
             </Import-Package>
             <Export-Package>
-              com.davis.ddf.test.*,
-              ddf.catalog.util.impl
+              com.davis.ddf.test.*
             </Export-Package>
           </instructions>
         </configuration>

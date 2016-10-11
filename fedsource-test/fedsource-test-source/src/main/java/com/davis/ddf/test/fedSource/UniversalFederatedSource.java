@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -172,7 +171,7 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
     } catch (Exception ex) {
       LOGGER.error("Error  = {}",ex);
     }
-
+    client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15,15,null,null);
 
   }
 
@@ -828,8 +827,11 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
 
     this.ssClientCertPath = ssClientCertPath;
 
-    if(ssClientCertPassword != null && !ssClientCertPassword.equalsIgnoreCase("")) {
+    if(ssClientCertPassword != null && !ssClientCertPassword.trim().equalsIgnoreCase("")) {
       if (ssClientCertPath != null && !ssClientCertPath.equalsIgnoreCase("")) {
+        if(client != null){
+          client =null;
+        }
         client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15, 15, getSsClientCertPath(), getSsClientCertPassword());
       }
     }
@@ -843,8 +845,11 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
   public void setSsClientCertPassword(String ssClientCertPassword) {
     LOGGER.debug("Spring setting variable ssClientCertPassword to {}", ssClientCertPassword);
     this.ssClientCertPassword = ssClientCertPassword;
-    if(ssClientCertPassword != null && !ssClientCertPassword.equalsIgnoreCase("")) {
+    if(ssClientCertPassword != null && !ssClientCertPassword.trim().equalsIgnoreCase("")) {
       if (ssClientCertPath != null && !ssClientCertPath.equalsIgnoreCase("")) {
+        if(client != null){
+          client =null;
+        }
         client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15, 15, getSsClientCertPath(), getSsClientCertPassword());
       }
     }
