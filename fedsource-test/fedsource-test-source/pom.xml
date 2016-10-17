@@ -164,6 +164,7 @@
             </Bundle-SymbolicName>
             <Private-Package>org.codice.ddf.platform.util.*</Private-Package>
             <Embed-Dependency>
+              platform-util,
               json-path,
               json-smart,
               json,
