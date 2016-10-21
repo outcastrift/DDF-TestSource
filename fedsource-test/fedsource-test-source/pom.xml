@@ -177,6 +177,7 @@
             </Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
             <Import-Package>
+              !com.fasterxml.jackson.*,
               org.jdom2;resolution:="optional",
               org.codice.ddf.cxf;resolution:="optional",
               com.rometools.rome.*;resolution:="optional",
