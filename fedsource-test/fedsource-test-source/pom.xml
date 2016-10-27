@@ -155,7 +155,7 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.5.0</version>
+        <version>3.2.0</version>
         <extensions>true</extensions>
         <configuration>
           <instructions>
@@ -178,11 +178,11 @@
             <Embed-Transitive>true</Embed-Transitive>
             <Import-Package>
               !com.fasterxml.jackson.*,
+              !android.*,
               org.jdom2;resolution:="optional",
               org.codice.ddf.cxf;resolution:="optional",
               com.rometools.rome.*;resolution:="optional",
               ddf.catalog.util.impl.*;resolution:="optional",
-              !android.*,
               *
             </Import-Package>
             <Export-Package>
