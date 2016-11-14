@@ -20,7 +20,7 @@
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.core</artifactId>
-      <version>${osgi-core-version}</version>
+      <version>4.3.0</version>
       <scope>provided</scope>
     </dependency>
     <!-- LOGGING -->
@@ -30,11 +30,11 @@
       <version>${slf4j.version}</version>
     </dependency>
     <!--START DDF-->
-    <dependency>
+ <!--   <dependency>
       <groupId>ddf.platform.util</groupId>
       <artifactId>platform-util</artifactId>
       <version>${primary.ddf.version}</version>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>ddf.security.core</groupId>
       <artifactId>security-core-api</artifactId>
@@ -63,11 +63,11 @@
     </dependency>-->
     <!--END DDF-->
     <!--START GENERAL -->
-    <dependency>
+   <!-- <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-rs-client</artifactId>
       <version>3.1.1</version>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
