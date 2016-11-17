@@ -5,14 +5,14 @@
       <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="rest-configurable-source-1.0.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="" bundleSymbolicName="com.davis.rest-configurable-source" bundleVersion="1.0.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
           <property key="Private-Package" value="org.codice.ddf.platform.util.*" />
-          <property key="Embed-Dependency" value="json-path,json-smart,json,gson,okhttp,okio,commons-lang3,urlbuilder,catalog-core-api-impl" />
+          <property key="Embed-Dependency" value="platform-util,json-path,json-smart,json,gson,okhttp,okio,commons-lang3,urlbuilder,catalog-core-api-impl" />
           <property key="Embed-Transitive" value="true" />
-          <property key="Import-Package" value="org.jdom2;resolution:=&quot;optional&quot;,org.codice.ddf.cxf;resolution:=&quot;optional&quot;,com.rometools.rome.*;resolution:=&quot;optional&quot;,ddf.catalog.util.impl.*;resolution:=&quot;optional&quot;,!android.*,*" />
-          <property key="Export-Package" value="com.davis.ddf.test.*,ddf.catalog.util.impl" />
+          <property key="Import-Package" value="!com.fasterxml.jackson.*,!android.*,org.jdom2;resolution:=&quot;optional&quot;,org.codice.ddf.cxf;resolution:=&quot;optional&quot;,com.rometools.rome.*;resolution:=&quot;optional&quot;,ddf.catalog.util.impl.*;resolution:=&quot;optional&quot;,*" />
+          <property key="Export-Package" value="com.davis.ddf.test.*" />
           <property key="Bundle-Name" value="Configurable Rest Source" />
-          <property key="Bundle-ClassPath" value=".,json-path-2.1.0.jar,json-smart-2.2.jar,json-smart-1.1.1.jar,json-20140107.jar,gson-2.3.1.jar,okhttp-3.3.1.jar,okio-1.8.0.jar,okio-1.9.0.jar,commons-lang3-3.4.jar,commons-lang3-3.3.2.jar,catalog-core-api-impl-2.9.2.jar" />
-          <property key="Include-Resource" value="json-path-2.1.0.jar=$MAVEN_REPOSITORY$/com/jayway/jsonpath/json-path/2.1.0/json-path-2.1.0.jar,json-smart-2.2.jar=$MAVEN_REPOSITORY$/net/minidev/json-smart/2.2/json-smart-2.2.jar,json-smart-1.1.1.jar=$MAVEN_REPOSITORY$/net/minidev/json-smart/1.1.1/json-smart-1.1.1.jar,json-20140107.jar=$MAVEN_REPOSITORY$/org/json/json/20140107/json-20140107.jar,gson-2.3.1.jar=$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.3.1/gson-2.3.1.jar,okhttp-3.3.1.jar=$MAVEN_REPOSITORY$/com/squareup/okhttp3/okhttp/3.3.1/okhttp-3.3.1.jar,okio-1.8.0.jar=$MAVEN_REPOSITORY$/com/squareup/okio/okio/1.8.0/okio-1.8.0.jar,okio-1.9.0.jar=$MAVEN_REPOSITORY$/com/squareup/okio/okio/1.9.0/okio-1.9.0.jar,commons-lang3-3.4.jar=$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.4/commons-lang3-3.4.jar,commons-lang3-3.3.2.jar=$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.3.2/commons-lang3-3.3.2.jar,catalog-core-api-impl-2.9.2.jar=$MAVEN_REPOSITORY$/ddf/catalog/core/catalog-core-api-impl/2.9.2/catalog-core-api-impl-2.9.2.jar" />
-          <property key="Embedded-Artifacts" value="json-path-2.1.0.jar;g=&quot;com.jayway.jsonpath&quot;;a=&quot;json-path&quot;;v=&quot;2.1.0&quot;,json-smart-2.2.jar;g=&quot;net.minidev&quot;;a=&quot;json-smart&quot;;v=&quot;2.2&quot;,json-smart-1.1.1.jar;g=&quot;net.minidev&quot;;a=&quot;json-smart&quot;;v=&quot;1.1.1&quot;,json-20140107.jar;g=&quot;org.json&quot;;a=&quot;json&quot;;v=&quot;20140107&quot;,gson-2.3.1.jar;g=&quot;com.google.code.gson&quot;;a=&quot;gson&quot;;v=&quot;2.3.1&quot;,okhttp-3.3.1.jar;g=&quot;com.squareup.okhttp3&quot;;a=&quot;okhttp&quot;;v=&quot;3.3.1&quot;,okio-1.8.0.jar;g=&quot;com.squareup.okio&quot;;a=&quot;okio&quot;;v=&quot;1.8.0&quot;,okio-1.9.0.jar;g=&quot;com.squareup.okio&quot;;a=&quot;okio&quot;;v=&quot;1.9.0&quot;,commons-lang3-3.4.jar;g=&quot;org.apache.commons&quot;;a=&quot;commons-lang3&quot;;v=&quot;3.4&quot;,commons-lang3-3.3.2.jar;g=&quot;org.apache.commons&quot;;a=&quot;commons-lang3&quot;;v=&quot;3.3.2&quot;,catalog-core-api-impl-2.9.2.jar;g=&quot;ddf.catalog.core&quot;;a=&quot;catalog-core-api-impl&quot;;v=&quot;2.9.2&quot;" />
+          <property key="Bundle-ClassPath" value=".,platform-util-2.9.3.jar,json-path-2.1.0.jar,json-smart-2.2.jar,json-smart-1.1.1.jar,json-20140107.jar,gson-2.3.1.jar,okhttp-3.3.1.jar,okio-1.8.0.jar,okio-1.9.0.jar,commons-lang3-3.4.jar,commons-lang3-3.3.2.jar,catalog-core-api-impl-2.9.3.jar" />
+          <property key="Include-Resource" value="platform-util-2.9.3.jar=$MAVEN_REPOSITORY$/ddf/platform/util/platform-util/2.9.3/platform-util-2.9.3.jar,json-path-2.1.0.jar=$MAVEN_REPOSITORY$/com/jayway/jsonpath/json-path/2.1.0/json-path-2.1.0.jar,json-smart-2.2.jar=$MAVEN_REPOSITORY$/net/minidev/json-smart/2.2/json-smart-2.2.jar,json-smart-1.1.1.jar=$MAVEN_REPOSITORY$/net/minidev/json-smart/1.1.1/json-smart-1.1.1.jar,json-20140107.jar=$MAVEN_REPOSITORY$/org/json/json/20140107/json-20140107.jar,gson-2.3.1.jar=$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.3.1/gson-2.3.1.jar,okhttp-3.3.1.jar=$MAVEN_REPOSITORY$/com/squareup/okhttp3/okhttp/3.3.1/okhttp-3.3.1.jar,okio-1.8.0.jar=$MAVEN_REPOSITORY$/com/squareup/okio/okio/1.8.0/okio-1.8.0.jar,okio-1.9.0.jar=$MAVEN_REPOSITORY$/com/squareup/okio/okio/1.9.0/okio-1.9.0.jar,commons-lang3-3.4.jar=$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.4/commons-lang3-3.4.jar,commons-lang3-3.3.2.jar=$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.3.2/commons-lang3-3.3.2.jar,catalog-core-api-impl-2.9.3.jar=$MAVEN_REPOSITORY$/ddf/catalog/core/catalog-core-api-impl/2.9.3/catalog-core-api-impl-2.9.3.jar" />
+          <property key="Embedded-Artifacts" value="platform-util-2.9.3.jar;g=&quot;ddf.platform.util&quot;;a=&quot;platform-util&quot;;v=&quot;2.9.3&quot;,json-path-2.1.0.jar;g=&quot;com.jayway.jsonpath&quot;;a=&quot;json-path&quot;;v=&quot;2.1.0&quot;,json-smart-2.2.jar;g=&quot;net.minidev&quot;;a=&quot;json-smart&quot;;v=&quot;2.2&quot;,json-smart-1.1.1.jar;g=&quot;net.minidev&quot;;a=&quot;json-smart&quot;;v=&quot;1.1.1&quot;,json-20140107.jar;g=&quot;org.json&quot;;a=&quot;json&quot;;v=&quot;20140107&quot;,gson-2.3.1.jar;g=&quot;com.google.code.gson&quot;;a=&quot;gson&quot;;v=&quot;2.3.1&quot;,okhttp-3.3.1.jar;g=&quot;com.squareup.okhttp3&quot;;a=&quot;okhttp&quot;;v=&quot;3.3.1&quot;,okio-1.8.0.jar;g=&quot;com.squareup.okio&quot;;a=&quot;okio&quot;;v=&quot;1.8.0&quot;,okio-1.9.0.jar;g=&quot;com.squareup.okio&quot;;a=&quot;okio&quot;;v=&quot;1.9.0&quot;,commons-lang3-3.4.jar;g=&quot;org.apache.commons&quot;;a=&quot;commons-lang3&quot;;v=&quot;3.4&quot;,commons-lang3-3.3.2.jar;g=&quot;org.apache.commons&quot;;a=&quot;commons-lang3&quot;;v=&quot;3.3.2&quot;,catalog-core-api-impl-2.9.3.jar;g=&quot;ddf.catalog.core&quot;;a=&quot;catalog-core-api-impl&quot;;v=&quot;2.9.3&quot;" />
         </additionalProperties>
         <additionalJARContents />
       </configuration>
@@ -34,128 +34,33 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: ddf.security.core:security-core-api:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.4.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-core:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: net.shibboleth.utilities:java-support:7.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-soap-impl:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-soap-api:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-profile-api:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-xmlsec-api:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-security-api:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.cryptacular:cryptacular:1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-messaging-api:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.cxf:cxf-rt-ws-policy:3.1.4" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.cxf:cxf-rt-security:3.1.4" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.wss4j:wss4j-ws-security-dom:2.1.4" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.wss4j:wss4j-ws-security-common:2.1.4" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-saml-impl:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-saml-api:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-security-impl:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-xmlsec-impl:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-xacml-impl:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-xacml-api:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-xacml-saml-impl:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-xacml-saml-api:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.cxf:cxf-rt-transports-http:3.1.4" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.cxf:cxf-rt-rs-security-xml:3.1.4" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.cxf:cxf-rt-security-saml:3.1.4" level="project" />
-    <orderEntry type="library" name="Maven: javax.servlet:javax.servlet-api:3.1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.shiro:shiro-core:1.2.4" level="project" />
-    <orderEntry type="library" name="Maven: commons-beanutils:commons-beanutils:1.9.2" level="project" />
-    <orderEntry type="library" name="Maven: com.google.http-client:google-http-client:1.22.0" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:1.3.9" level="project" />
-    <orderEntry type="library" name="Maven: javax.validation:validation-api:1.1.0.Final" level="project" />
-    <orderEntry type="library" name="Maven: org.bouncycastle:bcprov-jdk15on:1.54" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.karaf.jaas:org.apache.karaf.jaas.boot:2.4.3" level="project" />
-    <orderEntry type="library" name="Maven: ddf.support:support-findbugs:2.3.6" level="project" />
     <orderEntry type="library" name="Maven: ddf.catalog.core:catalog-core-api:2.9.1" level="project" />
     <orderEntry type="library" name="Maven: ddf.mime.core:mime-core-api:2.9.1" level="project" />
     <orderEntry type="library" name="Maven: ddf.platform:platform-configuration:2.9.1" level="project" />
     <orderEntry type="library" name="Maven: ddf.distribution:branding-api:2.9.1" level="project" />
     <orderEntry type="library" name="Maven: ddf.lib:common-system:2.9.1" level="project" />
     <orderEntry type="library" name="Maven: ddf.platform.api:platform-api:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.findbugs:findbugs:3.0.1" level="project" />
-    <orderEntry type="library" name="Maven: net.jcip:jcip-annotations:1.0" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.findbugs:bcel-findbugs:6.0" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.findbugs:jFormatString:2.0.1" level="project" />
-    <orderEntry type="library" name="Maven: dom4j:dom4j:1.6.1" level="project" />
-    <orderEntry type="library" name="Maven: org.ow2.asm:asm-debug-all:5.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.ow2.asm:asm-commons:5.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.ow2.asm:asm-tree:5.0.2" level="project" />
-    <orderEntry type="library" name="Maven: com.apple:AppleJavaExtensions:1.4" level="project" />
-    <orderEntry type="library" name="Maven: jaxen:jaxen:1.1.6" level="project" />
     <orderEntry type="library" name="Maven: ddf.catalog.core:catalog-core-api-impl:2.9.1" level="project" />
     <orderEntry type="library" name="Maven: ddf.platform.util:platform-util:2.9.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: ddf.catalog.core:catalog-core-commons:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.cxf:cxf-rt-rs-client:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.cxf:cxf-core:3.1.4" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.ow2.asm:asm:5.0.4" level="project" />
     <orderEntry type="library" name="Maven: ddf.platform.util:platform-util:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: org.bouncycastle:bcprov-jdk15on:1.54" level="project" />
-    <orderEntry type="library" name="Maven: ddf.support:support-findbugs:2.3.6" level="project" />
     <orderEntry type="library" name="Maven: ddf.security.core:security-core-api:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.4.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-core:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: net.shibboleth.utilities:java-support:7.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-soap-impl:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-soap-api:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-profile-api:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-xmlsec-api:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-security-api:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.cryptacular:cryptacular:1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-messaging-api:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.cxf:cxf-rt-ws-policy:3.1.4" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.cxf:cxf-rt-security:3.1.4" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.wss4j:wss4j-ws-security-dom:2.1.4" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.wss4j:wss4j-ws-security-common:2.1.4" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-saml-impl:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-saml-api:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-security-impl:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-xmlsec-impl:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-xacml-impl:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-xacml-api:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-xacml-saml-impl:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.opensaml:opensaml-xacml-saml-api:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.cxf:cxf-rt-transports-http:3.1.4" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.cxf:cxf-rt-rs-security-xml:3.1.4" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.cxf:cxf-rt-security-saml:3.1.4" level="project" />
-    <orderEntry type="library" name="Maven: javax.servlet:javax.servlet-api:3.1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.shiro:shiro-core:1.2.4" level="project" />
-    <orderEntry type="library" name="Maven: commons-beanutils:commons-beanutils:1.9.2" level="project" />
-    <orderEntry type="library" name="Maven: com.google.http-client:google-http-client:1.22.0" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:1.3.9" level="project" />
-    <orderEntry type="library" name="Maven: javax.validation:validation-api:1.1.0.Final" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.karaf.jaas:org.apache.karaf.jaas.boot:2.4.3" level="project" />
     <orderEntry type="library" name="Maven: ddf.catalog.core:catalog-core-api:2.9.1" level="project" />
     <orderEntry type="library" name="Maven: ddf.mime.core:mime-core-api:2.9.1" level="project" />
     <orderEntry type="library" name="Maven: ddf.platform:platform-configuration:2.9.1" level="project" />
     <orderEntry type="library" name="Maven: ddf.distribution:branding-api:2.9.1" level="project" />
     <orderEntry type="library" name="Maven: ddf.lib:common-system:2.9.1" level="project" />
     <orderEntry type="library" name="Maven: ddf.platform.api:platform-api:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.findbugs:findbugs:3.0.1" level="project" />
-    <orderEntry type="library" name="Maven: net.jcip:jcip-annotations:1.0" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.findbugs:bcel-findbugs:6.0" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.findbugs:jFormatString:2.0.1" level="project" />
-    <orderEntry type="library" name="Maven: dom4j:dom4j:1.6.1" level="project" />
-    <orderEntry type="library" name="Maven: org.ow2.asm:asm-debug-all:5.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.ow2.asm:asm-commons:5.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.ow2.asm:asm-tree:5.0.2" level="project" />
-    <orderEntry type="library" name="Maven: com.apple:AppleJavaExtensions:1.4" level="project" />
-    <orderEntry type="library" name="Maven: jaxen:jaxen:1.1.6" level="project" />
     <orderEntry type="library" name="Maven: ddf.catalog.core:catalog-core-api-impl:2.9.1" level="project" />
     <orderEntry type="library" name="Maven: ddf.catalog.core:catalog-core-commons:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.cxf:cxf-rt-rs-client:3.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.cxf:cxf-core:3.1.4" level="project" />
-    <orderEntry type="library" name="Maven: com.google.guava:guava:18.0" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.ow2.asm:asm:5.0.4" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.osgi:org.osgi.core:6.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.5" level="project" />
-    <orderEntry type="library" name="Maven: ddf.platform.util:platform-util:2.9.2" level="project" />
+    <orderEntry type="library" name="Maven: ddf.platform.util:platform-util:2.9.3" level="project" />
     <orderEntry type="library" name="Maven: org.osgi:org.osgi.compendium:5.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.bouncycastle:bcprov-jdk15on:1.54" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:18.0" level="project" />
     <orderEntry type="library" name="Maven: ddf.support:support-findbugs:2.3.6" level="project" />
-    <orderEntry type="library" name="Maven: ddf.security.core:security-core-api:2.9.2" level="project" />
+    <orderEntry type="library" name="Maven: ddf.security.core:security-core-api:2.9.3" level="project" />
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.4.1" level="project" />
     <orderEntry type="library" name="Maven: org.opensaml:opensaml-core:3.1.1" level="project" />
     <orderEntry type="library" name="Maven: joda-time:joda-time:2.2" level="project" />
@@ -218,8 +123,8 @@
     <orderEntry type="library" name="Maven: com.google.http-client:google-http-client:1.22.0" level="project" />
     <orderEntry type="library" name="Maven: javax.validation:validation-api:1.1.0.Final" level="project" />
     <orderEntry type="library" name="Maven: org.apache.karaf.jaas:org.apache.karaf.jaas.boot:2.4.3" level="project" />
-    <orderEntry type="library" name="Maven: ddf.catalog.core:catalog-core-api:2.9.2" level="project" />
-    <orderEntry type="library" name="Maven: ddf.mime.core:mime-core-api:2.9.2" level="project" />
+    <orderEntry type="library" name="Maven: ddf.catalog.core:catalog-core-api:2.9.3" level="project" />
+    <orderEntry type="library" name="Maven: ddf.mime.core:mime-core-api:2.9.3" level="project" />
     <orderEntry type="library" name="Maven: org.geotools:gt-opengis:8.4" level="project" />
     <orderEntry type="library" name="Maven: net.java.dev.jsr-275:jsr-275:1.0-beta-2" level="project" />
     <orderEntry type="library" name="Maven: java3d:vecmath:1.3.2" level="project" />
@@ -227,16 +132,16 @@
     <orderEntry type="library" name="Maven: javax.media:jai_core:1.1.3" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-ext:1.7.1" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.cal10n:cal10n-api:0.7.4" level="project" />
-    <orderEntry type="library" name="Maven: ddf.platform:platform-configuration:2.9.2" level="project" />
+    <orderEntry type="library" name="Maven: ddf.platform:platform-configuration:2.9.3" level="project" />
     <orderEntry type="library" name="Maven: javax.ws.rs:javax.ws.rs-api:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: net.minidev:json-smart:2.2" level="project" />
-    <orderEntry type="library" name="Maven: ddf.lib:common-system:2.9.2" level="project" />
+    <orderEntry type="library" name="Maven: ddf.lib:common-system:2.9.3" level="project" />
     <orderEntry type="library" name="Maven: org.apache.felix:org.apache.felix.utils:1.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.4" level="project" />
-    <orderEntry type="library" name="Maven: ddf.distribution:branding-api:2.9.2" level="project" />
+    <orderEntry type="library" name="Maven: ddf.distribution:branding-api:2.9.3" level="project" />
     <orderEntry type="library" name="Maven: org.apache.tika:tika-bundle:1.7" level="project" />
     <orderEntry type="library" name="Maven: org.apache.tika:tika-core:1.7" level="project" />
-    <orderEntry type="library" name="Maven: ddf.platform.api:platform-api:2.9.2" level="project" />
+    <orderEntry type="library" name="Maven: ddf.platform.api:platform-api:2.9.3" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.findbugs:findbugs:3.0.1" level="project" />
     <orderEntry type="library" name="Maven: net.jcip:jcip-annotations:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.findbugs:bcel-findbugs:6.0" level="project" />
@@ -249,8 +154,8 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.ow2.asm:asm:5.0.4" level="project" />
     <orderEntry type="library" name="Maven: com.apple:AppleJavaExtensions:1.4" level="project" />
     <orderEntry type="library" name="Maven: jaxen:jaxen:1.1.6" level="project" />
-    <orderEntry type="library" name="Maven: ddf.catalog.core:catalog-core-api-impl:2.9.2" level="project" />
-    <orderEntry type="library" name="Maven: ddf.catalog.core:catalog-core-commons:2.9.2" level="project" />
+    <orderEntry type="library" name="Maven: ddf.catalog.core:catalog-core-api-impl:2.9.3" level="project" />
+    <orderEntry type="library" name="Maven: ddf.catalog.core:catalog-core-commons:2.9.3" level="project" />
     <orderEntry type="library" name="Maven: xalan:xalan:2.7.2" level="project" />
     <orderEntry type="library" name="Maven: xalan:serializer:2.7.2" level="project" />
     <orderEntry type="library" name="Maven: xerces:xercesImpl:2.11.0" level="project" />

@@ -22,10 +22,7 @@ import java.util.Random;
 import java.util.TimeZone;
 import java.util.concurrent.ThreadLocalRandom;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -97,6 +94,15 @@ public class SourceEndpoint {
   }
 
 
+
+  @HEAD
+  @Path("/getSourceResults")
+  public Response getResultsForSource(@Context UriInfo requestUriInfo){
+    Response.ResponseBuilder builder = null;
+    builder = Response.ok();
+    return builder.build();
+
+  }
   /**
    * Convert geopoint response.
    *

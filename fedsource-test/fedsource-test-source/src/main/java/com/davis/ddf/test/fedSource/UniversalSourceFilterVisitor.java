@@ -43,6 +43,9 @@ import ddf.catalog.impl.filter.TemporalFilter;
  * Created by hduser on 6/2/15.
  */
 public class UniversalSourceFilterVisitor extends DefaultFilterVisitor {
+    private String metacardId = null;
+
+
     /**
      * The constant logger.
      */
@@ -499,12 +502,21 @@ public class UniversalSourceFilterVisitor extends DefaultFilterVisitor {
      */
     @Override
         public Object visit(PropertyIsEqualTo filter, Object data) {
-      //      logger.debug("ENTERING: PropertyIsEqualTo filter");
+        logger.debug("ENTERING: PropertyIsEqualTo filter");
 
-            filters.add(filter);
+        if (filter.getExpression1() != null && filter.getExpression2() != null) {
 
-     //       logger.debug("EXITING: PropertyIsEqualTo filter");
+            if (filter.getExpression2() instanceof Literal) {
+                Literal literal = (Literal) filter.getExpression2();
+                String exp2 = literal.getValue().toString();
+                logger.debug(exp2);
+                metacardId = (exp2);
+            }
+        }
 
+        filters.add(filter);
+
+        logger.debug("EXITING: PropertyIsEqualTo filter");
             return super.visit(filter, data);
         }
 
@@ -612,6 +624,11 @@ public class UniversalSourceFilterVisitor extends DefaultFilterVisitor {
             return spatialSearch;
         }
 
+    public String getMetacardIdForTransform() {
+        return metacardId;
     }
+
+
+}
 
 
