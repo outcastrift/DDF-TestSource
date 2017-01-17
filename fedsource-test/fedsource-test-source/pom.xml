@@ -30,11 +30,12 @@
       <version>${slf4j.version}</version>
     </dependency>
     <!--START DDF-->
-    <dependency>
+    <!--Depends on 2.9.1 and Above-->
+    <!--<dependency>
       <groupId>ddf.platform.util</groupId>
       <artifactId>platform-util</artifactId>
       <version>${primary.ddf.version}</version>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>ddf.security.core</groupId>
       <artifactId>security-core-api</artifactId>
@@ -181,6 +182,8 @@
               org.codice.ddf.cxf;resolution:="optional",
               com.rometools.rome.*;resolution:="optional",
               ddf.catalog.util.impl.*;resolution:="optional",
+              org.apache.cxf.jaxrs.client;version="[3,4)",
+              org.osgi.framework;version="[1,2)",
               *
             </Import-Package>
             <Export-Package>
