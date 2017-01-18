@@ -11,6 +11,21 @@
     <AD description="The full URL to the endpoint to query without the ? at the end."
         name="Endpoint Query URL" id="ssServiceUrl" required="true"
         type="String" default="https://localhost:8993/services/test/getSourceResults"/>
+    <AD
+            description="Content type for the data returned from the source."
+            name="Content Type" id="contentTypeName" required="true" type="String"
+            default="UNKNOWN">
+      <Option label="UNKNOWN" value="UNKNOWN"/>
+      <Option label="HUMINT" value="HUMINT"/>
+      <Option label="OSINT" value="OSINT"/>
+      <Option label="MASINT" value="MASINT"/>
+      <Option label="ELINT" value="ELINT"/>
+      <Option label="FISINT" value="FISINT"/>
+      <Option label="SIGINT" value="SIGINT"/>
+      <Option label="IMINT" value="IMINT"/>
+      <Option label="GEOINT" value="GEOINT"/>
+      <Option label="MULTI-INT" value="MULTI-INT"/>
+    </AD>
 
     <!--CERT PATH-->
     <AD description="Absolute path to the client certificate .p12 file. Leave blank to not use this field." type="String"

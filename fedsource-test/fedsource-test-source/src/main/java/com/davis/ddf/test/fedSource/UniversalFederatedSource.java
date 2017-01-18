@@ -9,6 +9,7 @@ import com.davis.ddf.test.filter.OpenSearchSiteUtil;
 import com.davis.ddf.test.service.SourceService;
 import com.davis.ddf.test.service.restService.RestGetService;
 
+import ddf.catalog.data.impl.ContentTypeImpl;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.opengis.geometry.DirectPosition;
 import org.opengis.geometry.Geometry;
@@ -67,6 +68,7 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
 
   private static final Logger LOGGER = LoggerFactory.getLogger(UniversalFederatedSource.class);
   private static final String DEFAULT_TYPE = UniversalFederatedSourceMetacardType.NAME;
+  private String contentTypeName = "Sigact";
   private static final long EXPIRATION_OFFSET = 3600000;
   private static int SAX = 1;
   private static int REST = 2;
@@ -688,11 +690,23 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
    *
    * @return the content types
    */
+  /** {@inheritDoc} */
+  @Override
   public Set<ContentType> getContentTypes() {
-
-    this.contentTypes = new HashSet<ContentType>();
-
-    return contentTypes;
+    if (this.contentTypeName != null) {
+      if (!this.contentTypeName.equalsIgnoreCase("")) {
+        Set<ContentType> contentTypes = new HashSet<ContentType>();
+        contentTypes.add(new ContentTypeImpl(this.contentTypeName, getVersion()));
+        this.contentTypes = contentTypes;
+        return contentTypes;
+      } else {
+        this.contentTypes = new HashSet<ContentType>();
+        return contentTypes;
+      }
+    } else {
+      this.contentTypes = new HashSet<ContentType>();
+      return contentTypes;
+    }
   }
 
   /**
@@ -855,6 +869,15 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
     }
 
   }
+
+  public String getContentTypeName() {
+    return contentTypeName;
+  }
+
+  public void setContentTypeName(String contentTypeName) {
+    this.contentTypeName = contentTypeName;
+  }
+
   public String getSsContainerPath() {
     return ssContainerPath;
   }

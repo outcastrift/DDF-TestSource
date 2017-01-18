@@ -33,26 +33,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: ddf.security.core:security-core-api:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: ddf.catalog.core:catalog-core-api:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: ddf.mime.core:mime-core-api:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: ddf.platform:platform-configuration:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: ddf.distribution:branding-api:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: ddf.lib:common-system:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: ddf.platform.api:platform-api:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: ddf.catalog.core:catalog-core-api-impl:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: ddf.platform.util:platform-util:2.9.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: ddf.catalog.core:catalog-core-commons:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: ddf.platform.util:platform-util:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: ddf.security.core:security-core-api:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: ddf.catalog.core:catalog-core-api:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: ddf.mime.core:mime-core-api:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: ddf.platform:platform-configuration:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: ddf.distribution:branding-api:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: ddf.lib:common-system:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: ddf.platform.api:platform-api:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: ddf.catalog.core:catalog-core-api-impl:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: ddf.catalog.core:catalog-core-commons:2.9.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.osgi:org.osgi.core:6.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.5" level="project" />
     <orderEntry type="library" name="Maven: ddf.security.core:security-core-api:2.8.2" level="project" />
