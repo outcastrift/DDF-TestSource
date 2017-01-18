@@ -394,7 +394,13 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
           metaCardData.setExpirationDate(expiration.getTime());
           metaCardData.setTitle(hitTitle);
 
-          metaCardData.setContentTypeName(DEFAULT_TYPE);
+          if(contentTypeName != null){
+            metaCardData.setContentTypeName(contentTypeName);
+
+          }else{
+            metaCardData.setContentTypeName(DEFAULT_TYPE);
+          }
+
           metaCardData.setContentTypeVersion(DEFAULT_TYPE_VERSION);
           if (fedSourceResponse.getClassification() != null) {
             metaCardData.setAttribute(UniversalFederatedSourceMetacardType.CLASSIFICATION, fedSourceResponse
