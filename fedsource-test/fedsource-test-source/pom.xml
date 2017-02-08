@@ -31,11 +31,11 @@
     </dependency>
     <!--START DDF-->
     <!--Depends on 2.9.1 and Above-->
-    <!--<dependency>
+    <dependency>
       <groupId>ddf.platform.util</groupId>
       <artifactId>platform-util</artifactId>
       <version>${primary.ddf.version}</version>
-    </dependency>-->
+    </dependency>
     <dependency>
       <groupId>ddf.security.core</groupId>
       <artifactId>security-core-api</artifactId>
