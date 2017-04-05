@@ -5,7 +5,7 @@
 
     <parent>
         <groupId>com.davis</groupId>
-        <artifactId>Fedsearch-Test-Source</artifactId>
+        <artifactId>configurable-rest-source-parent</artifactId>
         <version>1.0</version>
     </parent>
 
@@ -13,7 +13,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <version>1.0</version>
-    <artifactId>rest-source-test-endpoint</artifactId>
+    <artifactId>configurable-rest-source-test-endpoint</artifactId>
     <packaging>bundle</packaging>
     <name>Configurable Rest Source:: Test Endpoint</name>
     <properties>
@@ -21,7 +21,6 @@
     </properties>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/com.vividsolutions/jts -->
-
 
 
         <!--START ENDPOINT RELATED-->

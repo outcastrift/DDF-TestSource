@@ -2,8 +2,9 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <artifactId>Fedsearch-Test-Source</artifactId>
+    <artifactId>ConfigurableRestSource</artifactId>
     <version>1.0</version>
+    <name>Configurable Rest Source :: Parent</name>
     <groupId>com.davis</groupId>
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
@@ -74,16 +75,8 @@
         <saxon.version>9.6.0-4</saxon.version>
         <jaxb2.version>0.9.4</jaxb2.version>
         <spatial4j.version>0.4.1</spatial4j.version>
-        <!--
-            Remove restlet.version property and restlet dependencies from the dependencyManagement section when
-            Solr version is updated (see DDF-1203).
-        -->
         <solr.version>4.10.4</solr.version>
-        <!--
-            Important: version 2.1.4 is being used to address security vulnerabilities CVE-2013-4221 and
-            CVE-2013-4271. As this is a Solr transitive dependency, the restlet.version property and the restlet
-            dependencies found in the dependencyManagement section should be removed (see DDF-1203).
-        -->
+
         <restlet.version>2.1.4</restlet.version>
         <solr.saxon.version>9.5.1-5</solr.saxon.version>
         <jaxb.annotate.plugin.version>0.6.0</jaxb.annotate.plugin.version>
@@ -93,8 +86,8 @@
         <lucene.version>5.1.0</lucene.version>
     </properties>
     <modules>
-        <module>fedsource-test-endpoint</module>
-        <module>fedsource-test-source</module>
+        <module>configurable-rest-source</module>
+        <module>configurable-rest-source-test-endpoint</module>
     </modules>
     <dependencies>
 

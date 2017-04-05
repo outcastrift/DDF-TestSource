@@ -6,13 +6,13 @@
 
   <parent>
     <groupId>com.davis</groupId>
-    <artifactId>Fedsearch-Test-Source</artifactId>
+    <artifactId>configurable-rest-source-parent</artifactId>
     <version>1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
   <version>1.0</version>
-  <artifactId>rest-configurable-source</artifactId>
+  <artifactId>configurable-rest-source</artifactId>
   <packaging>bundle</packaging>
   <name>Configurable Rest Source</name>
   <dependencies>
