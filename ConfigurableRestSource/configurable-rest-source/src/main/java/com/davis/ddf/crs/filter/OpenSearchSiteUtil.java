@@ -14,7 +14,6 @@
 package com.davis.ddf.crs.filter;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.jaxrs.client.WebClient;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.opengis.filter.expression.PropertyName;
@@ -34,8 +33,6 @@ import ddf.catalog.impl.filter.SpatialFilter;
 import ddf.catalog.impl.filter.TemporalFilter;
 import ddf.catalog.operation.Query;
 import ddf.catalog.source.UnsupportedQueryException;
-import ddf.security.Subject;
-import ddf.security.assertion.SecurityAssertion;
 
 /**
  * Utility helper class that performs much of the translation logic used in CddaOpenSearchSite.
@@ -114,64 +111,7 @@ public final class OpenSearchSiteUtil {
 
     }
 
-    /**
-     * Populates general site information.
-     *
-     * @param client  Initial StringBuilder url that is not filled in.
-     * @param query
-     * @param subject
-     */
-    public static void populateSearchOptions(WebClient client, Query query, Subject subject,
-                                             List<String> parameters) {
-        String maxTotalSize = null;
-        String maxPerPage = null;
-        String routeTo = "";
-        String timeout = null;
-        String start = "1";
-        String dn = null;
-        String filterStr = "";
-        String sortStr = null;
 
-        if (query != null) {
-
-            maxPerPage = String.valueOf(query.getPageSize());
-            if (query.getPageSize() > DEFAULT_TOTAL_MAX) {
-                maxTotalSize = maxPerPage;
-            } else if (query.getPageSize() <= 0) {
-                maxTotalSize = String.valueOf(DEFAULT_TOTAL_MAX);
-            }
-
-            start = Integer.toString(query.getStartIndex());
-
-            timeout = Long.toString(query.getTimeoutMillis());
-
-            sortStr = translateToOpenSearchSort(query.getSortBy());
-
-            if (subject != null && subject.getPrincipals() != null && !subject.getPrincipals()
-                    .isEmpty()) {
-                List principals = subject.getPrincipals()
-                        .asList();
-                for (Object principal : principals) {
-                    if (principal instanceof SecurityAssertion) {
-                        SecurityAssertion assertion = (SecurityAssertion) principal;
-                        Principal assertionPrincipal = assertion.getPrincipal();
-                        if (assertionPrincipal != null) {
-                            dn = assertionPrincipal.getName();
-                        }
-                    }
-                }
-            }
-        }
-
-        checkAndReplace(client, start, START_INDEX, parameters);
-        checkAndReplace(client, maxPerPage, COUNT, parameters);
-        checkAndReplace(client, maxTotalSize, MAX_RESULTS, parameters);
-        checkAndReplace(client, routeTo, SRC, parameters);
-        checkAndReplace(client, timeout, MAX_TIMEOUT, parameters);
-        checkAndReplace(client, dn, USER_DN, parameters);
-        checkAndReplace(client, filterStr, FILTER, parameters);
-        checkAndReplace(client, sortStr, SORT, parameters);
-    }
 
     public static String translateToOpenSearchSort(SortBy ddfSort) {
         String openSearchSortStr = null;
@@ -204,152 +144,10 @@ public final class OpenSearchSiteUtil {
         return openSearchSortStr;
     }
 
-    /**
-     * Fills in the OpenSearch query URL with contextual information (Note: Section 2.2 - Query: The
-     * OpenSearch specification does not define a syntax for its primary query parameter,
-     * searchTerms, but it is generally used to support simple keyword queries.)
-     *
-     * @param client
-     * @param searchPhrase
-     */
-    public static void populateContextual(WebClient client, final String searchPhrase,
-            List<String> parameters) {
-        String queryStr = searchPhrase;
-        if (queryStr != null) {
-            try {
-                queryStr = URLEncoder.encode(queryStr, "UTF-8");
-            } catch (UnsupportedEncodingException uee) {
-                LOGGER.warn("Could not encode contextual string: {}", uee.getMessage());
-            }
-        }
 
-        checkAndReplace(client, queryStr, SEARCH_TERMS, parameters);
-    }
 
-    /**
-     * Fills in the opensearch query URL with temporal information (Start, End, and Name). Currently
-     * name is empty due to incompatibility with endpoints.
-     *
-     * @param client   OpenSearch URL to populate
-     * @param temporal TemporalCriteria that contains temporal data
-     */
-    public static void populateTemporal(WebClient client, TemporalFilter temporal,
-            List<String> parameters) {
-        DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
-        String start = "";
-        String end = "";
-        String name = "";
-        if (temporal != null) {
-            long startLng = (temporal.getStartDate() != null) ?
-                    temporal.getStartDate()
-                            .getTime() :
-                    0;
-            start = fmt.print(startLng);
-            long endLng = (temporal.getEndDate() != null) ?
-                    temporal.getEndDate()
-                            .getTime() :
-                    System.currentTimeMillis();
-            end = fmt.print(endLng);
-        }
-        checkAndReplace(client, start, TIME_START, parameters);
-        checkAndReplace(client, end, TIME_END, parameters);
-        checkAndReplace(client, name, TIME_NAME, parameters);
-    }
 
-    /**
-     * Fills in the OpenSearch query URL with geospatial information (poly, lat, lon, and radius).
-     *
-     * @param client  OpenSearch URL to populate
-     * @param spatial SpatialCriteria that contains the spatial data
-     */
-    public static void populateGeospatial(WebClient client, SpatialDistanceFilter spatial,
-            boolean shouldConvertToBBox, List<String> parameters) throws UnsupportedQueryException {
-        String lat = "";
-        String lon = "";
-        String radiusStr = "";
-        StringBuilder bbox = new StringBuilder("");
-        StringBuilder poly = new StringBuilder("");
 
-        if (spatial != null) {
-            String wktStr = spatial.getGeometryWkt();
-            double radius = spatial.getDistanceInMeters();
-
-            if (wktStr.indexOf("POINT") != -1) {
-                String[] latLon = createLatLonAryFromWKT(wktStr);
-                lon = latLon[0];
-                lat = latLon[1];
-                radiusStr = Double.toString(radius);
-                if (shouldConvertToBBox) {
-                    double[] bboxCoords = createBBoxFromPointRadius(Double.parseDouble(lon),
-                            Double.parseDouble(lat),
-                            radius);
-                    for (int i = 0; i < MAX_BBOX_POINTS; i++) {
-                        if (i > 0) {
-                            bbox.append(",");
-                        }
-                        bbox.append(bboxCoords[i]);
-                    }
-                    lon = "";
-                    lat = "";
-                    radiusStr = "";
-                }
-            } else {
-                LOGGER.warn("WKT ({}) not supported for POINT-RADIUS search, use POINT.", wktStr);
-            }
-        }
-
-        checkAndReplace(client, lat, GEO_LAT, parameters);
-        checkAndReplace(client, lon, GEO_LON, parameters);
-        checkAndReplace(client, radiusStr, GEO_RADIUS, parameters);
-        checkAndReplace(client, poly.toString(), GEO_POLY, parameters);
-        checkAndReplace(client, bbox.toString(), GEO_BBOX, parameters);
-    }
-
-    /**
-     * Fills in the OpenSearch query URL with geospatial information (poly, lat, lon, and radius).
-     *
-     * @param client  OpenSearch URL to populate
-     * @param spatial SpatialCriteria that contains the spatial data
-     */
-    public static void populateGeospatial(WebClient client, SpatialFilter spatial,
-            boolean shouldConvertToBBox, List<String> parameters) throws UnsupportedQueryException {
-        String lat = "";
-        String lon = "";
-        String radiusStr = "";
-        StringBuilder bbox = new StringBuilder("");
-        StringBuilder poly = new StringBuilder("");
-
-        if (spatial != null) {
-            String wktStr = spatial.getGeometryWkt();
-            if (wktStr.indexOf("POLYGON") != -1) {
-                String[] polyAry = createPolyAryFromWKT(wktStr);
-                if (shouldConvertToBBox) {
-                    double[] bboxCoords = createBBoxFromPolygon(polyAry);
-                    for (int i = 0; i < MAX_BBOX_POINTS; i++) {
-                        if (i > 0) {
-                            bbox.append(",");
-                        }
-                        bbox.append(bboxCoords[i]);
-                    }
-                } else {
-                    for (int i = 0; i < polyAry.length - 1; i += 2) {
-                        if (i != 0) {
-                            poly.append(",");
-                        }
-                        poly.append(polyAry[i + 1] + "," + polyAry[i]);
-                    }
-                }
-            } else {
-                LOGGER.warn("WKT ({}) not supported for SPATIAL search, use POLYGON.", wktStr);
-            }
-        }
-
-        checkAndReplace(client, lat, GEO_LAT, parameters);
-        checkAndReplace(client, lon, GEO_LON, parameters);
-        checkAndReplace(client, radiusStr, GEO_RADIUS, parameters);
-        checkAndReplace(client, poly.toString(), GEO_POLY, parameters);
-        checkAndReplace(client, bbox.toString(), GEO_BBOX, parameters);
-    }
 
     /**
      * Parses a WKT polygon string and returns a string array containing the lon and lat.
@@ -373,22 +171,7 @@ public final class OpenSearchSiteUtil {
         return lonLat.split(" ");
     }
 
-    /**
-     * Checks the input and replaces the items inside of the url.
-     *
-     * @param client     The URL to do the replacement on. <b>NOTE:</b> replacement is done directly on
-     *                   this object.
-     * @param inputStr   Item to put into the URL.
-     * @param definition Area inside of the URL to be replaced by.
-     */
-    private static void checkAndReplace(WebClient client, String inputStr, String definition,
-            List<String> parameters) {
-        if (hasParameter(definition, parameters)) {
-            if (StringUtils.isNotEmpty(inputStr)) {
-                client.replaceQueryParam(definition, inputStr);
-            }
-        }
-    }
+
 
     private static boolean hasParameter(String parameter, List<String> parameters) {
         for (String param : parameters) {

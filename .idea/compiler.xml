@@ -12,7 +12,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="configurable-rest-source" target="1.8" />
-      <module name="configurable-rest-source-test-endpoint" target="1.8" />
+      <module name="configurable-rest-source-test-endpoint" target="1.5" />
       <module name="ConfigurableRestSource" target="1.8" />
     </bytecodeTargetLevel>
   </component>
