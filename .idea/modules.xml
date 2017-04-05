@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/ConfigurableRestSource/ConfigurableRestSource.iml" filepath="$PROJECT_DIR$/ConfigurableRestSource/ConfigurableRestSource.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/DDF-Configurable-Rest-Source.iml" filepath="$PROJECT_DIR$/.idea/DDF-Configurable-Rest-Source.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ConfigurableRestSource/configurable-rest-source/configurable-rest-source.iml" filepath="$PROJECT_DIR$/ConfigurableRestSource/configurable-rest-source/configurable-rest-source.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ConfigurableRestSource/configurable-rest-source-test-endpoint/configurable-rest-source-test-endpoint.iml" filepath="$PROJECT_DIR$/ConfigurableRestSource/configurable-rest-source-test-endpoint/configurable-rest-source-test-endpoint.iml" />
+    </modules>
+  </component>
+</project>
