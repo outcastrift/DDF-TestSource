@@ -1,7 +1,7 @@
 package test;
 
 
-import com.davis.ddf.test.fedSource.UniversalFederatedSource;
+import com.davis.ddf.crs.UniversalFederatedSource;
 
 import org.junit.BeforeClass;
 import org.slf4j.Logger;

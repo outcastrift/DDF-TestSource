@@ -14,7 +14,7 @@
   <version>1.0</version>
   <artifactId>configurable-rest-source</artifactId>
   <packaging>bundle</packaging>
-  <name>Configurable Rest Source</name>
+  <name>Configurable Rest Source :: Source</name>
   <dependencies>
     <!--CORE OSGI-->
     <dependency>

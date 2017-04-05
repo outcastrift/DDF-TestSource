@@ -3,7 +3,7 @@
 
   <OCD name="TestBed Federated Source"
       description="Test Bed Federated Source"
-      id="com.davis.ddf.test.fedSource.UniversalFederatedSource">
+      id="com.davis.ddf.crs.UniversalFederatedSource">
     <AD description="Name to display in the Search UI" name="Short Name" id="ssShortName"
         required="false"
         type="String" default="TestBedFederatedSource"/>
@@ -146,9 +146,9 @@
         default="$[*].dateOccurred"/>
   </OCD>
 
-  <Designate pid="com.davis.ddf.test.fedSource.UniversalFederatedSource"
-      factoryPid="com.davis.ddf.test.fedSource.UniversalFederatedSource">
+  <Designate pid="com.davis.ddf.crs.UniversalFederatedSource"
+      factoryPid="com.davis.ddf.crs.UniversalFederatedSource">
 
-    <Object ocdref="com.davis.ddf.test.fedSource.UniversalFederatedSource"/>
+    <Object ocdref="com.davis.ddf.crs.UniversalFederatedSource"/>
   </Designate>
 </metatype:MetaData>
