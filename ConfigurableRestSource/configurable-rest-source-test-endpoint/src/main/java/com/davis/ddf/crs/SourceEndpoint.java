@@ -57,10 +57,6 @@ public class SourceEndpoint {
   private SimpleDateFormat dateFormat;
   private Date DEFAULT_START;
   private Date DEFAULT_END;
-  private ArrayList<String> originateUnit;
-  private ArrayList<String> reportLinks;
-  private ArrayList<String> summaries;
-  private ArrayList<String> eventTypes;
   private InMemoryDataStore dataStore;
 
   /**
@@ -86,10 +82,7 @@ public class SourceEndpoint {
     } catch (ParseException e2) {
     }
     dataStore = new InMemoryDataStore();
-    originateUnit = dataStore.getOriginateUnit();
-    reportLinks = dataStore.getReportLinks();
-    summaries = dataStore.getSummaries();
-    eventTypes = dataStore.getEventTypes();
+
 
 
   }
@@ -171,13 +164,14 @@ public class SourceEndpoint {
    * @return the response
    */
   @GET
-  @Path("/getSourceResults")
+  @Path("/getSourceResultsRandom")
   public Response getResultsForSource(@Context UriInfo requestUriInfo,
                                       @QueryParam("startDate") String startDate,
                                       @QueryParam("endDate") String endDate,
                                       @QueryParam("topLeftLatLong") String topLeftLatLong,
                                       @QueryParam("bottomRightLatLong") String bottomRightLatLong,
-                                      @QueryParam("amount") String amount
+                                      @QueryParam("amount") String amount,
+                                      @QueryParam("id") @DefaultValue("-1") Integer id
 
   ) throws UnsupportedEncodingException {
 
@@ -293,8 +287,6 @@ public class SourceEndpoint {
     } else {
       return null;
     }
-
-
   }
 
   /**
@@ -356,10 +348,10 @@ public class SourceEndpoint {
     uniResponse.setDisplaySerial(String.valueOf(topLeftLat) + String.valueOf(bottomRightLng) + String.valueOf(lat) + String.valueOf(lng));
     uniResponse.setLatitude(lat);
     uniResponse.setLongitude(lng);
-    uniResponse.setOriginatorUnit(getRandomizedField(originateUnit));
-    uniResponse.setPrimaryEventType(getRandomizedField(eventTypes));
-    uniResponse.setReportLink(getRandomizedField(reportLinks));
-    uniResponse.setSummary(getRandomizedField(summaries));
+    uniResponse.setOriginatorUnit(getRandomizedField(dataStore.getOriginateUnit()));
+    uniResponse.setPrimaryEventType(getRandomizedField(dataStore.getEventTypes()));
+    uniResponse.setReportLink(getRandomizedField(dataStore.getReportLinks()));
+    uniResponse.setSummary(getRandomizedField(dataStore.getSummaries()));
 
     return uniResponse;
   }

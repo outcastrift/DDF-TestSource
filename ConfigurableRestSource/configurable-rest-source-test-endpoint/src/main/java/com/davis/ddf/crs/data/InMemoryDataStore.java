@@ -725,6 +725,681 @@ public class InMemoryDataStore {
     summaries.add("gunman shot and injured a police officer; attacker was shot and injured");
     summaries.add("attacker injures 4 in machete attack at a restaurant; attacker was shot and killed by police when " +
             "" + "he attacked police at the end of a car chase");
+    summaries.add("crashing of hijacked planes into World Trade Center, New York City, New York, Pentagon in " +
+            "Alexandria, Virginia, and site in Pennsylvania, USA");
+    summaries.add("armed attack on city by Boko Haram");
+    summaries.add("armed attack and arson of villages by Boko Haram");
+    summaries.add("multiple car bombings in Al-Adnaniyah and Al-Qataniyah");
+    summaries.add("arson of theater");
+    summaries.add("hostage taking at school (includes 35 terrorists killed)");
+    summaries.add("mid-air bombings of Air India flight off Cork, Ireland, killing 329; bomb intended for second Air " +
+            "" + "India flight exploded in Narita Airport, Japan, killing 2 and injuring 4");
+    summaries.add("15 bombings throughout city");
+    summaries.add("armed attack on market, after which many buildings were set on fire");
+    summaries.add("truck bomb explodes outside U.S. embassy in Nairobi, Kenya, destroying adjacent office building; "
+            + "244 killed, 4,877 injured; within five minutes,");
+    summaries.add("a truck bomb explodes outside U.S. embassy in Dar es Salaam, Tanzania; 12 killed");
+    summaries.add("simultaneous truck bombings of U.S. Marine and French barracks");
+    summaries.add("armed attack");
+    summaries.add("armed attack");
+    summaries.add("mid-air bombing of Pan Am flight over Lockerbie, Scotland");
+    summaries.add("bombing and sinking of ship carrying Jewish immigrants");
+    summaries.add("hostage taking at Grand Mosque (includes 87 terrorists killed)");
+    summaries.add("armed attack and arson at refugee camp");
+    summaries.add("attacks at Sidi Moussa and Hais Rais");
+    summaries.add("apparent mid-air bombing of Russian Airbus over Sinai after departing Sharm el-Sheikh airport; " +
+            "plane broke apart in midair");
+    summaries.add("armed attacks on villages of Ungwar Sankwai, Ungwar Gata, and Chenshyi");
+    summaries.add("intentional crash of Egypt Air flight off Nantucket Island by copilot");
+    summaries.add("seven bombings on commuter trains");
+    summaries.add("car bombing outside nightclub");
+    summaries.add("five car bombings and two mortar attacks in Sadr City, Baghdad");
+    summaries.add("multiple bombings");
+    summaries.add("bombings of four trains");
+    summaries.add("armed attack on village");
+    summaries.add("suicide bombings at shrines in Karbala and Kadhimiya");
+    summaries.add("Boko Haram attack on village");
+    summaries.add("attacks at Had Chekala, Remka, and Ain Tarik, Algeria");
+    summaries.add("multiple suicide bombings and shooting attacks");
+    summaries.add("multiple suicide truck bombings in Armili and area, Iraq");
+    summaries.add("multiple bombings and gun attacks");
+    summaries.add("multiple shooting and grenade attacks and hostage takings (includes 9 terrorists killed)");
+    summaries.add("mid-air bombing of French UTA flight near Bilma");
+    summaries.add("hostage taking and attempted rescue in theater (includes 41 terrorists killed)");
+    summaries.add("truck bombing of federal building, causing partial collapse");
+    summaries.add("bombing by communist terrorists of Sveta Nedelya Cathedral during funeral; cathedral dome " +
+            "collapsed, killing mostly officials attending the funeral");
+    summaries.add("two vehicle bombings at government buildings");
+    summaries.add("two truck bombings");
+    summaries.add("attack on train south of Luanda");
+    summaries.add("attack on college campus by multiple gunmen");
+    summaries.add("armed attack on crowds");
+    summaries.add("sabotage resulting in derailment of Jnaneswari express train and collision with second train");
+    summaries.add("shooting and bombing attack on school");
+    summaries.add("hostage taking at hospital and two failed rescue attempts");
+    summaries.add("ambush of civilian traffic on highway");
+    summaries.add("two bombings at each of two mosques");
+    summaries.add("bombing of motorcade for former prime minister Bhutto");
+    summaries.add("armed attack at two mosques");
+    summaries.add("FARC rebels attack police barracks with rockets, killing police officers and 10 civilians");
+    summaries.add("shooting and hostage-taking at a theater; shooting attacks on three restaurants; four suicide " +
+            "bombings outside a soccer stadium and at a restaurant");
+    summaries.add("truck bombing in marketplace");
+    summaries.add("two suicide bombings and additional attacks");
+    summaries.add("multiple bombings in Baghdad, Khalis, and Mahmudiya");
+    summaries.add("car bombing outside medical clinic");
+    summaries.add("crash of hijacked PRC airliner");
+    summaries.add("bombing of apartment building");
+    summaries.add("five car bombings");
+    summaries.add("Tamil Tiger roadway ambush of Sinhalese in five vehicles near Alut Oya");
+    summaries.add("crash of hijacked Ethiopian Air flight off Comoros during forced landing off shore");
+    summaries.add("Mi-26 helicopter carrying Russian troops shot down by terrorist-fired missile shortly before " +
+            "landing; 115 killed immediately, 12 died of injuries; 21 survivors included 14 injured");
+    summaries.add("car bombing outside mosque");
+    summaries.add("bombings in Karbala, Ramadi, and Baghdad");
+    summaries.add("armed attack at mosque");
+    summaries.add("bombing attack on mosque");
+    summaries.add("bombings at security checkpoint, billiards hall, nearby street, and market in Quetta, and bombing " +
+            "" + "at mosque in Mingora");
+    summaries.add("car bombing at marketplace");
+    summaries.add("armed attack on village including bombing of church");
+    summaries.add("two car bombings at market and bus station");
+    summaries.add("bombing and fire on ferry near Manila");
+    summaries.add("attack by 50 gunmen on village");
+    summaries.add("multiple bombings in Taji, Mosul, Baghdad, Dhuluiya, Baquba, and Diyala");
+    summaries.add("truck bombing in marketplace");
+    summaries.add("mid-air bombing of Korean Air flight near Burma");
+    summaries.add("bombings in Baghdad, Hilla, Basra, Balad, Jisr Diyala, Samarra, Mosul, Baiji, Rutba, Baquba, and "
+            + "Tuz Khormato, and armed attacks in Haditha");
+    summaries.add("crash of Gulf Air flight following mid-air bombing over the UAE");
+    summaries.add("multiple bombings in Hilla, Basra, al-Suwayra, Baghdad, Tarmiyah, Fallujah, Mosul, and " +
+            "Iskandariyah, and additional armed attacks in Baghdad");
+    summaries.add("mid-air bombing of Avianca flight in Bogota, killing all 107 aboard plus 3 on the ground");
+    summaries.add("truck bombing of anti-Taliban tribal meeting");
+    summaries.add("two suicide bombings of political party offices");
+    summaries.add("bombings at a mosque, market, and football game spectators in Maiduguri; bombing of market in " +
+            "Monguno");
+    summaries.add("bombings in Baghdad, Amara, Kirkuk, Taji, Maysan, Tuz Khormato, Nasiriyah, Basra, Tal Afar, " +
+            "Hawija, and Ar Riyad, and armed attack on Dujail army base");
+    summaries.add("bombings in Baghdad, Tal Afar, Kirkuk, Daquq, Garma, Kut, Husainiya, Tuz Khurmato, and armed " +
+            "attacks in Mushahda, Falluja, Al-A'amiriya, and Baaj");
+    summaries.add("Tamil Tiger bombing of bus depot");
+    summaries.add("two suicide bombings");
+    summaries.add("crash of airliner struck by missile");
+    summaries.add("suicide bombing at dogfighting festival");
+    summaries.add("multiple bombings at government sites");
+    summaries.add("bombings in Mosul and Baghdad; armed attacks in Ramadi and Baquba");
+    summaries.add("suicide bombing of military convoy near Habarana");
+    summaries.add("attack on movie theater and mosque");
+    summaries.add("two suicide bombings at political rally");
+    summaries.add("hostage taking and army storming of mosque");
+    summaries.add("bombings in Baghdad and Baquba");
+    summaries.add("bombing of Siguranzia palace in Bolgard (Ograd?) in Bessarabia");
+    summaries.add("50 M-19 terrorists seize Palace of Justice in Bogota, Columbia; 12 judges killed, palace is " +
+            "stormed, fire results and kills all terrorists and additional hostages");
+    summaries.add("bombings and shooting attacks in Baghdad, Beiji, and Mosul");
+    summaries.add("suicide bombing in marketplace near gas tanker and mosque");
+    summaries.add("bombings and shooting attacks on churches, police headquarters, government buildings, and banks");
+    summaries.add("mid-air bombing of Aeroflot airliner over Siberia");
+    summaries.add("crash of hijacked Malaysian Boeing 747 airliner in Straits of Johore near Malaysia");
+    summaries.add("suicide bombing with truck carrying chlorine tanks");
+    summaries.add("bombing at open air market involving chlorine release");
+    summaries.add("water poisoning with pesticide at constabulary");
+    summaries.add("police officers poisoned, then shot");
+    summaries.add("attack with chemical grenades on village of Ormancik");
+    summaries.add("suicide bombing with dump truck carrying chlorine tank");
+    summaries.add("sarin nerve gas attack in subway");
+    summaries.add("bombing of chlorine tanker truck near restaurant");
+    summaries.add("poisoning and armed attack on police");
+    summaries.add("two suicide bombings in Falluja and one in Ramadi, all trucks carrying chlorine tanks resulting " +
+            "in" + " chemical releases");
+    summaries.add("possible poisoning of food");
+    summaries.add("sarin nerve gas attack, attributed to Aum Shinrikyo");
+    summaries.add("explosion of car bomb carrying chlorine tanks");
+    summaries.add("explosion of chlorine tanker near restaurant");
+    summaries.add("poisoning and armed attack on police outpost");
+    summaries.add("anthrax-laced letters mailed to Washington, DC");
+    summaries.add("poisoning attack on police");
+    summaries.add("poisoning attack on police");
+    summaries.add("suicide bombing with car carrying chlorine tanks");
+    summaries.add("acid attack on children");
+    summaries.add("anthrax-laced letters mailed to West Palm Beach, Florida, USA, and New York City, New York, USA");
+    summaries.add("truck bombing involving chlorine");
+    summaries.add("cyanide poisoning of bread for SS prisoners in Camp Stalag 13 near Nuremberg");
+    summaries.add("salmonella poisoning in restaurants by followers of Bhadwan Shree Rajneesh");
+    summaries.add("tear gas attack");
+    summaries.add("gas poisoning at girls' school");
+    summaries.add("water poisoning at girls' school");
+    summaries.add("poisoning attack on girls' school");
+    summaries.add("poisoning attack on girls' school");
+    summaries.add("gas poisoning at girls' school");
+    summaries.add("gas poisoning at girls' school");
+    summaries.add("gas poisoning at girls' school");
+    summaries.add("gas poisoning at girls' school");
+    summaries.add("description");
+    summaries.add("crashing of hijacked planes into World Trade Center, New York City, New York, Pentagon in " +
+            "Alexandria, Virginia, and site in Pennsylvania, USA");
+    summaries.add("sarin nerve gas attack in subway");
+    summaries.add("truck bomb explodes outside U.S. embassy in Nairobi, Kenya, destroying adjacent office building; "
+            + "244 killed, 4,877 injured; within five minutes, a truck bomb explodes outside U.S. embassy in Dar es "
+            + "Salaam, Tanzania; 12 killed");
+    summaries.add("cyanide poisoning of bread for SS prisoners in Camp Stalag 13 near Nuremberg");
+    summaries.add("bombings of four trains");
+    summaries.add("multiple car bombings in Al-Adnaniyah and Al-Qataniyah");
+    summaries.add("15 bombings throughout city");
+    summaries.add("suicide truck bombing of Central Bank");
+    summaries.add("truck bombing in garage of World Trade Center");
+    summaries.add("truck bombing at federal police building in Bogota");
+    summaries.add("bombings of three subway trains and one bus");
+    summaries.add("salmonella poisoning in restaurants by followers of Bhadwan Shree Rajneesh");
+    summaries.add("hostage taking at school (includes 35 terrorists killed)");
+    summaries.add("two vehicle bombings at government buildings");
+    summaries.add("seven bombings on commuter trains");
+    summaries.add("truck bombing in public square");
+    summaries.add("possible poisoning of food");
+    summaries.add("multiple suicide bombings and shooting attacks");
+    summaries.add("truck bombing of federal building, causing partial collapse");
+    summaries.add("hostage taking and attempted rescue in theater (includes 41 terrorists killed)");
+    summaries.add("suicide bombings at shrines in Karbala and Kadhimiya");
+    summaries.add("two car bombings outside government house");
+    summaries.add("hostage taking at Grand Mosque (includes 87 terrorists killed)");
+    summaries.add("bombing of train");
+    summaries.add("multiple bombings at government sites");
+    summaries.add("bombing of motorcade for former prime minister Bhutto");
+    summaries.add("two car bombings, with telephoned warning directing evacuees towards one bomb");
+    summaries.add("truck bombing at U.S. military housing complex near Dhahran");
+    summaries.add("bombing by communist terrorists of Sveta Nedelya Cathedral during funeral; cathedral dome " +
+            "collapsed, killing mostly officials attending the funeral");
+    summaries.add("car bombing outside mosque");
+    summaries.add("armed attack on town");
+    summaries.add("car bombing");
+    summaries.add("twelve bombings in Guwahati, Kokrajhar, Barpeta Road, and Bongaigaon");
+    summaries.add("five car bombings");
+    summaries.add("hostage taking at hospital and two failed rescue attempts");
+    summaries.add("multiple bombings:  27 police recruits killed and 26 injured by suicide bombing at a police " +
+            "academy; 15 killed and 400 injured (including 15 children injured) by a truck bombing in a residential "
+            + "area near an army base");
+    summaries.add("bombings in Baghdad, Amara, Kirkuk, Taji, Maysan, Tuz Khormato, Nasiriyah, Basra, Tal Afar, " +
+            "Hawija, and Ar Riyad, and armed attack on Dujail army base");
+    summaries.add("two suicide bombings at political rally");
+    summaries.add("two bombings outside mosques");
+    summaries.add("suicide bombings of British consulate and bank");
+    summaries.add("multiple bombings in Hilla, Basra, al-Suwayra, Baghdad, Tarmiyah, Fallujah, Mosul, and " +
+            "Iskandariyah, and additional armed attacks in Baghdad");
+    summaries.add("twin suicide attacks");
+    summaries.add("multiple shooting and grenade attacks and hostage takings (includes 9 terrorists killed)");
+    summaries.add("two bombings at each of two mosques");
+    summaries.add("shooting and hostage-taking at a theater; shooting attacks on three restaurants; four suicide " +
+            "bombings outside a soccer stadium and at a restaurant");
+    summaries.add("two suicide bombings in Falluja and one in Ramadi, all trucks carrying chlorine tanks resulting " +
+            "in" + " chemical releases");
+    summaries.add("two truck bombings");
+    summaries.add("car bombing outside nightclub");
+    summaries.add("bombings in Baghdad, Tal Afar, Kirkuk, Daquq, Garma, Kut, Husainiya, Tuz Khurmato, and armed " +
+            "attacks in Mushahda, Falluja, Al-A'amiriya, and Baaj");
+    summaries.add("truck bombing in marketplace");
+    summaries.add("bombings in Baghdad, Hilla, Basra, Balad, Jisr Diyala, Samarra, Mosul, Baiji, Rutba, Baquba, and "
+            + "Tuz Khormato, and armed attacks in Haditha");
+    summaries.add("bombings in Mosul and Baghdad; armed attacks in Ramadi and Baquba");
+    summaries.add("multiple car bombings in Kirkuk, Tuz Khurmato, Baghdad, and other cities");
+    summaries.add("16 car bombings during Shiite pilgrimage");
+    summaries.add("suicide bombing by Wehrsportsgruppe Neo-Nazi bomber");
+    summaries.add("two suicide bombings and additional attacks");
+    summaries.add("armed attack and arson of villages by Boko Haram");
+    summaries.add("Armed Revolutionary Nuclei bomb at railway station");
+    summaries.add("car bombing by FLP of PLO office");
+    summaries.add("twin car bombs and two other bombs in shopping area");
+    summaries.add("11 bombings at cafes, markets, and restaurants during religious festival");
+    summaries.add("bombing at airport");
+    summaries.add("bomb in horse-drawn wagon exploded near Morgan bank in lower Manhattan");
+    summaries.add("bombing of bus");
+    summaries.add("suicide bombing at Shia mosque");
+    summaries.add("President Abraham Lincoln shot by John Wilkes Booth in Washington DC; secretary of state William " +
+            "H" + ". Seward injured separately by accomplice Lewis Powell; Lincoln died 15 April");
+    summaries.add("President James Garfield shot by Charles J. Guiteau in Washington, DC, died 19 Sep");
+    summaries.add("bomb thrown during labor rally at Haymarket Square kills 7 policemen, many injured; police fire "
+            + "into crowd, killing 4; 8 anarchists accused");
+    summaries.add("Kentucky Representative William Taulbee shot outside U.S. Capitol by Charles Kincaid; Taulbee " +
+            "died" + " 11 March");
+    summaries.add("President William McKinley shot by Leon Czolgosz in Buffalo, NY, died 14 Sep");
+    summaries.add("Frank Steunenberg, former Idaho governor, killed by bomb");
+    summaries.add("bombing by labor activists at The Los Angeles Times building caused partial collapse of the " +
+            "building; two bombs at other locations were defused");
+    summaries.add("former President Theodore Roosevelt shot and injured in attempted assassination outside hotel en "
+            + "route to speech");
+    summaries.add("shooting attack on financier J. P. Morgan in failed hostage taking");
+    summaries.add("bomb in suitcase explodes at Preparedness Day parade");
+    summaries.add("bombing at police station");
+    summaries.add("3 Chinese assassinated");
+    summaries.add("mail bomb sent to home of senator Thomas Hardwick explodes, injuring a housekeeper and the " +
+            "senator's wife");
+    summaries.add("anarchist bombings kill a night watchman and a terrorist; additional bombings occurred in " +
+            "Washington, DC, Philadelphia, PA, Paterson, NJ, Cleveland, OH, and two in Pittsburgh, PA");
+    summaries.add("anarchist bombing at the home of a state representative injured one child; a second bombing at " +
+            "the" + " house of a judge caused no injuries");
+    summaries.add("bomb in horse-drawn wagon exploded near Morgan bank in lower Manhattan");
+    summaries.add("shooting by striking workers at labor protest");
+    summaries.add("explosion of bomb placed in school, followed by suicide bombing");
+    summaries.add("silver nitrate poison mailed to 9 New York City officials");
+    summaries.add("attempted assassination of President-elect Franklin Roosevelt by anarchist Joseph Zangara; " +
+            "Chicago" + " mayor Anton Cermak shot instead, dying 6 March");
+    summaries.add("mid-air bombing destroys a Boeing 247");
+    summaries.add("Senator Huey Long shot by Carl Weiss who was shot and killed by bodyguards; Long died 10 Sep");
+    summaries.add("plane hijacked from Brooklyn and flown across Atlantic, crashing in Irish Free State; 1 injured");
+    summaries.add("police officer shot by Puerto Rican nationalists");
+    summaries.add("police officer killed in shooting attack by Puerto Rican nationalists");
+    summaries.add("peace advocate drowned trying to bomb Japanese steamer");
+    summaries.add("bomb explodes at British Pavilion at the World's Fair, killing 2 police officers and injuring 2");
+    summaries.add("shooting by guard at German prisoners in POW camp");
+    summaries.add("Stephen J. Supona dropped homemade bomb from airplane over United Nations building; no damage " +
+            "caused");
+    summaries.add("shooting attack in residential neighborhood");
+    summaries.add("in assassination attempt on President Harry Truman, two Puerto Rican nationalists try to shoot " +
+            "their way into Blair House; 2 killed, including 1 terrorist");
+    summaries.add("NAACP state director Harry Moore and his wife killed in bombing of their house");
+    summaries.add("Puerto Rican nationalists fire from gallery of U.S. House of Representatives; 5 Congressman " +
+            "injured");
+    summaries.add("bomb explodes in seat at Radio City Music Hall during a movie showing");
+    summaries.add("United Air Lines DC-8 exploded and crashed near Longmont, CO, destroyed by bomb planted by John "
+            + "Graham in insurance plot to kill his mother, a passenger");
+    summaries.add("bomb explodes at Paramount Theater");
+    summaries.add("Cubana Airlines flight hijacked from Miami by members of 26th of July Movement; plane crashed " +
+            "near" + " Punta Tabaio, Cuba, killing 17 of 20 aboard");
+    summaries.add("suicide bombing at elementary school");
+    summaries.add("National Airlines flight bombed in insurance plot, crashing near Boliva, NC");
+    summaries.add("criticality excursion and explosion at SL-1 reactor, apparently due to intentional removal of " +
+            "control rod in murder/suicide act");
+    summaries.add("Puerto Rican hijacks National Airlines plane to Havana, Cuba");
+    summaries.add("Continental flight bombed");
+    summaries.add("Medgar Evers, NAACP Mississippi field secretary, shot and killed at his home");
+    summaries.add("bomb exploded under the steps of the Sixteenth Street Baptist Church, killing 4 young girls (ages " +
+            "" + "11-14) attending Sunday school");
+    summaries.add("President John Kennedy shot and killed by Lee Harvey Oswald, himself later fatally shot by Jack "
+            + "Rudy before trial");
+    summaries.add("Frank Gonzalez, intending to commit suicide, shot pilot of Pacific Air Lines flight, causing " +
+            "plane" + " to crash");
+    summaries.add("three civil rights workers kidnapped in Mississippi, bodies found 4 Aug, 7 whites convicted of " +
+            "murders");
+    summaries.add("three individuals, including members of Black Liberation Front and Montreal Separatist Party, " +
+            "arrested plotting to bomb Liberty Bell, Statue of Liberty, and Washington Monument");
+    summaries.add("Malcolm X fatally shot");
+    summaries.add("civil rights protestor killed by Ku Klux Klan");
+    summaries.add("black riots in Watts; $20 million in damage");
+    summaries.add("firebombing by Ku Klux Klan");
+    summaries.add("black riots in Watts");
+    summaries.add("sniper shooting from tower on University of Texas campus");
+    summaries.add("R. Parks commits suicide in bombing of Las Vegas motel");
+    summaries.add("simultaneous bombing of Yugoslav missions in Washington, DC, Chicago, IL, San Francisco, CA, New "
+            + "York City, NY, Ottawa, Canada, and Toronto, Canada; the Washington bombing injured two embassy " +
+            "employees");
+    summaries.add("26 Black Panthers walk into California State Legislature in Sacramento carrying loaded guns to " +
+            "read a political statement");
+    summaries.add("black riots");
+    summaries.add("black riots");
+    summaries.add("Martin Luther King Jr. shot and killed by James Earl Ray");
+    summaries.add("Robert Kennedy shot by Jordanian Sinhan Bishara Sirhan, died 6 Jun");
+    summaries.add("gunfight at Black Panther Party headquarters, injures 13 policemen");
+    summaries.add("bombing of Marine Midland Building");
+    summaries.add("three killed, apparently while building bombs for Weathermen");
+    summaries.add("Eastern Airlines flight hijacked; copilot shot and killed");
+    summaries.add("bombing at Sterling Hall kills scientist at University of Wisconsin; bomb planted in protest of "
+            + "Vietnam War");
+    summaries.add("US Army learns of Weathermen plot to blackmail homosexual officer at Fort Detrick, MD, to steal a " +
+            "" + "biological weapon for use in the water supply of a major city");
+    summaries.add("Weather Underground bombing of Senate wing of U.S. Capitol");
+    summaries.add("JDL members fire into apartment occupied by members of Soviet UN delegation");
+    summaries.add("two teenagers, members of RISE, arrested for plotting to introduce typhoid bacteria into Chicago "
+            + "water supply");
+    summaries.add("two police officers killed");
+    summaries.add("Jewish Defense League firebombs two Sol Hurok offices; one killed at each location, with 13 total " +
+            "" + "additional injuries");
+    summaries.add("Black Liberation Army kills 2 police officers");
+    summaries.add("caller threatens to bomb four TWA airliners, one every 6 hours, unless a $2,000,000 ransom was " +
+            "paid; caller stated bomb was aboard TWA Flight 7 en route from New York City to Los Angeles; flight " +
+            "returned to New York City and the bomb defused");
+    summaries.add("additional attack on TWA airliner; bomb exploded in emptied airliner in Las Vegas following its "
+            + "arrival from New York City");
+    summaries.add("intentional irradiation of child using radioactive sources");
+    summaries.add("Alabama governor George Wallace and 3 others injured, shot by Arthur Bremer");
+    summaries.add("shootings by former Black Panther member");
+    summaries.add("attempted bombings of three Israeli targets");
+    summaries.add("Israeli military attache Colonel Yosef Alon shot outside his home, claimed by PFLP");
+    summaries.add("SLA kills Marcus Foster, black school superintendent");
+    summaries.add("gunman attempts to hijack plane in Baltimore and fly it into White House to kill President Nixon; " +
+            "" + "kills 2 at airport and himself, injures one");
+    summaries.add("6 SLA suspects in Hearst kidnapping killed in gun battle with police");
+    summaries.add("bomb explodes in locker at airport, later attributed to the Alphabet Bomber");
+    summaries.add("Alphabet Bomber, having threatened to kill the President with nerve gas, arrested with all but " +
+            "one" + " of necessary components");
+    summaries.add("FALN bombing injures police officer");
+    summaries.add("FALN bombing of Fraunces Tavern in Wall Street");
+    summaries.add("Weather Underground bombing of U.S. State Department");
+    summaries.add("Secret Service agent prevents Lynette Fromme, a Charles Manson follower, from shooting President "
+            + "Gerald Ford");
+    summaries.add("President Gerald Ford unharmed in assassination attempt by Sara Jane Moore, a political activist");
+    summaries.add("bomb explodes in locker at La Guardia Airport; Croatian nationalists suspected");
+    summaries.add("B. A. Fox threatens to use mail to disperse ticks carrying pathogens");
+    summaries.add("gunman scales White House fence, is shot and killed by guards");
+    summaries.add("Croatian terrorists hijack TWA jet and have it flown to France; 1 policeman killed by bomb at " +
+            "Grand Central Terminal in New York City");
+    summaries.add("two Chileans killed in car bombing");
+    summaries.add("Hanafi Muslim gunmen seize 3 buildings in Washington, DC, and hold 134 hostages for 39 hours " +
+            "before surrendering");
+    summaries.add("bombing attributed to Chicano activist");
+    summaries.add("bomb explodes in locker at airport");
+    summaries.add("FALN bombs two office buildings; 1 killed at Mobil headquarters, 7 injured");
+    summaries.add("mail bomb slightly injures campus police officer at Northwestern University");
+    summaries.add("extortion attempt threatening release of uranium dioxide");
+    summaries.add("FALN bombing at Shubert Theatre");
+    summaries.add("bomb slightly injures student at Northwestern University");
+    summaries.add("shooting attack at protest");
+    summaries.add("bomb ignites on American Airlines flight which lands safely; 12 passengers suffer from smoke " +
+            "inhalation");
+    summaries.add("Macheteros members ambush Navy bus in Puerto Rico, killing 2 sailors and injuring 10");
+    summaries.add("Vernon Jordan Jr., civil rights leader, shot and injured");
+    summaries.add("mail bomb injures president of United Airlines");
+    summaries.add("Ali Akbar Tabataba'i, former senior officer in Iranian Shah's SAVAK, shot at home by Daoud " +
+            "Salahuddin, a radical black Muslim under instructions from Iran");
+    summaries.add("Macheteros terrorists bomb 9 Air National Guard jets, causing $40 million in damage");
+    summaries.add("Ku Klux Klan attack");
+    summaries.add("President Ronald Reagan and 3 others injured in attempted assassination by Hinkley");
+    summaries.add("bomb explodes in JFK airport terminal");
+    summaries.add("fatal self-inflicted radiation dose using stolen source");
+    summaries.add("Weather Underground member Kathy Boudin captured after killing 3");
+    summaries.add("UFF members murder New Jersey State Police officer");
+    summaries.add("Kemal Arikan, Turkish Consul-General, assassinated by Armenian terrorists");
+    summaries.add("Orhan Gunduz, honorary Turkish Consul in Boston, assassinated by Armenian terrorists");
+    summaries.add("mail bomb injures secretary at Vanderbilt University");
+    summaries.add("shooting attack on navy sailors");
+    summaries.add("mail bomb injures professor at University of California");
+    summaries.add("shooting attack");
+    summaries.add("two bombings in Manhattan and Brooklyn by FALN");
+    summaries.add("bomb in car kills Armenian Victor Galustian");
+    summaries.add("Ahmadiyya Movement in Islam secretary killed by members of Fuqra, a black Islamic sect; 2 members " +
+            "" + "killed setting fire in AMI temple");
+    summaries.add("bombing at U.S. Capitol building; later linked to Revolutionary Armed Task Force");
+    summaries.add("authorities prevent attempt by pro-Khomeini students to set fire to theater where 500 " +
+            "anti-Khomeini Iranians were attending a singing performance");
+    summaries.add("FALN bombings at federal and city buildings; 1 policeman injured");
+    summaries.add("two Canadians arrested in NY attempting to purchase large amounts of pathogenic bacteria (tetanus " +
+            "" + "and botulinal toxin) from a Rockville, MD, firm");
+    summaries.add("shooting attack at McDonalds restaurant");
+    summaries.add("Alan Berg killed by white supremacists");
+    summaries.add("followers of Bhagwan Shree Rajneesh use water to infect two officials with salmonella; both " +
+            "sickened, one hospitalized");
+    summaries.add("salmonella poisoning in restaurants by followers of Bhadwan Shree Rajneesh");
+    summaries.add("Robert Matthews, leader of The Order, a right-wing group, killed in raid by federal agents");
+    summaries.add("three abortion clinics bombed");
+    summaries.add("letter writer threatens to contaminate New York City's water reservoirs with plutonium unless " +
+            "charges against Bernhard Goetz are dropped; testing was announced to have detected femtocurie levels of " +
+            "" + "plutonium in the water on 26 July");
+    summaries.add("police assault on headquarters of radical black group Move starts fire");
+    summaries.add("mail bomb injures student at University of California");
+    summaries.add("Tscherim Soobzokov, alleged Nazi war criminal, injured by bombing possibly linked to JDL; died 6 "
+            + "Sep");
+    summaries.add("Alex Odah, officer of American-Arab Anti-Discrimination Committee, killed by bombing possibly " +
+            "linked to JDL");
+    summaries.add("bombing injures two");
+    summaries.add("Unabomber bomb kills Hugh Scrutton, a computer store owner, with bomb in paper bag behind store");
+    summaries.add("two Aryan Nation members take 150 students and teachers hostage at an elementary school; bomb " +
+            "accidentally explodes, killing one terrorist and injuring many children; second terrorist commits " +
+            "suicide");
+    summaries.add("members of Libyan-linked street gang El Rukn arrested attempting to obtain SAM to attack an " +
+            "aircraft at O'Hare IAP");
+    summaries.add("shooting attack by postal employee at post office");
+    summaries.add("tear gas bomb set off 5 minutes before end of Russian dance troupe performance at New York City's " +
+            "" + "Metropolitan Opera House by Jewish extremists");
+    summaries.add("four bombs explode in Coeur d'Alene, at department store, restaurant, federal building, and armed " +
+            "" + "forces recruiting station, set by Bruder Scheigen Strike Force II");
+    summaries.add("Macheteros bombings at military facilities");
+    summaries.add("6 members of Arizona Patriots indicted for planned bombings of the Phoenix ADL regional office, a " +
+            "" + "Phoenix synagogue, the Simon Wiesenthal Center in Los Angeles, and the Ogden Utah IRS facility");
+    summaries.add("Dennis Malvasi sets bomb in Planned Parenthood building in Manhattan, leaving rental agent " +
+            "handcuffed nearby; bomb fizzles");
+    summaries.add("three employees set fire in Dupont Plaza Hotel; most fatalities were in the hotel casino; the " +
+            "employees were in a labor dispute with the hotel's management");
+    summaries.add("bombing injures computer store owner");
+    summaries.add("apparent Islamic terrorist plot to bomb Atlantic City casinos called off due to alerted " +
+            "authorities");
+    summaries.add("Lebanese national and two others, all members of Syrian Socialist National Party, arrested " +
+            "attempting to enter Vermont from Canada with bomb components");
+    summaries.add("bomb exploded in parking lot of Sandia National Laboratories");
+    summaries.add("Yu Kikumura, member of Japanese Red Army, arrested in New Jersey with bombs to be detonated in " +
+            "Manhattan 3 days later");
+    summaries.add("animal rights activist arrested leaving pipe bomb at U.S. Surgical Corporation");
+    summaries.add("shooting attack on children in playground of elementary school; gunman then fatally shot himself");
+    summaries.add("pipe-bomb exploded in van of Sharon Lee Rogers, wife of U.S.S. Vincennes captain, planted by " +
+            "pro-Iranian terrorists");
+    summaries.add("US FDA inspectors in Philadelphia discover two grapes laced with minimal amounts of cyanide in " +
+            "shipment from Chile following warning telephoned to U.S. embassy in Santiago");
+    summaries.add("child maimed by bomb in toothpaste tube in K-Mart store; apparent teenage perpetrator commits " +
+            "suicide 20 April");
+    summaries.add("explosion in gun turrent of battleship U.S.S. Iowa off Puerto Rico kills 47; Navy cites some " +
+            "evidence of sabotage");
+    summaries.add("gas canister in parcel explodes at NAACP regional office");
+    summaries.add("Judge Robert Vance killed by mail bomb, wife injured");
+    summaries.add("black civil rights lawyer Robert Robinson killed by mail bomb");
+    summaries.add("Rashad Khalifa assassinated");
+    summaries.add("arson fire in social club");
+    summaries.add("two Earth First members injured in explosion while transporting bomb in car");
+    summaries.add("shooting attack at GMAC office");
+    summaries.add("Rabbi Meir Kahane assassinated by Al-Sayyid Abdulazziz Nossair");
+    summaries.add("Mustafa Shalabi killed in Brooklyn by Islamic group members");
+    summaries.add("shooting attack at Luby's restaurant");
+    summaries.add("Minnesota Patriots Council plots to assassinate law enforcement officials using ricin");
+    summaries.add("Parivash Rafizadeh, wife of former senior officer in Iranian Shah's SAVAK, shot near her home");
+    summaries.add("federal marshals in shootout with white supremacist Randy Weaver in Idaho kill his wife and son");
+    summaries.add("black riots following not guilty verdict in trial of four policemen for beating black offender");
+    summaries.add("shooting attack at high school");
+    summaries.add("Mir Amail Kansi, an Afghan Islamist, shot several CIA employees in cars in front of CIA " +
+            "headquarters");
+    summaries.add("truck bombing in garage of World Trade Center");
+    summaries.add("Branch Davidian cult members kill 4 ATF agents, injure 16, when agents raided their compound in "
+            + "Waco, TX; 10 cult members killed; compound was sieged until 19 Apr when another raid was attempted and" +
+            " " + "the compound burned down");
+    summaries.add("abortionist David Gunn shot and killed by abortion opponent");
+    summaries.add("bomb injures scientist from University of California");
+    summaries.add("bomb injures professor at Yale University");
+    summaries.add("Sheikh Omar Abdel Rahman and others arrested for role in World Trade Center bombing, thwarting " +
+            "plans to bomb United Nation Headquarters, the Lincoln Tunnel, the Holland Tunnel, the George Washington " +
+            "" + "Bridge, and FBI offices in New York City");
+    summaries.add("FBI arrests skinheads planning to machine gun worshippers at First African Methodist Episcopal " +
+            "Church in Los Angeles in hopes of starting a race war");
+    summaries.add("abortionist George Tiller shot and injured at an abortion clinic");
+    summaries.add("Colin Ferguson shot and killed 6, injured 17 on Long Island train, professing hatred of whites");
+    summaries.add("gunman fires at van of Orthodox Jewish students at the Brooklyn Bridge");
+    summaries.add("mail bomb kills man and injures his wife");
+    summaries.add("shooting attack at base hospital");
+    summaries.add("abortion opponent shot and killed abortionist and his bodyguard and injured abortionist's wife");
+    summaries.add("Frank Corder flew Cessna from MD into White House, striking tree near President's bedroom, " +
+            "killing" + " himself and causing damage to White House");
+    summaries.add("lone gunman with semi-automatic weapon fires shots at White House from sidewalk in front on " +
+            "Pennsylvania Avenue");
+    summaries.add("Unabomber mail bomb kills New York advertising executive Thomas Mosser");
+    summaries.add("gunman kills 2 abortion clinic workers in MA, then drives to Norfolk, VA, and fires on clinic " +
+            "before arrest");
+    summaries.add("truck bombing of federal building, causing partial collapse");
+    summaries.add("Unabomber mail bomb kills Gilbert Murray, president of California Forestry Assn., at office");
+    summaries.add("man with unloaded gun scales White House fence; jumper and Secret Service agent shot and injured "
+            + "by another guard");
+    summaries.add("car bombing at shopping mall, apparent murder plot");
+    summaries.add("Amtrak train derailed near Hyder, AZ, by sabotage to tracks with nearby note claiming " +
+            "responsibility by Sons of Gestapo, later attributed to railroad employee");
+    summaries.add("Thomas Lewis Lavy arrested in Arkansas for possession of ricin, a biotoxin; Lavy commits suicide "
+            + "the next day");
+    summaries.add("radioactive source theft");
+    summaries.add("several individuals arrested in plot to kill Republican officials; seized weapons included " +
+            "radioactive materials");
+    summaries.add("several individuals arrested in New York planning to kill Republican officials; seized weapons " +
+            "included radioactive materials");
+    summaries.add("mid-air explosion of TWA 800, attribution to accidental explosion has been disputed; victims " +
+            "included 20 children and 38 French citizens");
+    summaries.add("pipe bomb explodes in park at night concert at Summer Olympic Games; 1 killed, 1 died nearby of "
+            + "heart attack");
+    summaries.add("letter bombs received at Egyptian newspaper offices in Washington, DC, New York City, and a " +
+            "prison" + " in Leavenworth Kansas; similar device exploded at Egyptian newspaper office in London, UK, " +
+            "injuring 2 " + "guards");
+    summaries.add("bomb explodes in Atlanta, GA, nightclub frequented by homosexuals; 4 injured");
+    summaries.add("lone Palestinian gunman fired on tourists on observation deck of Empire State Building; Danish " +
+            "national was killed and other tourists injured before gunman killed himself");
+    summaries.add("discovery of mass suicide by 39 members of Heaven's Gate cult, tied by cult members to Comet " +
+            "Hale-Bopp");
+    summaries.add("James Dalton Bell allegedly investigates toxins for use in assassinating government officials");
+    summaries.add("would-be Palestinian suicide bombers are arrested at their apartment while planning to bomb New "
+            + "York subways");
+    summaries.add("bombing at abortion clinic kills one guard and injures a nurse; Eric Rudolph suspected in case");
+    summaries.add("shooting attack at middle school by two students; 4 students and 1 teacher killed, 9 students and " +
+            "" + "2 adults injured");
+    summaries.add("shooting attacks at residence and high school");
+    summaries.add("gunman enters U.S. Capitol building and kills two guards; one tourist and gunman are injured");
+    summaries.add("arson attacks by the Earth Liberation Front at Vail ski resort cause $12 million in damages");
+    summaries.add("abortionist shot and killed at his home");
+    summaries.add("mass shooting at Columbine High School by two students; 12 students and 1 teacher killed, 21 " +
+            "students and 2 teachers killed; both gunmen killed themselves");
+    summaries.add("shooting attack at Jewish daycare by white supremacist");
+    summaries.add("shooting attack at church service");
+    summaries.add("intentional crash of Egypt Air flight off Nantucket Island by copilot");
+    summaries.add("terrorist arrested crossing from Canada with material to bomb Los Angeles International Airport");
+    summaries.add("gunman fires on the White House from outside the perimeter fence; gunman is shot and injured by a " +
+            "" + "guard");
+    summaries.add("crashing of two hijacked planes into World Trade Center towers, causing fires and collapse");
+    summaries.add("crashing of hijacked plane into Pentagon");
+    summaries.add("crashing of hijacked plane into rural area of Pennsylvania, following attempt by passengers to " +
+            "regain control of aircraft");
+    summaries.add("anthrax-laced letters mailed to West Palm Beach, Florida, USA, and New York City, New York, USA");
+    summaries.add("anthrax-laced letters mailed to Washington, DC");
+    summaries.add("British citizen prevented from igniting shoe bomb on flight from Paris to Miami");
+    summaries.add("US citizen arrested for seeking to use dirty bomb in US");
+    summaries.add("Egyptian gunman kills two Israelis, injures four at the El Al ticket counter at the Los Angeles "
+            + "International Airport");
+    summaries.add("owner of Italian restaurant shot in robbery by Beltway snipers");
+    summaries.add("6 U.S. citizens arrested for terrorist connections");
+    summaries.add("liquor store employees shot in robbery by Beltway snipers");
+    summaries.add("1 killed at grocery store by Beltway snipers");
+    summaries.add("5 killed in separate shootings by Beltway snipers");
+    summaries.add("1 killed at shopping mall by Beltway snipers");
+    summaries.add("1 child injured at a middle school by Beltway snipers");
+    summaries.add("1 killed at gas station by Beltway snipers");
+    summaries.add("1 killed at gas station by Beltway snipers");
+    summaries.add("1 killed at shopping mall by Beltway snipers");
+    summaries.add("1 killed at restaurant by Beltway snipers");
+    summaries.add("1 bus driver killed by Beltway snipers");
+    summaries.add("US citizen arrested for planning to sabotage Brooklyn Bridge");
+    summaries.add("11 arrested for planning attacks on U.S. servicemen");
+    summaries.add("shooting attack at factory");
+    summaries.add("arrest of terrorist plotting to bomb shopping mall in Columbus");
+    summaries.add("2 arrested plotting assassination of Pakistani diplomat");
+    summaries.add("2 arrested planning to bomb Penn Station during Republican National Convention");
+    summaries.add("terror cell leader arrested in London for planning attacks on financial centers in the US");
+    summaries.add("shooting at Red Lake Indian Reservation school");
+    summaries.add("4 arrested plotting attacks on Los Angeles targets");
+    summaries.add("4 injured, including several children, by incendiary attacks by suspected animal rights activists");
+    summaries.add("1 arrested plotting attacks on refineries in Wyoming and New Jersey and on the transcontinental "
+            + "pipeline");
+    summaries.add("3 arrested plotting attacks on U.S. military abroad and on domestic targets");
+    summaries.add("man drives vehicle into pedestrians at the University of North Carolina");
+    summaries.add("2 arrested plotting attacks on U.S. Capitol and World Bank headquarters");
+    summaries.add("7 arrested planning to bomb the Sears Tower");
+    summaries.add("1 arrested planning to bomb train tunnels");
+    summaries.add("gunman fires on women at the Jewish Federation of Greater Seattle");
+    summaries.add("British authorities arrest 24 terrorists planning to use liquid explosives on airlines to attack "
+            + "US targets");
+    summaries.add("hostage taking and shooting attack at high school");
+    summaries.add("hostage taking and shooting attack at Amish schoolhouse");
+    summaries.add("1 arrested plotting grenade attack on Chicago area shopping mall");
+    summaries.add("shooting attack at Virginia Polytechnic Institute");
+    summaries.add("6 arrested plotting armed attack on Fort Dix");
+    summaries.add("4 arrested in Trinidad plotting to bomb fuel pipelines near JFK airport");
+    summaries.add("radioactive source theft");
+    summaries.add("animal rights activists attempt home invasion of biomedical researcher, injuring the researcher's " +
+            "" + "husband");
+    summaries.add("1 arrested plotting attacks on U.S. and European targets");
+    summaries.add("gunman fires on congregation at a church");
+    summaries.add("multiple shootings at residences and businesses in Samson and Geneva, AL");
+    summaries.add("shooting attack at immigrant center");
+    summaries.add("4 arrested plotting bombing attacks on New York Jewish centers and attacks against Air National "
+            + "Guard aircraft");
+    summaries.add("1 doctor killed (George Tiller) in shooting attack at Reformation Lutheran Church");
+    summaries.add("1 Army private killed (William Long), second injured in shooting attack at Army Navy Career Center");
+    summaries.add("1 guard killed (Stephen Johns) in shooting attack at the Holocaust Museum");
+    summaries.add("abortion protester shot and killed outside a school; the gunman also killed an area businessman");
+    summaries.add("US citizen arrested plotting to detonate car bomb at the federal building in Springfield, IL");
+    summaries.add("terrorist arrested planning to bomb Dallas Fountain Place");
+    summaries.add("1 arrested plotting attacks on shopping malls and assassinations of two politicians");
+    summaries.add("shooting attack at Soldier Readiness Center at Foot Hood");
+    summaries.add("Yemeni terrorist attempts to detonate bomb on flight from Amsterdam to Detroit; bomb only ignites," +
+            "" + " and passengers and crew subdue the terrorist");
+    summaries.add("suicide crash of small plane into federal office building");
+    summaries.add("shooting at gate outside Pentagon; gunman killed");
+    summaries.add("failed car bombing in Times Square by Pakistani terrorists");
+    summaries.add("2 arrested plotting mail bomb assassinations");
+    summaries.add("3 hostages held by gunman at Discovery Communications headquarters; gunman killed by police");
+    summaries.add("attempted shooting at Capitol Hill; gunman shot and injured by guards");
+    summaries.add("Pakistani-American arrested plotting bombing attack on Washington subway");
+    summaries.add("thwarted attempt to bomb multiple US-bound airliners with parcel bombs sent from Yemen");
+    summaries.add("1 arrested plotting bombing at Christmas tree lighting ceremony in Portland");
+    summaries.add("1 arrested plotting bombing of military recruiting center");
+    summaries.add("shooting attack at political event at a supermarket; U.S. District Judge John Roll killed, U.S. "
+            + "Representative Gabrielle Giffords injured");
+    summaries.add("1 arrested plotting bombings of domestic targets");
+    summaries.add("2 arrested plotting attacks on a Manhattan synagogue");
+    summaries.add("2 arrested plotting attack on Seattle military recruiting station");
+    summaries.add("thwarted attempt to attack restaurant near Fort Hood with bombing and shooting attack; Naser Abdo " +
+            "" + "arrested");
+    summaries.add("shooting attack at restaurant, killing 4 (2 died immediately, 2 died later of injuries) and " +
+            "injuring 7 others; casualties included 3 Nevada National Guard soldiers killed and 2 injured; gunman " +
+            "also died of self-inflicted wounds");
+    summaries.add("shooting attack at movie theater; suspect was arrested afterwards; suspect had booby-trapped his "
+            + "nearby apartment with explosives which were successfully disarmed by police");
+    summaries.add("6 killed, 4 injured in shooting attack at a Sikh temple shortly before worship service on Sunday "
+            + "morning; one of those injured was a police officer, another was president of the temple; the gunman " +
+            "was " + "shot and killed at the scene by police");
+    summaries.add("2 police officers killed, 1 injured while investigating attack that injured another officer; 7 " +
+            "arrested, 2 of whom were injured in the shootout; several of those arrested had ties to the sovereign "
+            + "citizen movement");
+    summaries.add("1 guard shot and injured while subduing gunman at Family Research Council offices");
+    summaries.add("shooting attack at elementary school kills 20 children and 6 adults; shooter killed himself and "
+            + "had killed his mother earlier that day");
+    summaries.add("two bombings at Boston Marathon kill 3 (including 1 child) and injure 183 (including 8 children)");
+    summaries.add("two letters testing positive for ricin mailed to Mississippi Senator Roger Wicker and President "
+            + "Obama are found at mail screening facilities; a third letter to an official in Mississippi was " +
+            "awaiting " + "testing; an individual in Mississippi is arrested and charged in the case");
+    summaries.add("1 police officer killed, one injured during manhunt for the Boston Marathon bombers; one " +
+            "terrorist" + " killed and one injured and captured");
+    summaries.add("two gunmen fired on crowds at Mother's Day parade; 19 injured, including 2 children");
+    summaries.add("shooting attack at Washington Navy Yard");
+    summaries.add("shooting attack at Los Angeles International Airport; 1 TSA officer killed, 2 TSA officers and " +
+            "several civilians injured");
+    summaries.add("shooting attack on Fort Hood; 3 killed, 16 injured; in addition the gunman killed himself");
+    summaries.add("shooting attack at a Jewish community center and Jewish retirement home; 3 killed, including one "
+            + "teenager");
+    summaries.add("shooting attack killed 1");
+    summaries.add("shooting attack near night club killed 2");
+    summaries.add("shooting attack at restaurant and store; 3 killed, including 2 police officers; both shooters " +
+            "killed themselves");
+    summaries.add("shooting attack killed 1 teenager");
+    summaries.add("shooting attack on police officers; shooter evaded a manhunt in nearby woods until 30 Oct");
+    summaries.add("knife attack at food processing plant killed 1, injured 1; attacker was shot and injured");
+    summaries.add("axe attack on police officers injured 2, one severely; police shot and killed the attacker and " +
+            "injured one bystander");
+    summaries.add("shots fired at Mexican consulate, US courthouse, and police station during early morning hours; "
+            + "failed attempt at arson at consulate; attacker was shot at by police");
+    summaries.add("shooting attack killed two police officers, gunman shot and killed himself");
+    summaries.add("attempted shooting attack at event involving art critical of Islam, one guard shot and injured, "
+            + "both attackers shot and killed by police officer serving as guard");
+    summaries.add("gunman killed 9 in attack at Emanuel African Methodist Episcopal Church on a Bible study group; "
+            + "South Carolina state congressman among those killed; 1 injured");
+    summaries.add("gunman killed 4 Marines and injures 1 Navy sailor (who died 18 Jul of injuries), 1 police officer," +
+            "" + " and 1 Marine, at two locations; gunman was shot and killed by police");
+    summaries.add("student stabbed two students and two staff at the University of California; attacker was shot and " +
+            "" + "killed by police");
+    summaries.add("gunman killed two civilians and one police officer outside a Planned Parenthood clinic, also " +
+            "injuring 4 civilians and 5 police officers");
+    summaries.add("two attackers killed 14 and injured 21 at a county employee meeting and Christmas party; both " +
+            "attackers were killed hours later in a shootout with police in which 2 police officers were injured");
+    summaries.add("gunman shot and injured a police officer; attacker was shot and injured");
+    summaries.add("attacker injures 4 in machete attack at a restaurant; attacker was shot and killed by police when " +
+            "" + "he attacked police at the end of a car chase");
     //originator unit
     originateUnit.add("1st Human Resources Center");
     originateUnit.add("24 Hour Counseling Hot Line - Army One Source");

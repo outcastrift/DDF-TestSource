@@ -8,9 +8,9 @@
         required="false"
         type="String" default="CRSFederatedSource"/>
 
-    <AD description="The full URL to the endpoint to query without the ? at the end."
+    <AD description="The full URL to the endpoint to query without the ? at the end. For the test endpoint use https://localhost:8993/services/test/getSourceResultsRandom for a random result. Metadata will work but be very random. You can also use https://localhost:8993/services/test/getSourceResultsCanned for the same 1000 results. "
         name="Endpoint Query URL" id="ssServiceUrl" required="true"
-        type="String" default="https://localhost:8993/services/test/getSourceResults"/>
+        type="String" default="https://localhost:8993/services/test/getSourceResultsRandom"/>
     <AD
             description="Content type for the data returned from the source."
             name="Content Type" id="contentTypeName" required="true" type="String"
