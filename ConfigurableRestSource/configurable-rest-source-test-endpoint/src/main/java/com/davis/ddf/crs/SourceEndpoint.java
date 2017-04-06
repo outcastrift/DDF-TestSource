@@ -89,8 +89,8 @@ public class SourceEndpoint {
     }
     Calendar cy = Calendar.getInstance();
 
-    c.set(DEFAULT_END.getYear() - 3, 0, 1);
-    String lastThreeYears = dateFormat.format(c.getTime());
+    cy.set(2014, 0, 1);
+    String lastThreeYears = dateFormat.format(cy.getTime());
     try {
       LAST_THREE_YEARS = dateFormat.parse(lastThreeYears);
     } catch (ParseException ey) {
@@ -152,10 +152,14 @@ public class SourceEndpoint {
       InMemoryDataStore dataStore, int itemId, int idOffset) {
 
     //Works for USA
-    double topLeftLat = 47.5531;
+   /* double topLeftLat = 47.5531;
     double topLeftLng = -124.3574;
     double bottomRightLat = -71.6631;
-    double bottomRightLng = 31.0422;
+    double bottomRightLng = 31.0422;*/
+    double topLeftLat = 90;
+    double topLeftLng = -180;
+    double bottomRightLat = -90 ;
+    double bottomRightLng = 180;
     CRSEndpointResponse uniResponse = new CRSEndpointResponse();
     int whichGeom = ThreadLocalRandom.current().nextInt(6);
     //logger.info("Array Number = {}", whichGeom);
@@ -493,6 +497,7 @@ public class SourceEndpoint {
   private boolean checkDateInRange(Date from, Date to, CRSEndpointResponse item) {
     boolean result = false;
     Long itemDate = item.getDateOccurred().getTime();
+
     if (itemDate > from.getTime() && itemDate < to.getTime()) {
       result = true;
     }
@@ -732,10 +737,12 @@ public class SourceEndpoint {
     long endL = e.getTimeInMillis() + e.getTimeZone().getOffset(e.getTimeInMillis());
     long startL = s.getTimeInMillis() + s.getTimeZone().getOffset(s.getTimeInMillis());
     long dayDiff = (endL - startL) / MILLIS_PER_DAY;
-
+    //int year  = dMax.getYear() - dMin.getYear();
     Calendar cal = Calendar.getInstance();
     cal.setTime(dMin);
     cal.add(Calendar.DATE, new Random().nextInt((int) dayDiff));
+    //int year  = (int) ThreadLocalRandom.current().nextDouble(1970, 2017);
+    //cal.add(Calendar.YEAR, year);
     return cal.getTime();
   }
 

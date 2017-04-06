@@ -42,10 +42,10 @@ public class CreateCannedDataSet {
         InMemoryDataStore dataStore = new InMemoryDataStore();
         ArrayList<CRSEndpointResponse> responses = new ArrayList<>();
         for (int x = 0; x < dataStore.getOriginateUnit().size(); x++) {
-            responses.add(sourceEndpoint.createCannedResult(dataStore, x, 957));
+            responses.add(sourceEndpoint.createCannedResult(dataStore, x, 0));
         }
         try {
-            writeDataObjectsToJsonFile(responses, "usaResults.json");
+            writeDataObjectsToJsonFile(responses, "cannedResults.json");
         } catch (IOException e) {
             e.printStackTrace();
         }
