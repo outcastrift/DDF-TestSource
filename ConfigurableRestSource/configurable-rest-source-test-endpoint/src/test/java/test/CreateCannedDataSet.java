@@ -10,7 +10,13 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * This software was created for
@@ -21,19 +27,25 @@ import java.util.ArrayList;
  */
 public class CreateCannedDataSet {
     public static final String outputDir = "target/runner-output";
-
-
+    private static final DecimalFormat decFormat = new DecimalFormat("#.#####");
+    private Date DEFAULT_START;
+    private Date DEFAULT_END;
+    private Date LAST_THREE_YEARS;
+    private SimpleDateFormat dateFormat;
 
     private SourceEndpoint sourceEndpoint = new SourceEndpoint();
+
     @Test
-    public void generateCannedData(){
+    public void generateCannedData() {
+
+
         InMemoryDataStore dataStore = new InMemoryDataStore();
         ArrayList<CRSEndpointResponse> responses = new ArrayList<>();
-        for(int x=0; x<dataStore.getOriginateUnit().size(); x++){
-        responses.add(sourceEndpoint.createCannedResult(dataStore,x));
+        for (int x = 0; x < dataStore.getOriginateUnit().size(); x++) {
+            responses.add(sourceEndpoint.createCannedResult(dataStore, x, 957));
         }
         try {
-            writeDataObjectsToJsonFile(responses, "cannedResults.json");
+            writeDataObjectsToJsonFile(responses, "usaResults.json");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -62,4 +74,5 @@ public class CreateCannedDataSet {
 
         FileUtils.writeStringToFile(file1, json);
     }
+
 }

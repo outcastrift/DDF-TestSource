@@ -1,26 +1,25 @@
 package com.davis.ddf.crs;
 
-
-
 import com.davis.ddf.crs.data.GroovyResponseObject;
 import com.davis.ddf.crs.data.InMemoryDataStore;
 import com.davis.ddf.crs.data.CRSEndpointResponse;
 import com.davis.ddf.crs.jsonapi.JsonApiResponse;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.io.WKTReader;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Random;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.ws.rs.*;
@@ -30,12 +29,20 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-/**
- * The type Geospatial endpoint.
- */
+/** The type Geospatial endpoint. */
 @Path("/")
 @Consumes("application/json")
 public class SourceEndpoint {
+  /**
+   * An unmodifiable set containing some common English words that are not usually useful for
+   * searching.
+   */
+  public static final List<String> stopWords =
+      Arrays.asList(
+          "a", "an", "and", "are", "as", "at", "be", "but", "by", "for", "if", "in", "into", "is",
+          "it", "no", "not", "of", "on", "or", "such", "that", "the", "their", "then", "there",
+          "these", "they", "this", "to", "was", "will", "with");
+
   private static final Double MAX_LAT = Double.valueOf(90); //Y variable
   private static final Double MIN_LAT = Double.valueOf(-90); //Y variable
   private static final Double MAX_LON = Double.valueOf(180); //X variable
@@ -48,12 +55,11 @@ public class SourceEndpoint {
   private static final int MULTIPOINT = 3;
   private static final int LINESTRING = 4;
   private static final int MULTILINESTRING = 5;
-
   private static final DecimalFormat decFormat = new DecimalFormat("#.#####");
-  /**
-   * The constant TAG.
-   */
+  /** The constant TAG. */
   private static final Logger logger = LoggerFactory.getLogger(SourceEndpoint.class);
+
+  private static final Type RESPONSE_TYPE = new TypeToken<List<CRSEndpointResponse>>() {}.getType();
   private SimpleDateFormat dateFormat;
   private Date DEFAULT_START;
   private Date DEFAULT_END;
@@ -61,9 +67,7 @@ public class SourceEndpoint {
   private InMemoryDataStore dataStore;
   private List<CRSEndpointResponse> cannedResponses = new ArrayList<>();
 
-  /**
-   * Instantiates a new Geospatial endpoint.
-   */
+  /** Instantiates a new Geospatial endpoint. */
   public SourceEndpoint() {
     // String dateFormatPattern = "MM/dd/yyyy HH:mm:ss";
     //NOTE yyyyMMddHHmmss works every time but we use the ISO format so cant use it.
@@ -90,27 +94,73 @@ public class SourceEndpoint {
     try {
       LAST_THREE_YEARS = dateFormat.parse(lastThreeYears);
     } catch (ParseException ey) {
-      logger.error("error countered parsing date {}" , ey.getMessage());
+      logger.error("error countered parsing date {}", ey.getMessage());
     }
 
     dataStore = new InMemoryDataStore();
+    try {
+      createCannedResults("cannedResults.json");
+      createCannedResults("usaResults.json");
+    } catch (FileNotFoundException e1) {
+      logger.error("Unable to create canned Dataset for endpoint. {}", e);
+    }
   }
 
-
-
-  private void createCannedResults(int numberToCreate){
-
+  /**
+   * Transform date string.
+   *
+   * @param date the date
+   * @param dateFormat the date format
+   * @return the string
+   */
+  public static String transformDate(Date date, SimpleDateFormat dateFormat) {
+    Calendar c = Calendar.getInstance();
+    TimeZone localTimeZone = c.getTimeZone();
+    TimeZone afgTimeZone = TimeZone.getTimeZone("Asia/Kabul");
+    int localOffsetFromUTC = localTimeZone.getRawOffset();
+    int afghanOffsetFromUTC = afgTimeZone.getRawOffset();
+    Calendar afghanCal = Calendar.getInstance(afgTimeZone);
+    afghanCal.setTimeInMillis(date.getTime());
+    afghanCal.add(Calendar.MILLISECOND, (-1 * localOffsetFromUTC));
+    afghanCal.add(Calendar.MILLISECOND, afghanOffsetFromUTC);
+    return dateFormat.format(afghanCal.getTime());
   }
 
-  public CRSEndpointResponse createCannedResult(InMemoryDataStore dataStore,  int itemId){
-    double topLeftLat = 90;
-    double topLeftLng =-180;
-    double bottomRightLat = -90;
-    double bottomRightLng = 180;
+  /**
+   * Get random element from array list.
+   *
+   * @param <T> the array list you want a random entry from.
+   * @return the random entry.
+   */
+  public static <T> T getRandomizedField(ArrayList<T> list) {
+    Random random = new Random();
+    return list.get(random.nextInt(list.size()));
+  }
+
+  private void createCannedResults(String fileName) throws FileNotFoundException {
+    Gson gson = new Gson();
+    BufferedReader reader =
+        new BufferedReader(
+            new InputStreamReader(
+                SourceEndpoint.class.getClassLoader().getResourceAsStream(fileName)));
+    JsonReader jsonReader = new JsonReader(reader);
+    List<CRSEndpointResponse> data = gson.fromJson(reader, RESPONSE_TYPE);
+    cannedResponses.addAll(data);
+  }
+
+  public CRSEndpointResponse createCannedResult(
+      InMemoryDataStore dataStore, int itemId, int idOffset) {
+
+    //Works for USA
+    double topLeftLat = 47.5531;
+    double topLeftLng = -124.3574;
+    double bottomRightLat = -71.6631;
+    double bottomRightLng = 31.0422;
     CRSEndpointResponse uniResponse = new CRSEndpointResponse();
     int whichGeom = ThreadLocalRandom.current().nextInt(6);
     //logger.info("Array Number = {}", whichGeom);
-    String wktString = constructWktString(whichGeom, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
+    String wktString =
+        constructWktString(whichGeom, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
     uniResponse.setLocation(wktString);
 
     Date sigactDate = generateRandomDate(LAST_THREE_YEARS, DEFAULT_END);
@@ -122,7 +172,7 @@ public class SourceEndpoint {
     //logger.debug("Entering always successful lng. Origin = {} Bound = {}",topLeftLng,bottomRightLng);
     double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
     lng = Double.parseDouble(decFormat.format(lng));
-    uniResponse.setDisplaySerial("CRS-"+String.valueOf(itemId));
+    uniResponse.setDisplaySerial("CRS-" + String.valueOf(itemId + idOffset));
     uniResponse.setLatitude(lat);
     uniResponse.setLongitude(lng);
     uniResponse.setOriginatorUnit(dataStore.getOriginateUnit().get(itemId));
@@ -132,27 +182,25 @@ public class SourceEndpoint {
     return uniResponse;
   }
 
-
-
   @HEAD
   @Path("/getSourceResults")
-  public Response getResultsForSource(@Context UriInfo requestUriInfo){
+  public Response getResultsForSource(@Context UriInfo requestUriInfo) {
     Response.ResponseBuilder builder = null;
     builder = Response.ok();
     return builder.build();
-
   }
+
   /**
    * Convert geopoint response.
    *
    * @param requestUriInfo the request uri info
-   * @param amount         the amount
+   * @param amount the amount
    * @return the response
    */
   @GET
   @Path("/getGroovyResults")
-  public Response getResultsForGroovy(@Context UriInfo requestUriInfo,
-                                      @QueryParam("amount") String amount) {
+  public Response getResultsForGroovy(
+      @Context UriInfo requestUriInfo, @QueryParam("amount") String amount) {
     int intAmount = 0;
     List<GroovyResponseObject> resultsList = null;
 
@@ -167,11 +215,13 @@ public class SourceEndpoint {
     if (response.getData() != null) {
       builder = Response.ok(response.getSanitizedJson(), MediaType.APPLICATION_JSON);
     } else {
-      throw new SourceEndpointException("There was a error handling the request.", "There was a error handling the " + "" + "" + "request.", Response.Status.INTERNAL_SERVER_ERROR);
+      throw new SourceEndpointException(
+          "There was a error handling the request.",
+          "There was a error handling the " + "" + "" + "request.",
+          Response.Status.INTERNAL_SERVER_ERROR);
     }
 
     return builder.build();
-
   }
 
   /**
@@ -185,8 +235,8 @@ public class SourceEndpoint {
     while (amount > 0) {
       GroovyResponseObject restResponseObject = new GroovyResponseObject();
 
-         /*The valid range of latitude in degrees is -90 and +90 for the southern and northern hemisphere respectively.
-         Longitude is in the range -180 and +180 specifying the east-west position.*/
+      /*The valid range of latitude in degrees is -90 and +90 for the southern and northern hemisphere respectively.
+      Longitude is in the range -180 and +180 specifying the east-west position.*/
       double lat = ThreadLocalRandom.current().nextDouble(MIN_LAT, MAX_LAT);
       double lng = ThreadLocalRandom.current().nextDouble(MIN_LON, MAX_LON);
       //POINT(73.0166738279393 33.6788721326803)
@@ -205,19 +255,19 @@ public class SourceEndpoint {
    * Create federated source response.
    *
    * @param requestUriInfo the request uri info
-   * @param amount         the amount
+   * @param amount the amount
    * @return the response
    */
   @GET
   @Path("/getSourceResultsRandom")
-  public Response getResultsForSourceRandom(@Context UriInfo requestUriInfo,
-                                      @QueryParam("startDate") String startDate,
-                                      @QueryParam("endDate") String endDate,
-                                      @QueryParam("topLeftLatLong") String topLeftLatLong,
-                                      @QueryParam("bottomRightLatLong") String bottomRightLatLong,
-                                      @QueryParam("amount") String amount
-
-  ) throws UnsupportedEncodingException {
+  public Response getResultsForSourceRandom(
+      @Context UriInfo requestUriInfo,
+      @QueryParam("startDate") String startDate,
+      @QueryParam("endDate") String endDate,
+      @QueryParam("topLeftLatLong") String topLeftLatLong,
+      @QueryParam("bottomRightLatLong") String bottomRightLatLong,
+      @QueryParam("amount") String amount)
+      throws UnsupportedEncodingException {
 
     logger.debug("SourceEndpoint received query");
     int intAmount = 0;
@@ -260,44 +310,46 @@ public class SourceEndpoint {
       results = generateDataForResponse(intAmount, start, end, topLeft, bottomRight);
     }
 
-
     JsonApiResponse response = new JsonApiResponse();
     Response.ResponseBuilder builder = null;
     response.setData(results);
     Response here = null;
     if (response.getData() != null) {
       String responseData = response.getSanitizedJson();
-      builder = Response.ok(responseData, MediaType.APPLICATION_JSON).header(HttpHeaders.CONTENT_LENGTH, responseData.getBytes("UTF-8").length);
+      builder =
+          Response.ok(responseData, MediaType.APPLICATION_JSON)
+              .header(HttpHeaders.CONTENT_LENGTH, responseData.getBytes("UTF-8").length);
       here = builder.build();
       logger.debug("SourceEndpoint Query Result Code  = {} ", String.valueOf(here.getStatus()));
     } else {
       logger.debug("SourceEndpoint ERROR There was a error handling the request. ");
-      throw new SourceEndpointException("There was a error handling the request.", "There was a error handling the " + "" + "" + "request.", Response.Status.INTERNAL_SERVER_ERROR);
+      throw new SourceEndpointException(
+          "There was a error handling the request.",
+          "There was a error handling the " + "" + "" + "request.",
+          Response.Status.INTERNAL_SERVER_ERROR);
     }
 
     return here;
-
   }
-
 
   /**
    * Create federated source response.
    *
    * @param requestUriInfo the request uri info
-   * @param amount         the amount
+   * @param amount the amount
    * @return the response
    */
   @GET
   @Path("/getSourceResultsCanned")
-  public Response getResultsForSourceCanned(@Context UriInfo requestUriInfo,
-                                      @QueryParam("startDate") String startDate,
-                                      @QueryParam("endDate") String endDate,
-                                      @QueryParam("topLeftLatLong") String topLeftLatLong,
-                                      @QueryParam("bottomRightLatLong") String bottomRightLatLong,
-                                      @QueryParam("amount") String amount,
-                                      @QueryParam("id") @DefaultValue("-1") Integer id
-
-  ) throws UnsupportedEncodingException {
+  public Response getResultsForSourceCanned(
+      @Context UriInfo requestUriInfo,
+      @QueryParam("startDate") String startDate,
+      @QueryParam("endDate") String endDate,
+      @QueryParam("topLeftLatLong") String topLeftLatLong,
+      @QueryParam("bottomRightLatLong") String bottomRightLatLong,
+      @QueryParam("amount") String amount,
+      @QueryParam("id") @DefaultValue("-1") Integer id)
+      throws UnsupportedEncodingException {
 
     logger.debug("SourceEndpoint received query");
     int intAmount = 0;
@@ -305,7 +357,7 @@ public class SourceEndpoint {
     String bottomRight = null;
     Date start = null;
     Date end = null;
-    ArrayList<CRSEndpointResponse> results = null;
+    List<CRSEndpointResponse> results = null;
     if (startDate != null) {
       try {
         start = dateFormat.parse(startDate);
@@ -335,10 +387,7 @@ public class SourceEndpoint {
       bottomRight = BOTTOM_RIGHT;
     }
 
-    if (amount != null) {
-      intAmount = getIntegerFromString(amount, 10);
-      results = generateDataForResponse(intAmount, start, end, topLeft, bottomRight);
-    }
+    results=  checkForResults(start, end, bottomRight, topLeft, amount);
 
 
     JsonApiResponse response = new JsonApiResponse();
@@ -347,23 +396,141 @@ public class SourceEndpoint {
     Response here = null;
     if (response.getData() != null) {
       String responseData = response.getSanitizedJson();
-      builder = Response.ok(responseData, MediaType.APPLICATION_JSON).header(HttpHeaders.CONTENT_LENGTH, responseData.getBytes("UTF-8").length);
+      builder =
+          Response.ok(responseData, MediaType.APPLICATION_JSON)
+              .header(HttpHeaders.CONTENT_LENGTH, responseData.getBytes("UTF-8").length);
       here = builder.build();
       logger.debug("SourceEndpoint Query Result Code  = {} ", String.valueOf(here.getStatus()));
     } else {
       logger.debug("SourceEndpoint ERROR There was a error handling the request. ");
-      throw new SourceEndpointException("There was a error handling the request.", "There was a error handling the " + "" + "" + "request.", Response.Status.INTERNAL_SERVER_ERROR);
+      throw new SourceEndpointException(
+          "There was a error handling the request.",
+          "There was a error handling the " + "" + "" + "request.",
+          Response.Status.INTERNAL_SERVER_ERROR);
     }
 
     return here;
-
   }
 
+  private List<CRSEndpointResponse> checkForResults(
+      Date start, Date end, String bottomRight, String topLeft, String queryString) {
+    List<CRSEndpointResponse> result = new ArrayList<>();
+    String latSegments[] = StringUtils.split(topLeft);
+    String lngSegments[] = StringUtils.split(bottomRight);
+    double topLeftLat = Double.parseDouble(latSegments[0]);
+
+    double topLeftLng = Double.parseDouble(latSegments[1]);
+
+    double bottomRightLat = Double.parseDouble(lngSegments[0]);
+
+    double bottomRightLng = Double.parseDouble(lngSegments[1]);
+
+    for (CRSEndpointResponse e : cannedResponses) {
+      if (checkResultForMatching(
+          topLeftLat, topLeftLng, bottomRightLat, bottomRightLng, queryString, start, end, e)) {
+        result.add(e);
+      }
+    }
+
+    return result;
+  }
+
+  private boolean checkResultForMatching(
+      double topLeftLat,
+      double topLeftLng,
+      double bottomRightLat,
+      double bottomRightLng,
+      String queryString,
+      Date start,
+      Date end,
+      CRSEndpointResponse e) {
+    boolean result = false;
+    boolean dateMatched = checkDateInRange(start, end, e);
+    if (dateMatched) {
+      boolean locationMatched =
+          checkDoubleInRange(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng, e);
+      if (locationMatched) {
+        boolean contextualMatched = checkQueryString(queryString, e);
+        if (contextualMatched) {
+          result = true;
+        }
+      }
+    }
+    return result;
+  }
+
+  private boolean checkQueryString(String queryString, CRSEndpointResponse item) {
+    boolean result = false;
+    if(queryString != null){
+      String[] queryParams = queryString.split(" ");
+      String itemRollUp =
+              item.getClassification()
+                      + " "
+                      + item.getOriginatorUnit()
+                      + " "
+                      + item.getSummary()
+                      + " "
+                      + item.getReportLink()
+                      + " "
+                      + item.getDisplayTitle();
+      for (String param : queryParams) {
+
+        if (!stopWords.contains(param)) {
+          if (itemRollUp.contains(param)) {
+            result = true;
+            break;
+          }
+        }
+      }
+    }else{
+      result = true;
+    }
+
+
+    return result;
+  }
+
+  private boolean checkDateInRange(Date from, Date to, CRSEndpointResponse item) {
+    boolean result = false;
+    Long itemDate = item.getDateOccurred().getTime();
+    if (itemDate > from.getTime() && itemDate < to.getTime()) {
+      result = true;
+    }
+    return result;
+  }
+
+  private boolean checkDoubleInRange(
+      double topLeftLat,
+      double topLeftLng,
+      double bottomRightLat,
+      double bottomRightLng,
+      CRSEndpointResponse item) {
+    boolean result = false;
+    String itemLocation = item.getLocation();
+    WKTReader reader = new WKTReader();
+    try {
+      Geometry geometry = reader.read(itemLocation);
+      Point center = geometry.getCentroid();
+      double lat = center.getX();
+      double lng = center.getY();
+
+      if (lat > bottomRightLat && lat < topLeftLat) {
+        if (lng > bottomRightLng && lng < topLeftLng) {
+          result = true;
+        }
+      }
+
+    } catch (com.vividsolutions.jts.io.ParseException e) {
+      logger.error("Unable to parse WKT determining the item to be false.");
+    }
+
+    return result;
+  }
 
   /**
    * Get integer from string int.
    *
-   * @param s     the s
+   * @param s the s
    * @param value the value
    * @return the int
    */
@@ -376,12 +543,8 @@ public class SourceEndpoint {
     return value;
   }
 
-  private ArrayList<CRSEndpointResponse> generateDataForResponse(int amount,
-                                                                 Date start,
-                                                                 Date end,
-                                                                 String topLeft,
-                                                                 String bottomRight) {
-
+  private ArrayList<CRSEndpointResponse> generateDataForResponse(
+      int amount, Date start, Date end, String topLeft, String bottomRight) {
 
     String latSegments[] = StringUtils.split(topLeft);
     String lngSegments[] = StringUtils.split(bottomRight);
@@ -406,7 +569,8 @@ public class SourceEndpoint {
       logger.error(ed.getMessage());
     }
 
-    ArrayList<CRSEndpointResponse> results = buildObjectsForSource(amount, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng, s, e);
+    ArrayList<CRSEndpointResponse> results =
+        buildObjectsForSource(amount, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng, s, e);
     if (results.size() > 0 && results != null) {
       return results;
     } else {
@@ -414,27 +578,14 @@ public class SourceEndpoint {
     }
   }
 
-  /**
-   * Transform date string.
-   *
-   * @param date       the date
-   * @param dateFormat the date format
-   * @return the string
-   */
-  public static String transformDate(Date date, SimpleDateFormat dateFormat) {
-    Calendar c = Calendar.getInstance();
-    TimeZone localTimeZone = c.getTimeZone();
-    TimeZone afgTimeZone = TimeZone.getTimeZone("Asia/Kabul");
-    int localOffsetFromUTC = localTimeZone.getRawOffset();
-    int afghanOffsetFromUTC = afgTimeZone.getRawOffset();
-    Calendar afghanCal = Calendar.getInstance(afgTimeZone);
-    afghanCal.setTimeInMillis(date.getTime());
-    afghanCal.add(Calendar.MILLISECOND, (-1 * localOffsetFromUTC));
-    afghanCal.add(Calendar.MILLISECOND, afghanOffsetFromUTC);
-    return dateFormat.format(afghanCal.getTime());
-  }
-
-  private ArrayList<CRSEndpointResponse> buildObjectsForSource(int amount, Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng, Date start, Date end) {
+  private ArrayList<CRSEndpointResponse> buildObjectsForSource(
+      int amount,
+      Double topLeftLat,
+      Double topLeftLng,
+      Double bottomRightLat,
+      Double bottomRightLng,
+      Date start,
+      Date end) {
     ArrayList<CRSEndpointResponse> results = new ArrayList<>();
 
     while (amount > 0) {
@@ -447,7 +598,9 @@ public class SourceEndpoint {
       double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
       lng = Double.parseDouble(decFormat.format(lng));
 
-      CRSEndpointResponse uniResponse = generateRandomMetacard(lat, lng, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng, start, end);
+      CRSEndpointResponse uniResponse =
+          generateRandomMetacard(
+              lat, lng, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng, start, end);
 
       results.add(uniResponse);
       amount = amount - 1;
@@ -455,7 +608,15 @@ public class SourceEndpoint {
     return results;
   }
 
-  private CRSEndpointResponse generateRandomMetacard(double lat, double lng, Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng, Date start, Date end) {
+  private CRSEndpointResponse generateRandomMetacard(
+      double lat,
+      double lng,
+      Double topLeftLat,
+      Double topLeftLng,
+      Double bottomRightLat,
+      Double bottomRightLng,
+      Date start,
+      Date end) {
     /*logger.debug("topLeftLat {}",topLeftLat);
     logger.debug("topLeftLng {}",topLeftLng);
     logger.debug("bottomRightLat {}",bottomRightLat);
@@ -463,13 +624,18 @@ public class SourceEndpoint {
     CRSEndpointResponse uniResponse = new CRSEndpointResponse();
     int whichGeom = ThreadLocalRandom.current().nextInt(6);
     //logger.info("Array Number = {}", whichGeom);
-    String wktString = constructWktString(whichGeom, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
+    String wktString =
+        constructWktString(whichGeom, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
     uniResponse.setLocation(wktString);
     Date sigactDate = generateRandomDate(start, end);
     uniResponse.setClassification("UNCLASSIFIED");
     uniResponse.setDisplayTitle(generateTitleBasedOnGeometry(wktString, sigactDate));
     uniResponse.setDateOccurred(sigactDate);
-    uniResponse.setDisplaySerial(String.valueOf(topLeftLat) + String.valueOf(bottomRightLng) + String.valueOf(lat) + String.valueOf(lng));
+    uniResponse.setDisplaySerial(
+        String.valueOf(topLeftLat)
+            + String.valueOf(bottomRightLng)
+            + String.valueOf(lat)
+            + String.valueOf(lng));
     uniResponse.setLatitude(lat);
     uniResponse.setLongitude(lng);
     uniResponse.setOriginatorUnit(getRandomizedField(dataStore.getOriginateUnit()));
@@ -479,68 +645,78 @@ public class SourceEndpoint {
     return uniResponse;
   }
 
-  public String constructWktString(int wktType, Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng) {
+  public String constructWktString(
+      int wktType,
+      Double topLeftLat,
+      Double topLeftLng,
+      Double bottomRightLat,
+      Double bottomRightLng) {
     String result = null;
     switch (wktType) {
-      case POLYGON: {
-        try {
-          result = createRandomWktPolygon(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
-        } catch (Exception e) {
-          logger.error("Wkt Creation Failed For POLYGON {}", e);
+      case POLYGON:
+        {
+          try {
+            result = createRandomWktPolygon(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
+          } catch (Exception e) {
+            logger.error("Wkt Creation Failed For POLYGON {}", e);
+          }
         }
-      }
-      break;
-      case MULTIPOLYGON: {
-        try {
-          result = createRandomWktMultiPolygon(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
-        } catch (Exception e) {
-          logger.error("Wkt Creation Failed For MULTIPOLYGON");
+        break;
+      case MULTIPOLYGON:
+        {
+          try {
+            result =
+                createRandomWktMultiPolygon(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
+          } catch (Exception e) {
+            logger.error("Wkt Creation Failed For MULTIPOLYGON");
+          }
         }
-      }
-      break;
-      case POINT: {
-        try {
-          result = createRandomWktPoint(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
-        } catch (Exception e) {
-          logger.error("Wkt Creation Failed For POINT");
-
+        break;
+      case POINT:
+        {
+          try {
+            result = createRandomWktPoint(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
+          } catch (Exception e) {
+            logger.error("Wkt Creation Failed For POINT");
+          }
         }
-      }
-      break;
-      case MULTIPOINT: {
-        try {
-          result = createRandomWktMultiPoint(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
-        } catch (Exception e) {
-          logger.error("Wkt Creation Failed For MULTIPOINT");
+        break;
+      case MULTIPOINT:
+        {
+          try {
+            result =
+                createRandomWktMultiPoint(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
+          } catch (Exception e) {
+            logger.error("Wkt Creation Failed For MULTIPOINT");
+          }
         }
-      }
-      break;
-      //Removed because these lines look like ass on the map, until i can customize better they are staying off.
-      /*case LINESTRING: {
-        try {
-          result = createRandomWktLine(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
-        } catch (Exception e) {
-          logger.error("Wkt Creation Failed For LINESTRING");
+        break;
+        //Removed because these lines look like ass on the map, until i can customize better they are staying off.
+        /*case LINESTRING: {
+          try {
+            result = createRandomWktLine(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
+          } catch (Exception e) {
+            logger.error("Wkt Creation Failed For LINESTRING");
+          }
         }
-      }
-      break;
-      case MULTILINESTRING: {
-        try {
-          result = createRandomWktMultiLine(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
-        } catch (Exception e) {
-          logger.error("Wkt Creation Failed For MULTILINESTRING");
+        break;
+        case MULTILINESTRING: {
+          try {
+            result = createRandomWktMultiLine(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
+          } catch (Exception e) {
+            logger.error("Wkt Creation Failed For MULTILINESTRING");
+          }
         }
-      }
-      break;
-      */
-      default: {
-        try {
-          result = createRandomWktPoint(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
-        } catch (Exception e) {
-          logger.error("Wkt Creation Failed For Default Type of Point");
-
+        break;
+        */
+      default:
+        {
+          try {
+            result = createRandomWktPoint(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
+          } catch (Exception e) {
+            logger.error("Wkt Creation Failed For Default Type of Point");
+          }
         }
-      }
     }
     return result;
   }
@@ -563,7 +739,7 @@ public class SourceEndpoint {
     return cal.getTime();
   }
 
-  private String generateTitleBasedOnGeometry(String geom, Date date) {
+  public String generateTitleBasedOnGeometry(String geom, Date date) {
     String name = null;
     if (geom.contains("MULTIPOINT")) {
       name = "SIGACT-COLLECTION" + date;
@@ -579,24 +755,13 @@ public class SourceEndpoint {
 
     } else if (geom.contains("POLYGON")) {
       name = "NAI-" + date;
-
     }
     return name;
   }
 
-  /**
-   * Get random element from array list.
-   *
-   * @param <T> the array list you want a random entry from.
-   * @return the random entry.
-   */
-  public static <T> T getRandomizedField(ArrayList<T> list) {
-    Random random = new Random();
-    return list.get(random.nextInt(list.size()));
-  }
-
   //Verified and tested this method creates valid WKT Polygons
-  private String createRandomWktPolygon(Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng) {
+  private String createRandomWktPolygon(
+      Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng) {
     StringBuilder result = new StringBuilder();
     double lat = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
     lat = Double.parseDouble(decFormat.format(lat));
@@ -609,7 +774,8 @@ public class SourceEndpoint {
     //upper Right
     result.append(generateUpperRight(lng, decision) + " " + lat + ", ");
     //Lower right
-    result.append(generateUpperRight(lng, decision) + " " + generateLowerRight(lat, decision) + ", ");
+    result.append(
+        generateUpperRight(lng, decision) + " " + generateLowerRight(lat, decision) + ", ");
     //lower left
     result.append(lng + " " + generateLowerLeft(lat, decision) + ", ");
     result.append(lng + " " + lat + " ))");
@@ -618,7 +784,8 @@ public class SourceEndpoint {
   }
 
   //Verified and tested this method creates valid WKT MultiPolygons
-  private String createRandomWktMultiPolygon(Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng) {
+  private String createRandomWktMultiPolygon(
+      Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng) {
     StringBuilder result = new StringBuilder();
     int numberOfPolygons = ThreadLocalRandom.current().nextInt(4) + 1;
 
@@ -637,7 +804,8 @@ public class SourceEndpoint {
       //upper Right
       inner.append(generateUpperRight(lng, levelOf) + " " + lat + ", ");
       //Lower right
-      inner.append(generateUpperRight(lng, levelOf) + " " + generateLowerRight(lat, levelOf) + ", ");
+      inner.append(
+          generateUpperRight(lng, levelOf) + " " + generateLowerRight(lat, levelOf) + ", ");
       //lower left
       inner.append(lng + " " + generateLowerLeft(lat, levelOf) + ", ");
       inner.append(lng + " " + lat + " )),");
@@ -651,7 +819,8 @@ public class SourceEndpoint {
   }
 
   //Verified and tested this method produces valid points
-  private String createRandomWktPoint(Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng) {
+  private String createRandomWktPoint(
+      Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng) {
     String result = null;
     //logger.debug("Entering generate lat. Origin = {} Bound = {}",bottomRightLat,topLeftLat);
     double lat = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
@@ -668,7 +837,8 @@ public class SourceEndpoint {
   }
 
   //Verified this method produces valid multipoints.
-  private String createRandomWktMultiPoint(Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng) {
+  private String createRandomWktMultiPoint(
+      Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng) {
     StringBuilder result = new StringBuilder();
     int numberOfPoints = ThreadLocalRandom.current().nextInt(20) + 1;
     double lat = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
@@ -736,7 +906,8 @@ public class SourceEndpoint {
   }
 
   //Verified this method returns valid line.
-  private String createRandomWktLine(Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng) {
+  private String createRandomWktLine(
+      Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng) {
     StringBuilder result = new StringBuilder();
     int numberOfPoints = ThreadLocalRandom.current().nextInt(4) + 1;
     double lat = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
@@ -761,7 +932,8 @@ public class SourceEndpoint {
   }
 
   //Verified and tested this method creates valid MultiLineStrings
-  private String createRandomWktMultiLine(Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng) {
+  private String createRandomWktMultiLine(
+      Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng) {
     StringBuilder result = new StringBuilder();
     int numberOfLines = ThreadLocalRandom.current().nextInt(4) + 1;
     result.append("MULTILINESTRING (");

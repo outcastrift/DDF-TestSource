@@ -4,13 +4,13 @@
     <facet type="Osmorc" name="OSGi">
       <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="configurable-rest-source-test-endpoint-1.0.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="" bundleSymbolicName="com.davis.configurable-rest-source-test-endpoint" bundleVersion="1.0.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
-          <property key="Embed-Dependency" value="gson,commons-lang3,commons-lang" />
+          <property key="Embed-Dependency" value="gson,commons-lang3,commons-lang,jts" />
           <property key="Import-Package" value="*" />
           <property key="Export-Package" value="com.davis.ddf.crs.*" />
           <property key="Bundle-Name" value="Configurable Rest Source:: Test Endpoint" />
-          <property key="Bundle-ClassPath" value=".,gson-2.3.1.jar,commons-lang3-3.4.jar,commons-lang-2.6.jar" />
-          <property key="Include-Resource" value="gson-2.3.1.jar=$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.3.1/gson-2.3.1.jar,commons-lang3-3.4.jar=$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.4/commons-lang3-3.4.jar,commons-lang-2.6.jar=$MAVEN_REPOSITORY$/commons-lang/commons-lang/2.6/commons-lang-2.6.jar" />
-          <property key="Embedded-Artifacts" value="gson-2.3.1.jar;g=&quot;com.google.code.gson&quot;;a=&quot;gson&quot;;v=&quot;2.3.1&quot;,commons-lang3-3.4.jar;g=&quot;org.apache.commons&quot;;a=&quot;commons-lang3&quot;;v=&quot;3.4&quot;,commons-lang-2.6.jar;g=&quot;commons-lang&quot;;a=&quot;commons-lang&quot;;v=&quot;2.6&quot;" />
+          <property key="Bundle-ClassPath" value=".,gson-2.3.1.jar,commons-lang3-3.4.jar,commons-lang-2.6.jar,jts-1.13.jar" />
+          <property key="Include-Resource" value="gson-2.3.1.jar=$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.3.1/gson-2.3.1.jar,commons-lang3-3.4.jar=$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.4/commons-lang3-3.4.jar,commons-lang-2.6.jar=$MAVEN_REPOSITORY$/commons-lang/commons-lang/2.6/commons-lang-2.6.jar,jts-1.13.jar=$MAVEN_REPOSITORY$/com/vividsolutions/jts/1.13/jts-1.13.jar" />
+          <property key="Embedded-Artifacts" value="gson-2.3.1.jar;g=&quot;com.google.code.gson&quot;;a=&quot;gson&quot;;v=&quot;2.3.1&quot;,commons-lang3-3.4.jar;g=&quot;org.apache.commons&quot;;a=&quot;commons-lang3&quot;;v=&quot;3.4&quot;,commons-lang-2.6.jar;g=&quot;commons-lang&quot;;a=&quot;commons-lang&quot;;v=&quot;2.6&quot;,jts-1.13.jar;g=&quot;com.vividsolutions&quot;;a=&quot;jts&quot;;v=&quot;1.13&quot;" />
         </additionalProperties>
         <additionalJARContents />
       </configuration>
@@ -63,6 +63,7 @@
     <orderEntry type="library" scope="TEST" name="Maven: log4j:log4j:1.2.17" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.12" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
+    <orderEntry type="library" name="Maven: com.vividsolutions:jts:1.13" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: xmlunit:xmlunit:1.4" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: ch.qos.logback:logback-classic:0.9.24" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: ch.qos.logback:logback-core:0.9.24" level="project" />

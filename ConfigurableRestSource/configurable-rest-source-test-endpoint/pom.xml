@@ -118,6 +118,11 @@
             <scope>test</scope>
             <version>${junit.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.vividsolutions</groupId>
+            <artifactId>jts</artifactId>
+            <version>1.13</version>
+        </dependency>
         <!--END TEST RELATED-->
     </dependencies>
 
@@ -136,7 +141,8 @@
                         <Embed-Dependency>
                             gson,
                             commons-lang3,
-                            commons-lang
+                            commons-lang,
+                            jts
                         </Embed-Dependency>
                         <Import-Package>*</Import-Package>
                         <Export-Package>
