@@ -4,7 +4,7 @@ package com.davis.ddf.crs;
 
 import com.davis.ddf.crs.data.GroovyResponseObject;
 import com.davis.ddf.crs.data.InMemoryDataStore;
-import com.davis.ddf.crs.data.UniversalFederatedSourceResponse;
+import com.davis.ddf.crs.data.CRSEndpointResponse;
 import com.davis.ddf.crs.jsonapi.JsonApiResponse;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -57,7 +57,9 @@ public class SourceEndpoint {
   private SimpleDateFormat dateFormat;
   private Date DEFAULT_START;
   private Date DEFAULT_END;
+  private Date LAST_THREE_YEARS;
   private InMemoryDataStore dataStore;
+  private List<CRSEndpointResponse> cannedResponses = new ArrayList<>();
 
   /**
    * Instantiates a new Geospatial endpoint.
@@ -81,10 +83,53 @@ public class SourceEndpoint {
       DEFAULT_END = dateFormat.parse(e);
     } catch (ParseException e2) {
     }
+    Calendar cy = Calendar.getInstance();
+
+    c.set(DEFAULT_END.getYear() - 3, 0, 1);
+    String lastThreeYears = dateFormat.format(c.getTime());
+    try {
+      LAST_THREE_YEARS = dateFormat.parse(lastThreeYears);
+    } catch (ParseException ey) {
+      logger.error("error countered parsing date {}" , ey.getMessage());
+    }
+
     dataStore = new InMemoryDataStore();
+  }
 
 
 
+  private void createCannedResults(int numberToCreate){
+
+  }
+
+  public CRSEndpointResponse createCannedResult(InMemoryDataStore dataStore,  int itemId){
+    double topLeftLat = 90;
+    double topLeftLng =-180;
+    double bottomRightLat = -90;
+    double bottomRightLng = 180;
+    CRSEndpointResponse uniResponse = new CRSEndpointResponse();
+    int whichGeom = ThreadLocalRandom.current().nextInt(6);
+    //logger.info("Array Number = {}", whichGeom);
+    String wktString = constructWktString(whichGeom, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
+    uniResponse.setLocation(wktString);
+
+    Date sigactDate = generateRandomDate(LAST_THREE_YEARS, DEFAULT_END);
+    uniResponse.setClassification("UNCLASSIFIED");
+    uniResponse.setDisplayTitle(generateTitleBasedOnGeometry(wktString, sigactDate));
+    uniResponse.setDateOccurred(sigactDate);
+    double lat = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
+    lat = Double.parseDouble(decFormat.format(lat));
+    //logger.debug("Entering always successful lng. Origin = {} Bound = {}",topLeftLng,bottomRightLng);
+    double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
+    lng = Double.parseDouble(decFormat.format(lng));
+    uniResponse.setDisplaySerial("CRS-"+String.valueOf(itemId));
+    uniResponse.setLatitude(lat);
+    uniResponse.setLongitude(lng);
+    uniResponse.setOriginatorUnit(dataStore.getOriginateUnit().get(itemId));
+    uniResponse.setPrimaryEventType(getRandomizedField(dataStore.getEventTypes()));
+    uniResponse.setReportLink(getRandomizedField(dataStore.getReportLinks()));
+    uniResponse.setSummary(dataStore.getSummaries().get(itemId));
+    return uniResponse;
   }
 
 
@@ -165,13 +210,12 @@ public class SourceEndpoint {
    */
   @GET
   @Path("/getSourceResultsRandom")
-  public Response getResultsForSource(@Context UriInfo requestUriInfo,
+  public Response getResultsForSourceRandom(@Context UriInfo requestUriInfo,
                                       @QueryParam("startDate") String startDate,
                                       @QueryParam("endDate") String endDate,
                                       @QueryParam("topLeftLatLong") String topLeftLatLong,
                                       @QueryParam("bottomRightLatLong") String bottomRightLatLong,
-                                      @QueryParam("amount") String amount,
-                                      @QueryParam("id") @DefaultValue("-1") Integer id
+                                      @QueryParam("amount") String amount
 
   ) throws UnsupportedEncodingException {
 
@@ -181,7 +225,7 @@ public class SourceEndpoint {
     String bottomRight = null;
     Date start = null;
     Date end = null;
-    ArrayList<UniversalFederatedSourceResponse> results = null;
+    ArrayList<CRSEndpointResponse> results = null;
     if (startDate != null) {
       try {
         start = dateFormat.parse(startDate);
@@ -235,6 +279,87 @@ public class SourceEndpoint {
 
   }
 
+
+  /**
+   * Create federated source response.
+   *
+   * @param requestUriInfo the request uri info
+   * @param amount         the amount
+   * @return the response
+   */
+  @GET
+  @Path("/getSourceResultsCanned")
+  public Response getResultsForSourceCanned(@Context UriInfo requestUriInfo,
+                                      @QueryParam("startDate") String startDate,
+                                      @QueryParam("endDate") String endDate,
+                                      @QueryParam("topLeftLatLong") String topLeftLatLong,
+                                      @QueryParam("bottomRightLatLong") String bottomRightLatLong,
+                                      @QueryParam("amount") String amount,
+                                      @QueryParam("id") @DefaultValue("-1") Integer id
+
+  ) throws UnsupportedEncodingException {
+
+    logger.debug("SourceEndpoint received query");
+    int intAmount = 0;
+    String topLeft = null;
+    String bottomRight = null;
+    Date start = null;
+    Date end = null;
+    ArrayList<CRSEndpointResponse> results = null;
+    if (startDate != null) {
+      try {
+        start = dateFormat.parse(startDate);
+      } catch (ParseException e) {
+        e.printStackTrace();
+      }
+    } else {
+      start = DEFAULT_START;
+    }
+    if (endDate != null) {
+      try {
+        end = dateFormat.parse(endDate);
+      } catch (ParseException e) {
+        e.printStackTrace();
+      }
+    } else {
+      end = DEFAULT_END;
+    }
+    if (topLeftLatLong != null) {
+      topLeft = topLeftLatLong;
+    } else {
+      topLeft = TOP_LEFT;
+    }
+    if (bottomRightLatLong != null) {
+      bottomRight = bottomRightLatLong;
+    } else {
+      bottomRight = BOTTOM_RIGHT;
+    }
+
+    if (amount != null) {
+      intAmount = getIntegerFromString(amount, 10);
+      results = generateDataForResponse(intAmount, start, end, topLeft, bottomRight);
+    }
+
+
+    JsonApiResponse response = new JsonApiResponse();
+    Response.ResponseBuilder builder = null;
+    response.setData(results);
+    Response here = null;
+    if (response.getData() != null) {
+      String responseData = response.getSanitizedJson();
+      builder = Response.ok(responseData, MediaType.APPLICATION_JSON).header(HttpHeaders.CONTENT_LENGTH, responseData.getBytes("UTF-8").length);
+      here = builder.build();
+      logger.debug("SourceEndpoint Query Result Code  = {} ", String.valueOf(here.getStatus()));
+    } else {
+      logger.debug("SourceEndpoint ERROR There was a error handling the request. ");
+      throw new SourceEndpointException("There was a error handling the request.", "There was a error handling the " + "" + "" + "request.", Response.Status.INTERNAL_SERVER_ERROR);
+    }
+
+    return here;
+
+  }
+
+
   /**
    * Get integer from string int.
    *
@@ -251,11 +376,11 @@ public class SourceEndpoint {
     return value;
   }
 
-  private ArrayList<UniversalFederatedSourceResponse> generateDataForResponse(int amount,
-                                                                              Date start,
-                                                                              Date end,
-                                                                              String topLeft,
-                                                                              String bottomRight) {
+  private ArrayList<CRSEndpointResponse> generateDataForResponse(int amount,
+                                                                 Date start,
+                                                                 Date end,
+                                                                 String topLeft,
+                                                                 String bottomRight) {
 
 
     String latSegments[] = StringUtils.split(topLeft);
@@ -281,7 +406,7 @@ public class SourceEndpoint {
       logger.error(ed.getMessage());
     }
 
-    ArrayList<UniversalFederatedSourceResponse> results = buildObjectsForSource(amount, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng, s, e);
+    ArrayList<CRSEndpointResponse> results = buildObjectsForSource(amount, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng, s, e);
     if (results.size() > 0 && results != null) {
       return results;
     } else {
@@ -309,8 +434,8 @@ public class SourceEndpoint {
     return dateFormat.format(afghanCal.getTime());
   }
 
-  private ArrayList<UniversalFederatedSourceResponse> buildObjectsForSource(int amount, Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng, Date start, Date end) {
-    ArrayList<UniversalFederatedSourceResponse> results = new ArrayList<>();
+  private ArrayList<CRSEndpointResponse> buildObjectsForSource(int amount, Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng, Date start, Date end) {
+    ArrayList<CRSEndpointResponse> results = new ArrayList<>();
 
     while (amount > 0) {
       //logger.debug("Entering always successful lat. Origin = {} Bound = {}",bottomRightLat,topLeftLat);
@@ -322,7 +447,7 @@ public class SourceEndpoint {
       double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
       lng = Double.parseDouble(decFormat.format(lng));
 
-      UniversalFederatedSourceResponse uniResponse = generateRandomMetacard(lat, lng, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng, start, end);
+      CRSEndpointResponse uniResponse = generateRandomMetacard(lat, lng, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng, start, end);
 
       results.add(uniResponse);
       amount = amount - 1;
@@ -330,19 +455,18 @@ public class SourceEndpoint {
     return results;
   }
 
-  private UniversalFederatedSourceResponse generateRandomMetacard(double lat, double lng, Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng, Date start, Date end) {
+  private CRSEndpointResponse generateRandomMetacard(double lat, double lng, Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng, Date start, Date end) {
     /*logger.debug("topLeftLat {}",topLeftLat);
     logger.debug("topLeftLng {}",topLeftLng);
     logger.debug("bottomRightLat {}",bottomRightLat);
     logger.debug("bottomRightLng {}",bottomRightLng);*/
-    UniversalFederatedSourceResponse uniResponse = new UniversalFederatedSourceResponse();
+    CRSEndpointResponse uniResponse = new CRSEndpointResponse();
     int whichGeom = ThreadLocalRandom.current().nextInt(6);
     //logger.info("Array Number = {}", whichGeom);
     String wktString = constructWktString(whichGeom, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
     uniResponse.setLocation(wktString);
     Date sigactDate = generateRandomDate(start, end);
     uniResponse.setClassification("UNCLASSIFIED");
-
     uniResponse.setDisplayTitle(generateTitleBasedOnGeometry(wktString, sigactDate));
     uniResponse.setDateOccurred(sigactDate);
     uniResponse.setDisplaySerial(String.valueOf(topLeftLat) + String.valueOf(bottomRightLng) + String.valueOf(lat) + String.valueOf(lng));
@@ -352,7 +476,6 @@ public class SourceEndpoint {
     uniResponse.setPrimaryEventType(getRandomizedField(dataStore.getEventTypes()));
     uniResponse.setReportLink(getRandomizedField(dataStore.getReportLinks()));
     uniResponse.setSummary(getRandomizedField(dataStore.getSummaries()));
-
     return uniResponse;
   }
 

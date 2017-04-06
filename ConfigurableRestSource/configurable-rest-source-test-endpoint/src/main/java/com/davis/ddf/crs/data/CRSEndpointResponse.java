@@ -6,7 +6,7 @@ import java.util.Date;
 /**
  * Created by hduser on 7/17/15.
  */
-public class UniversalFederatedSourceResponse {
+public class CRSEndpointResponse {
 
     private String location;
 
