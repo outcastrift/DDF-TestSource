@@ -6,7 +6,7 @@
         <additionalProperties>
           <property key="Embed-Dependency" value="json-path,json-smart,json,gson,guava,okhttp,okio,commons-lang3,catalog-core-api-impl" />
           <property key="Embed-Transitive" value="true" />
-          <property key="Import-Package" value="!org.codice.ddf.platform.*,!com.fasterxml.jackson.*,!android.*,org.jdom2;resolution:=&quot;optional&quot;,org.codice.ddf.cxf;resolution:=&quot;optional&quot;,com.rometools.rome.*;resolution:=&quot;optional&quot;,ddf.catalog.util.impl.*;resolution:=&quot;optional&quot;,org.osgi.framework;version=&quot;[1,2)&quot;,ddf.catalog;version=&quot;[2.8.0,3.0.0)&quot;,*" />
+          <property key="Import-Package" value="!org.codice.ddf.platform.*,!com.fasterxml.jackson.*,!android.*,org.jdom2;resolution:=&quot;optional&quot;,org.codice.ddf.cxf;resolution:=&quot;optional&quot;,com.rometools.rome.*;resolution:=&quot;optional&quot;,ddf.catalog.util.impl.*;resolution:=&quot;optional&quot;,org.osgi.framework;version=&quot;[1,2)&quot;,*" />
           <property key="Export-Package" value="com.davis.ddf.crs.*" />
           <property key="Bundle-Name" value="Configurable Rest Source :: Source" />
           <property key="Bundle-ClassPath" value=".,json-path-2.1.0.jar,json-smart-2.2.jar,json-smart-1.1.1.jar,json-20140107.jar,gson-2.3.1.jar,guava-18.0.jar,okhttp-3.3.1.jar,okio-1.8.0.jar,okio-1.9.0.jar,commons-lang3-3.4.jar,commons-lang3-3.3.2.jar,catalog-core-api-impl-2.9.2.jar" />
