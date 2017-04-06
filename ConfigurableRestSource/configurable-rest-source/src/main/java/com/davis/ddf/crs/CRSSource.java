@@ -4,7 +4,7 @@ import com.davis.ddf.crs.client.TrustingOkHttpClient;
 import com.davis.ddf.crs.data.CRSResponse;
 import com.davis.ddf.crs.data.CRSMetacard;
 import com.davis.ddf.crs.data.CRSMetacardType;
-import com.davis.ddf.crs.filter.ContextualSearch;
+
 import com.davis.ddf.crs.filter.CRSFilterVisitor;
 import com.davis.ddf.crs.service.SourceService;
 import com.davis.ddf.crs.service.RestGetService;
@@ -65,16 +65,15 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
   //region Class Variables
   private static final Logger LOGGER = LoggerFactory.getLogger(CRSSource.class);
   private static final String DEFAULT_TYPE = CRSMetacardType.NAME;
-  private String contentTypeName = "Sigact";
   private static final long EXPIRATION_OFFSET = 3600000;
   private static int SAX = 1;
   private static int REST = 2;
   public String ssClientCertPath;
   public String ssClientCertPassword;
-  /**
-   * Spring set variables
-   **/
+  private String contentTypeName = "Sigact";
+  /** Spring set variables */
   private String ssWktStringParam;
+
   private String ssContextSearchParam;
   private String ssSpatialSearchParamLat;
   private String ssSpatialSearchParamLong;
@@ -96,10 +95,9 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
   private String ssShortName;
   private boolean ssShouldConvertToBBox;
 
-  /**
-   * End Spring set variables
-   **/
+  /** End Spring set variables */
   private NumberFormat decimalFormatter = new DecimalFormat("#0.0000");
+
   private String version = "v10";
   private String org = "AFRL";
   private MimeTypeMapper mimeTypeMapper;
@@ -116,9 +114,7 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
   //endregion
 
   //region Constructors
-  /**
-   * Test Constructor
-   **/
+  /** Test Constructor */
   public CRSSource(HashMap<String, String> springVars) {
     setSsShortName(springVars.get("ssShortName"));
     setSsClassification(springVars.get("ssClassification"));
@@ -143,7 +139,7 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
     setSsClientCertPassword(springVars.get("ssClientCertPassword"));
     setSsWktStringParam(springVars.get("ssWktStringParam"));
     mode = REST;
-    client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15,15,null,null);
+    client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15, 15, null, null);
     try {
       String dateFormatPattern = "yyyy-MM-dd'T'HH:mm:ssZ";
       dateFormat = new SimpleDateFormat(dateFormatPattern);
@@ -151,7 +147,7 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
       LOGGER.info("Successfully created CRSSource");
 
     } catch (Exception ex) {
-      LOGGER.error("Error  = {}",ex);
+      LOGGER.error("Error  = {}", ex);
     }
   }
 
@@ -170,10 +166,9 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
       LOGGER.info("Successfully created CRSSource");
 
     } catch (Exception ex) {
-      LOGGER.error("Error  = {}",ex);
+      LOGGER.error("Error  = {}", ex);
     }
-    client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15,15,null,null);
-
+    client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15, 15, null, null);
   }
 
   //endregion
@@ -187,7 +182,8 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
     mimeTypeMapper = (MimeTypeMapper) bc.getService(serviceReference);
 
     //Service reference in order to populate our service
-    ServiceReference serviceReference2 = bc.getServiceReference(MetacardTypeRegistry.class.getName());
+    ServiceReference serviceReference2 =
+        bc.getServiceReference(MetacardTypeRegistry.class.getName());
     //get the service
     metacardTypeRegistry = (MetacardTypeRegistry) bc.getService(serviceReference2);
     try {
@@ -208,15 +204,15 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
   /**
    * Retrieve resource resource response.
    *
-   * @param uri                   the uri
+   * @param uri the uri
    * @param stringSerializableMap the string serializable map
    * @return the resource response
-   * @throws IOException                   the io exception
-   * @throws ResourceNotFoundException     the resource not found exception
+   * @throws IOException the io exception
+   * @throws ResourceNotFoundException the resource not found exception
    * @throws ResourceNotSupportedException the resource not supported exception
    */
-  public ResourceResponse retrieveResource(URI uri, Map<String, Serializable> stringSerializableMap) throws
-          IOException, ResourceNotFoundException, ResourceNotSupportedException {
+  public ResourceResponse retrieveResource(URI uri, Map<String, Serializable> stringSerializableMap)
+      throws IOException, ResourceNotFoundException, ResourceNotSupportedException {
     return null;
   }
 
@@ -240,7 +236,9 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
    */
   public Set<String> getOptions(Metacard metacard) {
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("OpenSearch Source \"{}\" does not support resource retrieval options.", this.ssShortName);
+      LOGGER.debug(
+          "OpenSearch Source \"{}\" does not support resource retrieval options.",
+          this.ssShortName);
     }
     return Collections.emptySet();
   }
@@ -272,7 +270,7 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
    * @throws UnsupportedQueryException the unsupported query exception
    */
   public SourceResponse query(QueryRequest queryRequest) throws UnsupportedQueryException {
-   try {
+    try {
       LOGGER.debug("*******Entering Federated Source Query********");
 
       Serializable metacardId = queryRequest.getPropertyValue(Metacard.ID);
@@ -285,7 +283,7 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
       }
       CRSFilterVisitor visitor = new CRSFilterVisitor();
       query.accept(visitor, null);
-      ContextualSearch contextualFilter = visitor.getContextualSearch();
+      String searchPhrase = visitor.getSearchPhrase();
       TemporalFilter temporalFilter = visitor.getTemporalSearch();
       SpatialFilter spatialFilter = visitor.getSpatialSearch();
       long elapsed = System.currentTimeMillis();
@@ -294,17 +292,18 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
         LOGGER.debug("SAX mode enabled entering queryWithSax ");
       } else if (mode == REST) {
         LOGGER.debug("REST mode enabled entering queryWithParams ");
-        operationsCRSResponseReports = queryWithParams(query, contextualFilter, temporalFilter,
-                spatialFilter);
+        operationsCRSResponseReports =
+            queryWithParams(query, searchPhrase, temporalFilter, spatialFilter);
         LOGGER.debug("REST :: exiting queryWithParams ");
       }
 
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug("Received query: " + query);
       }
-     List<Result> results = createResultList(operationsCRSResponseReports);
+      List<Result> results = createResultList(operationsCRSResponseReports);
       elapsed = System.currentTimeMillis() - elapsed;
-      LOGGER.debug("query returning " + results.size() + " results in " + elapsed + " milliseconds");
+      LOGGER.debug(
+          "query returning " + results.size() + " results in " + elapsed + " milliseconds");
       SourceResponseImpl response = new SourceResponseImpl(queryRequest, results);
       response.setHits(results.size());
       return response;
@@ -314,7 +313,6 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
     LOGGER.info("Returning null for configured source");
     return null;
   }
-
 
   /**
    * Gets content types.
@@ -362,6 +360,16 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
   }
 
   /**
+   * Gets id.
+   *
+   * @return the id
+   */
+  public String getId() {
+
+    return ssShortName;
+  }
+
+  /**
    * Gets title.
    *
    * @return the title
@@ -396,40 +404,46 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
     }
     return org;
   }
-
-  /**
-   * Gets id.
-   *
-   * @return the id
-   */
-  public String getId() {
-
-    return ssShortName;
-  }
   //endregion
 
+  /**
+   * Sets id.
+   *
+   * @param id the id
+   */
+  public void setId(String id) {
+    this.sourceId = id;
+  }
+
   //region Http Query
-  protected ArrayList<CRSResponse> queryWithParams(Query query, ContextualSearch
-          contextualSearch, TemporalFilter temporalFilter, SpatialFilter spatialFilter) {
+  protected ArrayList<CRSResponse> queryWithParams(
+      Query query,
+      String contextualSearch,
+      TemporalFilter temporalFilter,
+      SpatialFilter spatialFilter) {
     if (restGetService == null) {
 
-      restGetService = new RestGetService(this, mode,client);
+      restGetService = new RestGetService(this, mode, client);
       LOGGER.debug("Created RestGetService with BaseUrl of {}", ssServiceUrl);
     }
 
     LOGGER.debug("Inside Query With Params");
     List<CRSResponse> results = new ArrayList<CRSResponse>();
-    results = getRestResults((ArrayList<CRSResponse>) results, restGetService, query,
-            contextualSearch, temporalFilter, spatialFilter);
+    results =
+        getRestResults(
+            (ArrayList<CRSResponse>) results,
+            restGetService,
+            query,
+            contextualSearch,
+            temporalFilter,
+            spatialFilter);
 
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("queryTfr Returning " + results);
     }
     return (ArrayList<CRSResponse>) results;
   }
-  //endregion
 
-  //region Metacard and Results
   /**
    * Create result list.
    *
@@ -445,8 +459,7 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
     try {
 
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("Obtained " + CRSRespons.size() + " CRSResponse " +
-                "Objects");
+        LOGGER.debug("Obtained " + CRSRespons.size() + " CRSResponse " + "Objects");
       }
 
       String hitTitle = null;
@@ -466,13 +479,18 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
 
           String metadataString = null;
           if (mode == SAX) {
-            metadataString = "<metadata>" + StringEscapeUtils.escapeXml11(fedSourceResponse.getMetaData()) +
-                    "</metadata>";
-            metaCardData.setMetadata("<metadata>" + StringEscapeUtils.escapeXml11(metadataString) + "</metadata>");
+            metadataString =
+                "<metadata>"
+                    + StringEscapeUtils.escapeXml11(fedSourceResponse.getMetaData())
+                    + "</metadata>";
+            metaCardData.setMetadata(
+                "<metadata>" + StringEscapeUtils.escapeXml11(metadataString) + "</metadata>");
           } else {
 
-            metadataString = "<metadata>" + StringEscapeUtils.escapeXml11(fedSourceResponse.getMetaData()) +
-                    "</metadata>";
+            metadataString =
+                "<metadata>"
+                    + StringEscapeUtils.escapeXml11(fedSourceResponse.getMetaData())
+                    + "</metadata>";
             LOGGER.trace(metadataString);
             metaCardData.setMetadata(metadataString);
           }
@@ -490,17 +508,17 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
           metaCardData.setExpirationDate(expiration.getTime());
           metaCardData.setTitle(hitTitle);
 
-          if(contentTypeName != null){
+          if (contentTypeName != null) {
             metaCardData.setContentTypeName(contentTypeName);
 
-          }else{
+          } else {
             metaCardData.setContentTypeName(DEFAULT_TYPE);
           }
 
           metaCardData.setContentTypeVersion(DEFAULT_TYPE_VERSION);
           if (fedSourceResponse.getClassification() != null) {
-            metaCardData.setAttribute(CRSMetacardType.CLASSIFICATION, fedSourceResponse
-                    .getClassification());
+            metaCardData.setAttribute(
+                CRSMetacardType.CLASSIFICATION, fedSourceResponse.getClassification());
           } else {
             metaCardData.setAttribute(CRSMetacardType.CLASSIFICATION, "Unknown");
           }
@@ -525,15 +543,15 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
             metaCardData.setAttribute(CRSMetacardType.UNIT, "Unknown Unit");
           }
           if (fedSourceResponse.getPrimaryEventType() != null) {
-            metaCardData.setAttribute(CRSMetacardType.EVENT_TYPE, fedSourceResponse
-                    .getPrimaryEventType());
+            metaCardData.setAttribute(
+                CRSMetacardType.EVENT_TYPE, fedSourceResponse.getPrimaryEventType());
           } else {
             metaCardData.setAttribute(CRSMetacardType.EVENT_TYPE, "Unknown Event Type");
           }
           //  metaCardData.setResourceURI(new URI(CRSResponse.getSsReportLink()));
           if (fedSourceResponse.getReportLink() != null) {
-            metaCardData.setAttribute(CRSMetacardType.REPORT_LINK, fedSourceResponse
-                    .getReportLink());
+            metaCardData.setAttribute(
+                CRSMetacardType.REPORT_LINK, fedSourceResponse.getReportLink());
           } else {
             metaCardData.setAttribute(CRSMetacardType.REPORT_LINK, "No Supplied Link");
           }
@@ -541,12 +559,15 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
             metaCardData.setLocation(fedSourceResponse.getLocation());
           } else {
             if (fedSourceResponse.getLongitude() != 0.0 && fedSourceResponse.getLatitude() != 0.0) {
-              metaCardData.setLocation("POINT (" + Double.parseDouble(decimalFormatter.format(fedSourceResponse
-                      .getLongitude())) + " " + Double.parseDouble(decimalFormatter.format(fedSourceResponse
-                      .getLatitude())) + ")");
+              metaCardData.setLocation(
+                  "POINT ("
+                      + Double.parseDouble(
+                          decimalFormatter.format(fedSourceResponse.getLongitude()))
+                      + " "
+                      + Double.parseDouble(decimalFormatter.format(fedSourceResponse.getLatitude()))
+                      + ")");
             }
           }
-
 
           if (LOGGER.isDebugEnabled()) {
             if (metaCardData.getId() != null) {
@@ -577,8 +598,8 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
               LOGGER.trace("Location: " + metaCardData.getLocation());
             }
             if (metaCardData.getAttribute(CRSMetacardType.SUMMARY) != null) {
-              LOGGER.trace("Summary:" + metaCardData.getAttribute(CRSMetacardType.SUMMARY)
-                      .toString());
+              LOGGER.trace(
+                  "Summary:" + metaCardData.getAttribute(CRSMetacardType.SUMMARY).toString());
             }
           }
           ResultImpl localEntry = new ResultImpl(metaCardData);
@@ -601,17 +622,22 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
     }
     return results;
   }
+  //endregion
 
-  private ArrayList<CRSResponse> getRestResults(ArrayList<CRSResponse>
-                                                                             results, SourceService service, Query
-          query, ContextualSearch contextualSearch, TemporalFilter temporalFilter, SpatialFilter spatialFilter) {
+  //region Rest Results
+  private ArrayList<CRSResponse> getRestResults(
+      ArrayList<CRSResponse> results,
+      SourceService service,
+      Query query,
+      String contextualSearch,
+      TemporalFilter temporalFilter,
+      SpatialFilter spatialFilter) {
     HttpUrl httpUrl = HttpUrl.parse(ssServiceUrl);
 
     HttpUrl.Builder httpBuilder = httpUrl.newBuilder();
 
     //Create array list to hold query params.
     //ArrayList<String> queryParams = new ArrayList<String>();
-    String searchParams = null;
     String startDate = null;
     String endDate = null;
     StringBuilder topLeftLatLong = null;
@@ -619,9 +645,7 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
     try {
       LOGGER.debug("Creating Filters");
       if (contextualSearch != null) {
-        LOGGER.debug("Contextual Search = " + contextualSearch.getSelectors() + " search phrase " + contextualSearch
-                .getSearchPhrase());
-        searchParams = contextualSearch.getSearchPhrase();
+        LOGGER.debug("Contextual Search = " + contextualSearch);
       }
       if (temporalFilter != null) {
         //sets the date to a specific format "yyyy-MM-dd'T'HH:mm:ssZ"
@@ -630,14 +654,18 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
 
         if (LOGGER.isDebugEnabled()) {
           LOGGER.debug("UI START: " + temporalFilter.getStartDate());
-          LOGGER.debug("UI START: " + dateFormat.format(temporalFilter.getStartDate()) + "UI END: " + dateFormat
-                  .format(temporalFilter.getEndDate()));
+          LOGGER.debug(
+              "UI START: "
+                  + dateFormat.format(temporalFilter.getStartDate())
+                  + "UI END: "
+                  + dateFormat.format(temporalFilter.getEndDate()));
         }
         LOGGER.debug("START: " + startDate + " END: " + endDate);
       } else {
         //if temporal filter is null then do the exact same thing
         //NOTE changed this, was unnecessarily checking for null again
-        LOGGER.info("Temporal Filter was null setting start date to 1970 and end date to the current day and time");
+        LOGGER.info(
+            "Temporal Filter was null setting start date to 1970 and end date to the current day and time");
         Calendar c = Calendar.getInstance();
         c.set(1970, 0, 1);
         startDate = dateFormat.format(c.getTime());
@@ -645,7 +673,8 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
         endDate = dateFormat.format(c.getTime());
       }
       //Add variable to queryParams and append a &
-      if (ssTemporalSearchParamStart != null && !ssTemporalSearchParamStart.equalsIgnoreCase("null")) {
+      if (ssTemporalSearchParamStart != null
+          && !ssTemporalSearchParamStart.equalsIgnoreCase("null")) {
         httpBuilder.addQueryParameter(ssTemporalSearchParamStart, startDate);
         //queryParams.add(ssTemporalSearchParamStart + "=" + startDate + "&");
       }
@@ -677,12 +706,18 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
             LOGGER.trace("DirectPosition: " + dp);
             //create a coordinates array based on the direct position
             double[] coords = dp.getCoordinate();
-            LOGGER.trace("Creating bbox from " + coords[0] + ", " + coords[1] + ", " + sdf.getDistanceInMeters());
-
+            LOGGER.trace(
+                "Creating bbox from "
+                    + coords[0]
+                    + ", "
+                    + coords[1]
+                    + ", "
+                    + sdf.getDistanceInMeters());
 
             //createBBoxFromPointRadius = minX, minY, maxX, maxY
-            double[] bboxCoords = SourceUtil.createBBoxFromPointRadius(coords[0], coords[1], sdf
-                    .getDistanceInMeters());
+            double[] bboxCoords =
+                SourceUtil.createBBoxFromPointRadius(
+                    coords[0], coords[1], sdf.getDistanceInMeters());
             //create string builder for top left
             topLeftLatLong = new StringBuilder();
             //create string builder for bottom right
@@ -692,11 +727,15 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
             //appending the Max Y variable //append Space  //then the Min Y variable
             bottomRightLatLong.append(bboxCoords[1]).append(" ").append(bboxCoords[2]);
             //Add variable to queryParams and append a &
-            if (ssSpatialSearchParamLat != null && !ssSpatialSearchParamLat.equalsIgnoreCase("null")) {
-              httpBuilder.addQueryParameter(ssSpatialSearchParamLat, String.valueOf(topLeftLatLong));
+            if (ssSpatialSearchParamLat != null
+                && !ssSpatialSearchParamLat.equalsIgnoreCase("null")) {
+              httpBuilder.addQueryParameter(
+                  ssSpatialSearchParamLat, String.valueOf(topLeftLatLong));
             }
-            if (ssSpatialSearchParamLong != null && !ssSpatialSearchParamLong.equalsIgnoreCase("null")) {
-              httpBuilder.addQueryParameter(ssSpatialSearchParamLong, String.valueOf(bottomRightLatLong));
+            if (ssSpatialSearchParamLong != null
+                && !ssSpatialSearchParamLong.equalsIgnoreCase("null")) {
+              httpBuilder.addQueryParameter(
+                  ssSpatialSearchParamLong, String.valueOf(bottomRightLatLong));
             }
           } catch (Exception ex) {
             LOGGER.error(ex.getMessage());
@@ -718,11 +757,15 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
             topLeftLatLong.append(bboxCoords[3]).append(" ").append(bboxCoords[0]);
             //appending the Max Y variable //append Space  //then the Min Y variable
             bottomRightLatLong.append(bboxCoords[1]).append(" ").append(bboxCoords[2]);
-            if (ssSpatialSearchParamLat != null && !ssSpatialSearchParamLat.equalsIgnoreCase("null")) {
-              httpBuilder.addQueryParameter(ssSpatialSearchParamLat, String.valueOf(topLeftLatLong));
+            if (ssSpatialSearchParamLat != null
+                && !ssSpatialSearchParamLat.equalsIgnoreCase("null")) {
+              httpBuilder.addQueryParameter(
+                  ssSpatialSearchParamLat, String.valueOf(topLeftLatLong));
             }
-            if (ssSpatialSearchParamLong != null && !ssSpatialSearchParamLong.equalsIgnoreCase("null")) {
-              httpBuilder.addQueryParameter(ssSpatialSearchParamLong, String.valueOf(bottomRightLatLong));
+            if (ssSpatialSearchParamLong != null
+                && !ssSpatialSearchParamLong.equalsIgnoreCase("null")) {
+              httpBuilder.addQueryParameter(
+                  ssSpatialSearchParamLong, String.valueOf(bottomRightLatLong));
             }
           } else {
             LOGGER.trace("WKT ({}) not supported for SPATIAL search, use POLYGON.", wktStr);
@@ -730,7 +773,7 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
         }
       }
       if (ssContextSearchParam != null && !ssContextSearchParam.equalsIgnoreCase("null")) {
-        httpBuilder.addQueryParameter(ssContextSearchParam, searchParams);
+        httpBuilder.addQueryParameter(ssContextSearchParam, contextualSearch);
       }
 
       //Make the call to the service
@@ -752,14 +795,13 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
   public String getSsDescription() {
     return ssDescription;
   }
-  /**
-   * Sets id.
-   *
-   * @param id the id
-   */
-  public void setId(String id) {
-    this.sourceId = id;
+
+  public void setSsDescription(String ssDescription) {
+    LOGGER.debug("Spring setting variable ssDescription to {}", ssDescription);
+
+    this.ssDescription = ssDescription;
   }
+
   /**
    * Gets ssShortName.
    *
@@ -779,11 +821,6 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
 
     this.ssShortName = ssShortName;
   }
-  public void setSsDescription(String ssDescription) {
-    LOGGER.debug("Spring setting variable ssDescription to {}", ssDescription);
-
-    this.ssDescription = ssDescription;
-  }
 
   public String getSsWktStringParam() {
     return ssWktStringParam;
@@ -795,7 +832,6 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
     this.ssWktStringParam = ssWktStringParam;
   }
 
-
   public String getSsClientCertPath() {
     return ssClientCertPath;
   }
@@ -805,15 +841,16 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
 
     this.ssClientCertPath = ssClientCertPath;
 
-    if(ssClientCertPassword != null && !ssClientCertPassword.trim().equalsIgnoreCase("")) {
+    if (ssClientCertPassword != null && !ssClientCertPassword.trim().equalsIgnoreCase("")) {
       if (ssClientCertPath != null && !ssClientCertPath.equalsIgnoreCase("")) {
-        if(client != null){
-          client =null;
+        if (client != null) {
+          client = null;
         }
-        client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15, 15, getSsClientCertPath(), getSsClientCertPassword());
+        client =
+            new TrustingOkHttpClient()
+                .getUnsafeOkHttpClient(15, 15, getSsClientCertPath(), getSsClientCertPassword());
       }
     }
-
   }
 
   public String getSsClientCertPassword() {
@@ -823,15 +860,16 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
   public void setSsClientCertPassword(String ssClientCertPassword) {
     LOGGER.debug("Spring setting variable ssClientCertPassword to {}", ssClientCertPassword);
     this.ssClientCertPassword = ssClientCertPassword;
-    if(ssClientCertPassword != null && !ssClientCertPassword.trim().equalsIgnoreCase("")) {
+    if (ssClientCertPassword != null && !ssClientCertPassword.trim().equalsIgnoreCase("")) {
       if (ssClientCertPath != null && !ssClientCertPath.equalsIgnoreCase("")) {
-        if(client != null){
-          client =null;
+        if (client != null) {
+          client = null;
         }
-        client = new TrustingOkHttpClient().getUnsafeOkHttpClient(15, 15, getSsClientCertPath(), getSsClientCertPassword());
+        client =
+            new TrustingOkHttpClient()
+                .getUnsafeOkHttpClient(15, 15, getSsClientCertPath(), getSsClientCertPassword());
       }
     }
-
   }
 
   public String getContentTypeName() {
@@ -877,7 +915,8 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
   }
 
   public void setSsSpatialSearchParamLong(String ssSpatialSearchParamLong) {
-    LOGGER.debug("Spring setting variable ssSpatialSearchParamLong to {}", ssSpatialSearchParamLong);
+    LOGGER.debug(
+        "Spring setting variable ssSpatialSearchParamLong to {}", ssSpatialSearchParamLong);
 
     this.ssSpatialSearchParamLong = ssSpatialSearchParamLong;
   }
@@ -887,7 +926,8 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
   }
 
   public void setSsTemporalSearchParamEnd(String ssTemporalSearchParamEnd) {
-    LOGGER.debug("Spring setting variable ssTemporalSearchParamEnd to {}", ssTemporalSearchParamEnd);
+    LOGGER.debug(
+        "Spring setting variable ssTemporalSearchParamEnd to {}", ssTemporalSearchParamEnd);
 
     this.ssTemporalSearchParamEnd = ssTemporalSearchParamEnd;
   }
@@ -897,7 +937,8 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
   }
 
   public void setSsTemporalSearchParamStart(String ssTemporalSearchParamStart) {
-    LOGGER.debug("Spring setting variable ssTemporalSearchParamStart to {}", ssTemporalSearchParamStart);
+    LOGGER.debug(
+        "Spring setting variable ssTemporalSearchParamStart to {}", ssTemporalSearchParamStart);
 
     this.ssTemporalSearchParamStart = ssTemporalSearchParamStart;
   }
