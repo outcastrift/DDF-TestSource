@@ -17,11 +17,13 @@
     <packaging>bundle</packaging>
     <name>Configurable Rest Source:: Test Endpoint</name>
     <properties>
+        <cxf-rt-frontend-jaxrs.version>3.0.4</cxf-rt-frontend-jaxrs.version>
+        <javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
+        <org-glassfish-jersey-common-version>2.22.1</org-glassfish-jersey-common-version>
+        <jersey-client-version>1.8</jersey-client-version>
 
     </properties>
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/com.vividsolutions/jts -->
-
 
         <!--START ENDPOINT RELATED-->
         <dependency>
@@ -57,17 +59,11 @@
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-core</artifactId>
-            <version>${shiro.version}</version>
+            <version>1.2.4</version>
         </dependency>
         <!--END DDF RELATED-->
-        <!--START NETWORK RELATED-->
 
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>${http-client-version}</version>
-        </dependency>
-        <!--END NETWORK RELATED-->
+
 
         <!--START GENERAL RELATED-->
         <dependency>
@@ -89,6 +85,7 @@
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
+            <version>${commons-lang.version}</version>
         </dependency>
         <!--END GENERAL RELATED-->
         <!-- START LOGGING RELATED -->
@@ -122,8 +119,6 @@
             <version>${junit.version}</version>
         </dependency>
         <!--END TEST RELATED-->
-
-
     </dependencies>
 
     <build>
@@ -131,7 +126,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.7</version>
+                <version>3.2.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
@@ -145,7 +140,7 @@
                         </Embed-Dependency>
                         <Import-Package>*</Import-Package>
                         <Export-Package>
-                            com.davis.ddf.test.*
+                            com.davis.ddf.crs.*
                         </Export-Package>
                     </instructions>
                 </configuration>

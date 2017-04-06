@@ -13,6 +13,8 @@
  **/
 package com.davis.ddf.crs;
 
+import com.davis.ddf.crs.jsonapi.JsonApiResponse;
+import com.davis.ddf.crs.jsonapi.JsonApiResponseError;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -23,9 +25,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import com.davis.ddf.test.restEndpoint.jsonapi.JsonApiResponse;
-import com.davis.ddf.test.restEndpoint.jsonapi.JsonApiResponseError;
 
 /**
  * Class that will provide support for returning an HTML response and message.  See:

@@ -1,11 +1,11 @@
 package com.davis.ddf.crs;
 
-import com.davis.ddf.test.fedSource.datamodel.InMemoryDataStore;
-import com.davis.ddf.test.fedSource.datamodel.UniversalFederatedSourceResponse;
-import com.davis.ddf.test.groovySource.datamodel.GroovyResponseObject;
-import com.davis.ddf.test.restEndpoint.SourceEndpointException;
-import com.davis.ddf.test.restEndpoint.jsonapi.JsonApiResponse;
 
+
+import com.davis.ddf.crs.data.GroovyResponseObject;
+import com.davis.ddf.crs.data.InMemoryDataStore;
+import com.davis.ddf.crs.data.UniversalFederatedSourceResponse;
+import com.davis.ddf.crs.jsonapi.JsonApiResponse;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

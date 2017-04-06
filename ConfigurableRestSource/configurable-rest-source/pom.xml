@@ -29,17 +29,6 @@
       <version>${slf4j.version}</version>
     </dependency>
     <!--START DDF-->
-    <!--Depends on 2.9.1 and Above-->
-    <dependency>
-      <groupId>ddf.platform.util</groupId>
-      <artifactId>platform-util</artifactId>
-      <version>${primary.ddf.version}</version>
-    </dependency>
-    <!--<dependency>
-      <groupId>ddf.security.core</groupId>
-      <artifactId>security-core-api</artifactId>
-      <version>${primary.ddf.version}</version>
-    </dependency>-->
     <dependency>
       <groupId>ddf.catalog.core</groupId>
       <artifactId>catalog-core-api</artifactId>
@@ -50,11 +39,11 @@
       <artifactId>catalog-core-api-impl</artifactId>
       <version>${primary.ddf.version}</version>
     </dependency>
-    <dependency>
+   <!-- <dependency>
       <groupId>ddf.catalog.core</groupId>
       <artifactId>catalog-core-commons</artifactId>
       <version>${primary.ddf.version}</version>
-    </dependency>
+    </dependency>-->
     <!--END DDF-->
     <!--START GENERAL -->
 
@@ -113,25 +102,11 @@
     <!--END NETWORK CALLS-->
     <!--START TESTING-->
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <scope>test</scope>
-      <version>${slf4j-log4j12.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-      <version>${junit.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-cql</artifactId>
       <version>15.0</version>
       <scope>test</scope>
     </dependency>
-
-
     <!--END TESTING-->
 
   </dependencies>
@@ -150,9 +125,7 @@
             <Bundle-SymbolicName>
               ${project.groupId}.${project.artifactId}
             </Bundle-SymbolicName>
-            <Private-Package>org.codice.ddf.platform.util.*</Private-Package>
             <Embed-Dependency>
-              platform-util,
               json-path,
               json-smart,
               json,
@@ -161,11 +134,11 @@
               okhttp,
               okio,
               commons-lang3,
-              urlbuilder,
               catalog-core-api-impl
             </Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
             <Import-Package>
+              !org.codice.ddf.platform.*,
               !com.fasterxml.jackson.*,
               !android.*,
               org.jdom2;resolution:="optional",
