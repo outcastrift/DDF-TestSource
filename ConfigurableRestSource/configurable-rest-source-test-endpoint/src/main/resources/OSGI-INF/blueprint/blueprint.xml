@@ -11,40 +11,14 @@
       http://cxf.apache.org/blueprint/core http://cxf.apache.org/schemas/blueprint/core.xsd">
 
 
-  <!--REST ENDPOINT START-->
   <jaxrs:server id="restService" address="/test">
     <jaxrs:serviceBeans>
       <ref component-id="testSource"/>
     </jaxrs:serviceBeans>
   </jaxrs:server>
-  <!--
-We are using the OSGi Blueprint XML syntax to define a bean that we referred to in our JAX-RS server setup.
-This bean carries a set of JAX-RS annotations that allow its methods to be mapped to incoming requests.
-  -->
-  <bean id="testSource" class="com.davis.ddf.test.restEndpoint.SourceEndpoint"/>
-  <!--REST ENDPOINT END-->
 
+  <bean id="testSource" class="com.davis.ddf.crs.SourceEndpoint"/>
 
-  <!--Federated SourceEndpoint Start-->
-
-  <!--    <reference id="mimeTypeMapper" interface="ddf.mime.MimeTypeMapper"/>
-
-      <reference id="metacardTypeRegistry" interface="ddf.catalog.data.MetacardTypeRegistry"/>
-
-      <reference id="catalogFramework" interface="ddf.catalog.CatalogFramework"/>-->
-
-  <!--<bean id="TestFederatedSource" class="com.davisvis.ddf.test.ddf.test.source.fedSource.FederatedSource">
-      <cm:managed-properties persistent-id="TestBedFederatedSource"
-                             update-strategy="container-managed"/>
-      <argument ref="blueprintBundleContext"/>
-      <argument ref="mimeTypeMapper"/>
-      <argument ref="metacardTypeRegistry"/>
-      <argument ref="catalogFramework"/>
-
-  </bean>-->
-  <!--    <service ref="TestFederatedSource" interface="ddf.catalog.source.FederatedSource"/>
-      <service ref="TestFederatedSource" interface="ddf.catalog.source.RemoteSource"/>-->
-  <!--Federated SourceEndpoint End-->
 
 
 </blueprint>

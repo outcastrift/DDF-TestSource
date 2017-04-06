@@ -54,7 +54,7 @@ public class SourceEndpoint {
    * The constant TAG.
    */
   private static final Logger logger = LoggerFactory.getLogger(SourceEndpoint.class);
-  SimpleDateFormat dateFormat;
+  private SimpleDateFormat dateFormat;
   private Date DEFAULT_START;
   private Date DEFAULT_END;
   private ArrayList<String> originateUnit;
