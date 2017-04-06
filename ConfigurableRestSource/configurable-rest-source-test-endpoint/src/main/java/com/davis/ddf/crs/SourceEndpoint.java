@@ -99,7 +99,7 @@ public class SourceEndpoint {
 
     dataStore = new InMemoryDataStore();
     try {
-      createCannedResults("cannedResults.json");
+   //   createCannedResults("cannedResults.json");
       createCannedResults("usaResults.json");
     } catch (FileNotFoundException e1) {
       logger.error("Unable to create canned Dataset for endpoint. {}", e);
@@ -144,7 +144,7 @@ public class SourceEndpoint {
             new InputStreamReader(
                 SourceEndpoint.class.getClassLoader().getResourceAsStream(fileName)));
     JsonReader jsonReader = new JsonReader(reader);
-    List<CRSEndpointResponse> data = gson.fromJson(reader, RESPONSE_TYPE);
+    List<CRSEndpointResponse> data = gson.fromJson(jsonReader, RESPONSE_TYPE);
     cannedResponses.addAll(data);
   }
 
@@ -152,14 +152,14 @@ public class SourceEndpoint {
       InMemoryDataStore dataStore, int itemId, int idOffset) {
 
     //Works for USA
-   /* double topLeftLat = 47.5531;
+    double topLeftLat = 47.5531;
     double topLeftLng = -124.3574;
-    double bottomRightLat = -71.6631;
-    double bottomRightLng = 31.0422;*/
-    double topLeftLat = 90;
+    double bottomRightLat = 29.8240;
+    double bottomRightLng = -66.3350;
+   /* double topLeftLat = 90;
     double topLeftLng = -180;
     double bottomRightLat = -90 ;
-    double bottomRightLng = 180;
+    double bottomRightLng = 180;*/
     CRSEndpointResponse uniResponse = new CRSEndpointResponse();
     int whichGeom = ThreadLocalRandom.current().nextInt(6);
     //logger.info("Array Number = {}", whichGeom);
@@ -465,7 +465,7 @@ public class SourceEndpoint {
 
   private boolean checkQueryString(String queryString, CRSEndpointResponse item) {
     boolean result = false;
-    if(queryString != null){
+    if(queryString != null && !queryString.equalsIgnoreCase("%")){
       String[] queryParams = queryString.split(" ");
       String itemRollUp =
               item.getClassification()
@@ -516,11 +516,11 @@ public class SourceEndpoint {
     try {
       Geometry geometry = reader.read(itemLocation);
       Point center = geometry.getCentroid();
-      double lat = center.getX();
-      double lng = center.getY();
+      double lat = item.getLatitude();
+      double lng = item.getLongitude();
 
       if (lat > bottomRightLat && lat < topLeftLat) {
-        if (lng > bottomRightLng && lng < topLeftLng) {
+        if (lng < bottomRightLng && lng > topLeftLng) {
           result = true;
         }
       }

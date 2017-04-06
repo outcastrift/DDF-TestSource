@@ -45,7 +45,7 @@ public class CreateCannedDataSet {
             responses.add(sourceEndpoint.createCannedResult(dataStore, x, 0));
         }
         try {
-            writeDataObjectsToJsonFile(responses, "cannedResults.json");
+            writeDataObjectsToJsonFile(responses, "usaResults.json");
         } catch (IOException e) {
             e.printStackTrace();
         }
