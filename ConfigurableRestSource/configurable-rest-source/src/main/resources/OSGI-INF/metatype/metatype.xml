@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metatype:MetaData xmlns:metatype="http://www.osgi.org/xmlns/metatype/v1.0.0">
 
-  <OCD name="TestBed Federated Source"
-      description="Test Bed Federated Source"
+  <OCD name="Configurable REST Federated Source"
+      description="Configurable REST Federated Source"
       id="com.davis.ddf.crs.CRSSource">
     <AD description="Name to display in the Search UI" name="Short Name" id="ssShortName"
         required="false"
-        type="String" default="TestBedFederatedSource"/>
+        type="String" default="CRSFederatedSource"/>
 
     <AD description="The full URL to the endpoint to query without the ? at the end."
         name="Endpoint Query URL" id="ssServiceUrl" required="true"
