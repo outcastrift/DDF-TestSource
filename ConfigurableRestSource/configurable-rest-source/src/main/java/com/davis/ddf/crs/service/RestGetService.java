@@ -7,11 +7,10 @@ package com.davis.ddf.crs.service;
  */
 
 
+import com.davis.ddf.crs.CRSSource;
 import com.davis.ddf.crs.client.TrustingOkHttpClient;
-import com.davis.ddf.crs.UniversalFederatedSource;
-import com.davis.ddf.crs.data.UniversalFederatedSourceResponse;
-import com.davis.ddf.crs.parsing.UniversalFederatedSourceParser;
-import com.davis.ddf.crs.service.SourceService;
+import com.davis.ddf.crs.data.CRSResponse;
+import com.davis.ddf.crs.parsing.CRSParser;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,14 +25,14 @@ import okhttp3.Response;
 
 
 public class RestGetService implements SourceService {
-  private static final Logger LOGGER = LoggerFactory.getLogger(UniversalFederatedSource.class);
-  UniversalFederatedSource source;
+  private static final Logger LOGGER = LoggerFactory.getLogger(CRSSource.class);
+  CRSSource source;
   private String url;
   private OkHttpClient client;
-  private UniversalFederatedSourceParser parser;
+  private CRSParser parser;
 
 
-  public RestGetService(UniversalFederatedSource source, int mode,
+  public RestGetService(CRSSource source, int mode,
                         OkHttpClient client) {
     this.source = source;
     this.client = client;
@@ -41,7 +40,7 @@ public class RestGetService implements SourceService {
 
     this.url = source.getSsServiceUrl();
     LOGGER.debug("Creating REST Service for " + this.url);
-    parser = new UniversalFederatedSourceParser(mode, source);
+    parser = new CRSParser(mode, source);
 
   }
 
@@ -57,8 +56,8 @@ public class RestGetService implements SourceService {
    *                strings within the array list also need to hold the queryParameter. Ie amount=
    **/
   @Override
-  public ArrayList<UniversalFederatedSourceResponse> getResultsForQuery(HttpUrl httpUrl) {
-    ArrayList<UniversalFederatedSourceResponse> finalResultsList = null;
+  public ArrayList<CRSResponse> getResultsForQuery(HttpUrl httpUrl) {
+    ArrayList<CRSResponse> finalResultsList = null;
 
     LOGGER.debug("OkHttp URL to Call = {}", httpUrl.url().toString());
 
@@ -84,7 +83,7 @@ public class RestGetService implements SourceService {
         //do nothing
       }
       //create empty result list to prevents errors
-      finalResultsList = new ArrayList<UniversalFederatedSourceResponse>();
+      finalResultsList = new ArrayList<CRSResponse>();
       return finalResultsList;
     }
     //Time to create POJOs

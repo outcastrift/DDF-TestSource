@@ -1,14 +1,15 @@
 package com.davis.ddf.crs;
 
 import com.davis.ddf.crs.client.TrustingOkHttpClient;
-import com.davis.ddf.crs.data.UniversalFederatedSourceResponse;
-import com.davis.ddf.crs.data.metacard.UniversalFederatedSourceMetacard;
-import com.davis.ddf.crs.data.metacard.UniversalFederatedSourceMetacardType;
+import com.davis.ddf.crs.data.CRSResponse;
+import com.davis.ddf.crs.data.CRSMetacard;
+import com.davis.ddf.crs.data.CRSMetacardType;
 import com.davis.ddf.crs.filter.ContextualSearch;
-import com.davis.ddf.crs.filter.OpenSearchSiteUtil;
+import com.davis.ddf.crs.filter.CRSFilterVisitor;
 import com.davis.ddf.crs.service.SourceService;
 import com.davis.ddf.crs.service.RestGetService;
 
+import com.davis.ddf.crs.util.SourceUtil;
 import ddf.catalog.data.impl.ContentTypeImpl;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.opengis.geometry.DirectPosition;
@@ -19,9 +20,6 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -38,7 +36,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 
 import ddf.catalog.CatalogFramework;
 import ddf.catalog.data.ContentType;
@@ -59,15 +56,15 @@ import ddf.catalog.resource.ResourceNotSupportedException;
 import ddf.catalog.source.IngestException;
 import ddf.catalog.source.SourceMonitor;
 import ddf.catalog.source.UnsupportedQueryException;
-import ddf.catalog.util.Describable;
 import ddf.mime.MimeTypeMapper;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 
-public class UniversalFederatedSource implements ddf.catalog.source.FederatedSource, Describable {
+public class CRSSource implements ddf.catalog.source.FederatedSource {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(UniversalFederatedSource.class);
-  private static final String DEFAULT_TYPE = UniversalFederatedSourceMetacardType.NAME;
+  //region Class Variables
+  private static final Logger LOGGER = LoggerFactory.getLogger(CRSSource.class);
+  private static final String DEFAULT_TYPE = CRSMetacardType.NAME;
   private String contentTypeName = "Sigact";
   private static final long EXPIRATION_OFFSET = 3600000;
   private static int SAX = 1;
@@ -116,11 +113,13 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
   private boolean isAvailable;
   private String sourceId = "UniversalFedSource" + ssShortName;
   private MetacardTypeRegistry metacardTypeRegistry;
+  //endregion
 
+  //region Constructors
   /**
    * Test Constructor
    **/
-  public UniversalFederatedSource(HashMap<String, String> springVars) {
+  public CRSSource(HashMap<String, String> springVars) {
     setSsShortName(springVars.get("ssShortName"));
     setSsClassification(springVars.get("ssClassification"));
     setSsDateOccurred(springVars.get("ssDateOccurred"));
@@ -149,7 +148,7 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
       String dateFormatPattern = "yyyy-MM-dd'T'HH:mm:ssZ";
       dateFormat = new SimpleDateFormat(dateFormatPattern);
       isAvailable = true;
-      LOGGER.info("Successfully created UniversalFederatedSource");
+      LOGGER.info("Successfully created CRSSource");
 
     } catch (Exception ex) {
       LOGGER.error("Error  = {}",ex);
@@ -161,14 +160,14 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
    *
    * @throws IngestException the ingest exception
    */
-  public UniversalFederatedSource() {
+  public CRSSource() {
     mode = REST;
     setupOSGIServices();
     try {
       String dateFormatPattern = "yyyy-MM-dd'T'HH:mm:ssZ";
       dateFormat = new SimpleDateFormat(dateFormatPattern);
       isAvailable = true;
-      LOGGER.info("Successfully created UniversalFederatedSource");
+      LOGGER.info("Successfully created CRSSource");
 
     } catch (Exception ex) {
       LOGGER.error("Error  = {}",ex);
@@ -177,8 +176,11 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
 
   }
 
+  //endregion
+
+  //region Osgi Service Creation
   private void setupOSGIServices() {
-    BundleContext bc = FrameworkUtil.getBundle(UniversalFederatedSource.class).getBundleContext();
+    BundleContext bc = FrameworkUtil.getBundle(CRSSource.class).getBundleContext();
     //Service reference in order to populate our service
     ServiceReference serviceReference = bc.getServiceReference(MimeTypeMapper.class.getName());
     //get the service
@@ -190,7 +192,7 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
     metacardTypeRegistry = (MetacardTypeRegistry) bc.getService(serviceReference2);
     try {
 
-      metacardTypeRegistry.register(new UniversalFederatedSourceMetacardType());
+      metacardTypeRegistry.register(new CRSMetacardType());
     } catch (Exception ex) {
       ex.printStackTrace();
       LOGGER.error(ex.getMessage());
@@ -200,8 +202,9 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
     //get the service
     catalogFramework = (CatalogFramework) bc.getService(serviceReference3);
   }
+  //endregion
 
-
+  //region Federated Source Methods
   /**
    * Retrieve resource resource response.
    *
@@ -280,18 +283,18 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug("Query = " + query);
       }
-      UniversalSourceFilterVisitor visitor = new UniversalSourceFilterVisitor();
+      CRSFilterVisitor visitor = new CRSFilterVisitor();
       query.accept(visitor, null);
       ContextualSearch contextualFilter = visitor.getContextualSearch();
       TemporalFilter temporalFilter = visitor.getTemporalSearch();
       SpatialFilter spatialFilter = visitor.getSpatialSearch();
       long elapsed = System.currentTimeMillis();
-      ArrayList<UniversalFederatedSourceResponse> operationsUniversalFederatedSourceResponseReports = null;
+      ArrayList<CRSResponse> operationsCRSResponseReports = null;
       if (mode == SAX) {
         LOGGER.debug("SAX mode enabled entering queryWithSax ");
       } else if (mode == REST) {
         LOGGER.debug("REST mode enabled entering queryWithParams ");
-        operationsUniversalFederatedSourceResponseReports = queryWithParams(query, contextualFilter, temporalFilter,
+        operationsCRSResponseReports = queryWithParams(query, contextualFilter, temporalFilter,
                 spatialFilter);
         LOGGER.debug("REST :: exiting queryWithParams ");
       }
@@ -299,7 +302,7 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug("Received query: " + query);
       }
-     List<Result> results = createResultList(operationsUniversalFederatedSourceResponseReports);
+     List<Result> results = createResultList(operationsCRSResponseReports);
       elapsed = System.currentTimeMillis() - elapsed;
       LOGGER.debug("query returning " + results.size() + " results in " + elapsed + " milliseconds");
       SourceResponseImpl response = new SourceResponseImpl(queryRequest, results);
@@ -312,384 +315,6 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
     return null;
   }
 
-
-
-
-  protected ArrayList<UniversalFederatedSourceResponse> queryWithParams(Query query, ContextualSearch
-          contextualSearch, TemporalFilter temporalFilter, SpatialFilter spatialFilter) {
-    if (restGetService == null) {
-
-      restGetService = new RestGetService(this, mode,client);
-      LOGGER.debug("Created RestGetService with BaseUrl of {}", ssServiceUrl);
-    }
-
-    LOGGER.debug("Inside Query With Params");
-    List<UniversalFederatedSourceResponse> results = new ArrayList<UniversalFederatedSourceResponse>();
-    results = getRestResults((ArrayList<UniversalFederatedSourceResponse>) results, restGetService, query,
-            contextualSearch, temporalFilter, spatialFilter);
-
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("queryTfr Returning " + results);
-    }
-    return (ArrayList<UniversalFederatedSourceResponse>) results;
-  }
-
-  /**
-   * Create result list.
-   *
-   * @param universalFederatedSourceResponses the response objects
-   * @return the list
-   */
-  private List<Result> createResultList(ArrayList<UniversalFederatedSourceResponse> universalFederatedSourceResponses) {
-
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("CREATING RESULT LIST");
-    }
-    List<Result> results = new ArrayList<Result>();
-    try {
-
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("Obtained " + universalFederatedSourceResponses.size() + " UniversalFederatedSourceResponse " +
-                "Objects");
-      }
-
-      String hitTitle = null;
-      for (UniversalFederatedSourceResponse fedSourceResponse : universalFederatedSourceResponses) {
-        try {
-          UniversalFederatedSourceMetacard metaCardData = new UniversalFederatedSourceMetacard();
-          metaCardData.setSourceId(this.ssShortName);
-          hitTitle = fedSourceResponse.getDisplayTitle();
-          if (hitTitle == null || hitTitle.equals("")) {
-            hitTitle = "Unknown";
-          }
-          Date responseObjectDate = null;
-          if (fedSourceResponse.getDateOccurred() != null) {
-            responseObjectDate = fedSourceResponse.getDateOccurred();
-          }
-          metaCardData.setId(fedSourceResponse.getDisplaySerial());
-
-          String metadataString = null;
-          if (mode == SAX) {
-            metadataString = "<metadata>" + StringEscapeUtils.escapeXml11(fedSourceResponse.getMetaData()) +
-                    "</metadata>";
-            metaCardData.setMetadata("<metadata>" + StringEscapeUtils.escapeXml11(metadataString) + "</metadata>");
-          } else {
-
-            metadataString = "<metadata>" + StringEscapeUtils.escapeXml11(fedSourceResponse.getMetaData()) +
-                    "</metadata>";
-            LOGGER.trace(metadataString);
-            metaCardData.setMetadata(metadataString);
-          }
-          Calendar c = Calendar.getInstance();
-          long now = System.currentTimeMillis();
-          c.setTimeInMillis(now);
-          if (responseObjectDate != null) {
-            metaCardData.setCreatedDate(responseObjectDate);
-            metaCardData.setModifiedDate(responseObjectDate);
-            metaCardData.setEffectiveDate(responseObjectDate);
-          }
-
-          Calendar expiration = Calendar.getInstance();
-          expiration.setTimeInMillis(now + EXPIRATION_OFFSET);
-          metaCardData.setExpirationDate(expiration.getTime());
-          metaCardData.setTitle(hitTitle);
-
-          if(contentTypeName != null){
-            metaCardData.setContentTypeName(contentTypeName);
-
-          }else{
-            metaCardData.setContentTypeName(DEFAULT_TYPE);
-          }
-
-          metaCardData.setContentTypeVersion(DEFAULT_TYPE_VERSION);
-          if (fedSourceResponse.getClassification() != null) {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.CLASSIFICATION, fedSourceResponse
-                    .getClassification());
-          } else {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.CLASSIFICATION, "Unknown");
-          }
-          if (fedSourceResponse.getSummary() != null) {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.SUMMARY, fedSourceResponse.getSummary());
-          } else {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.SUMMARY, "No ssSummary");
-          }
-          if (fedSourceResponse.getLatitude() != null) {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.LAT, fedSourceResponse.getLatitude());
-          } else {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.LAT, 0.0);
-          }
-          if (fedSourceResponse.getLongitude() != null) {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.LON, fedSourceResponse.getLongitude());
-          } else {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.LON, 0.0);
-          }
-          if (fedSourceResponse.getOriginatorUnit() != null) {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.UNIT, fedSourceResponse.getOriginatorUnit());
-          } else {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.UNIT, "Unknown Unit");
-          }
-          if (fedSourceResponse.getPrimaryEventType() != null) {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.EVENT_TYPE, fedSourceResponse
-                    .getPrimaryEventType());
-          } else {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.EVENT_TYPE, "Unknown Event Type");
-          }
-          //  metaCardData.setResourceURI(new URI(UniversalFederatedSourceResponse.getSsReportLink()));
-          if (fedSourceResponse.getReportLink() != null) {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.REPORT_LINK, fedSourceResponse
-                    .getReportLink());
-          } else {
-            metaCardData.setAttribute(UniversalFederatedSourceMetacardType.REPORT_LINK, "No Supplied Link");
-          }
-          if (fedSourceResponse.getLocation() != null) {
-            metaCardData.setLocation(fedSourceResponse.getLocation());
-          } else {
-            if (fedSourceResponse.getLongitude() != 0.0 && fedSourceResponse.getLatitude() != 0.0) {
-              metaCardData.setLocation("POINT (" + Double.parseDouble(decimalFormatter.format(fedSourceResponse
-                      .getLongitude())) + " " + Double.parseDouble(decimalFormatter.format(fedSourceResponse
-                      .getLatitude())) + ")");
-            }
-          }
-
-
-          if (LOGGER.isDebugEnabled()) {
-            if (metaCardData.getId() != null) {
-              LOGGER.trace("Id: " + metaCardData.getId());
-            }
-            if (metaCardData.getMetadata() != null) {
-              LOGGER.trace("Metadata: " + metaCardData.getMetadata());
-            }
-            if (metaCardData.getContentTypeName() != null) {
-              LOGGER.trace("ContentTypeName: " + metaCardData.getContentTypeName());
-            }
-            if (metaCardData.getContentTypeVersion() != null) {
-              LOGGER.trace("ContentTypeVersion: " + metaCardData.getContentTypeVersion());
-            }
-            if (metaCardData.getTitle() != null) {
-              LOGGER.trace("Title: " + metaCardData.getTitle());
-            }
-            if (metaCardData.getEffectiveDate() != null) {
-              LOGGER.trace("Effective: " + metaCardData.getEffectiveDate().toString());
-            }
-            if (metaCardData.getCreatedDate() != null) {
-              LOGGER.trace("Created: " + metaCardData.getCreatedDate().toString());
-            }
-            if (metaCardData.getModifiedDate() != null) {
-              LOGGER.trace("Modified: " + metaCardData.getModifiedDate().toString());
-            }
-            if (metaCardData.getLocation() != null) {
-              LOGGER.trace("Location: " + metaCardData.getLocation());
-            }
-            if (metaCardData.getAttribute(UniversalFederatedSourceMetacardType.SUMMARY) != null) {
-              LOGGER.trace("Summary:" + metaCardData.getAttribute(UniversalFederatedSourceMetacardType.SUMMARY)
-                      .toString());
-            }
-          }
-          ResultImpl localEntry = new ResultImpl(metaCardData);
-          localEntry.setRelevanceScore(Double.valueOf(1.0));
-          localEntry.setDistanceInMeters(100.0);
-          results.add(localEntry);
-        } catch (Exception ex) {
-          LOGGER.error("******Error Setting MetaCard Data****************\n" + ex.toString());
-          ex.printStackTrace();
-        }
-      }
-      if (results.size() > 0) {
-        LOGGER.debug("Returning {} results", results.size());
-      } else {
-        LOGGER.debug("Returning 0 results");
-      }
-    } catch (Throwable t) {
-      LOGGER.error("Error during metacard creation of results");
-      t.printStackTrace();
-    }
-    return results;
-  }
-
-  private ArrayList<UniversalFederatedSourceResponse> getRestResults(ArrayList<UniversalFederatedSourceResponse>
-                                                                             results, SourceService service, Query
-          query, ContextualSearch contextualSearch, TemporalFilter temporalFilter, SpatialFilter spatialFilter) {
-    HttpUrl httpUrl = HttpUrl.parse(ssServiceUrl);
-
-    HttpUrl.Builder httpBuilder = httpUrl.newBuilder();
-
-    //Create array list to hold query params.
-    //ArrayList<String> queryParams = new ArrayList<String>();
-    String searchParams = null;
-    String startDate = null;
-    String endDate = null;
-    StringBuilder topLeftLatLong = null;
-    StringBuilder bottomRightLatLong = null;
-    try {
-      LOGGER.debug("Creating Filters");
-      if (contextualSearch != null) {
-        LOGGER.debug("Contextual Search = " + contextualSearch.getSelectors() + " search phrase " + contextualSearch
-                .getSearchPhrase());
-        searchParams = contextualSearch.getSearchPhrase();
-      }
-      if (temporalFilter != null) {
-        //sets the date to a specific format "yyyy-MM-dd'T'HH:mm:ssZ"
-        startDate = transformDateTfr(temporalFilter.getStartDate(), dateFormat);
-        endDate = transformDateTfr(temporalFilter.getEndDate(), dateFormat);
-
-        if (LOGGER.isDebugEnabled()) {
-          LOGGER.debug("UI START: " + temporalFilter.getStartDate());
-          LOGGER.debug("UI START: " + dateFormat.format(temporalFilter.getStartDate()) + "UI END: " + dateFormat
-                  .format(temporalFilter.getEndDate()));
-        }
-        LOGGER.debug("START: " + startDate + " END: " + endDate);
-      } else {
-        //if temporal filter is null then do the exact same thing
-        //NOTE changed this, was unnecessarily checking for null again
-        LOGGER.info("Temporal Filter was null setting start date to 1970 and end date to the current day and time");
-        Calendar c = Calendar.getInstance();
-        c.set(1970, 0, 1);
-        startDate = dateFormat.format(c.getTime());
-        c.setTimeInMillis(System.currentTimeMillis());
-        endDate = dateFormat.format(c.getTime());
-      }
-      //Add variable to queryParams and append a &
-      if (ssTemporalSearchParamStart != null && !ssTemporalSearchParamStart.equalsIgnoreCase("null")) {
-        httpBuilder.addQueryParameter(ssTemporalSearchParamStart, startDate);
-        //queryParams.add(ssTemporalSearchParamStart + "=" + startDate + "&");
-      }
-      if (ssTemporalSearchParamEnd != null && !ssTemporalSearchParamEnd.equalsIgnoreCase("null")) {
-        httpBuilder.addQueryParameter(ssTemporalSearchParamEnd, endDate);
-      }
-      //if Spatial filter isn't null do all of this.
-      if (spatialFilter != null) {
-        //get the location string in Well known text
-        String wktStr = spatialFilter.getGeometryWkt();
-        //Print it to the log.
-        LOGGER.trace("wktStr: " + wktStr);
-        //if the spatial filter is a Distance Filter do all of this
-        if (spatialFilter instanceof SpatialDistanceFilter) {
-          try {
-            //Create the distance filter
-            SpatialDistanceFilter sdf = (SpatialDistanceFilter) spatialFilter;
-            //get the geometry object
-            Geometry geo = sdf.getGeometry();
-            //print it
-            LOGGER.trace("GEO: " + geo);
-            //get the Point
-            Point point = (Point) geo;
-            //print it
-            LOGGER.trace("POINT: " + point);
-            //get the direstPosition
-            DirectPosition dp = point.getDirectPosition();
-            //print it
-            LOGGER.trace("DirectPosition: " + dp);
-            //create a coordinates array based on the direct position
-            double[] coords = dp.getCoordinate();
-            LOGGER.trace("Creating bbox from " + coords[0] + ", " + coords[1] + ", " + sdf.getDistanceInMeters());
-
-
-            //createBBoxFromPointRadius = minX, minY, maxX, maxY
-            double[] bboxCoords = OpenSearchSiteUtil.createBBoxFromPointRadius(coords[0], coords[1], sdf
-                    .getDistanceInMeters());
-            //create string builder for top left
-            topLeftLatLong = new StringBuilder();
-            //create string builder for bottom right
-            bottomRightLatLong = new StringBuilder();
-            //appending the Max X variable  //append Space   //then the Min X variable
-            topLeftLatLong.append(bboxCoords[3]).append(" ").append(bboxCoords[0]);
-            //appending the Max Y variable //append Space  //then the Min Y variable
-            bottomRightLatLong.append(bboxCoords[1]).append(" ").append(bboxCoords[2]);
-            //Add variable to queryParams and append a &
-            if (ssSpatialSearchParamLat != null && !ssSpatialSearchParamLat.equalsIgnoreCase("null")) {
-              httpBuilder.addQueryParameter(ssSpatialSearchParamLat, String.valueOf(topLeftLatLong));
-            }
-            if (ssSpatialSearchParamLong != null && !ssSpatialSearchParamLong.equalsIgnoreCase("null")) {
-              httpBuilder.addQueryParameter(ssSpatialSearchParamLong, String.valueOf(bottomRightLatLong));
-            }
-          } catch (Exception ex) {
-            LOGGER.error(ex.getMessage());
-          }
-        }
-        //if we are not a instance of Spatial Distance Filter
-        else {
-          if (LOGGER.isDebugEnabled()) {
-            LOGGER.trace("WKTSTR: " + wktStr);
-          }
-          if (wktStr.contains("POLYGON")) {
-            String[] polyAry = OpenSearchSiteUtil.createPolyAryFromWKT(wktStr);
-            topLeftLatLong = new StringBuilder();
-            bottomRightLatLong = new StringBuilder();
-            //creating array with bounding box
-            //{minX, minY, maxX, maxY};
-            double[] bboxCoords = OpenSearchSiteUtil.createBBoxFromPolygon(polyAry);
-            //appending the Max X variable  //append Space   //then the Min X variable
-            topLeftLatLong.append(bboxCoords[3]).append(" ").append(bboxCoords[0]);
-            //appending the Max Y variable //append Space  //then the Min Y variable
-            bottomRightLatLong.append(bboxCoords[1]).append(" ").append(bboxCoords[2]);
-            if (ssSpatialSearchParamLat != null && !ssSpatialSearchParamLat.equalsIgnoreCase("null")) {
-              httpBuilder.addQueryParameter(ssSpatialSearchParamLat, String.valueOf(topLeftLatLong));
-            }
-            if (ssSpatialSearchParamLong != null && !ssSpatialSearchParamLong.equalsIgnoreCase("null")) {
-              httpBuilder.addQueryParameter(ssSpatialSearchParamLong, String.valueOf(bottomRightLatLong));
-            }
-          } else {
-            LOGGER.trace("WKT ({}) not supported for SPATIAL search, use POLYGON.", wktStr);
-          }
-        }
-      }
-      if (ssContextSearchParam != null && !ssContextSearchParam.equalsIgnoreCase("null")) {
-        httpBuilder.addQueryParameter(ssContextSearchParam, searchParams);
-      }
-
-      //Make the call to the service
-      LOGGER.debug("CALLING getResultsForQuery(" + httpUrl.url().toString() + ")");
-
-      results = service.getResultsForQuery(httpBuilder.build());
-    } catch (Exception ex) {
-      //LOGGER.warn(ex.getMessage());
-      ex.printStackTrace();
-    }
-    if (results != null) {
-      LOGGER.info("UniversalFederatedSource  RETURNED {} results", results.size());
-    }
-    return results;
-  }
-
-  /**
-   * Transform date string.
-   *
-   * @param date       the date
-   * @param dateFormat the date format
-   * @return the string
-   */
-  public static String transformDateTfr(Date date, SimpleDateFormat dateFormat) {
-    Calendar c = Calendar.getInstance();
-    TimeZone localTimeZone = c.getTimeZone();
-    TimeZone afgTimeZone = TimeZone.getTimeZone("Asia/Kabul");
-    int localOffsetFromUTC = localTimeZone.getRawOffset();
-    int afghanOffsetFromUTC = afgTimeZone.getRawOffset();
-    Calendar afghanCal = Calendar.getInstance(afgTimeZone);
-    afghanCal.setTimeInMillis(date.getTime());
-    afghanCal.add(Calendar.MILLISECOND, (-1 * localOffsetFromUTC));
-    afghanCal.add(Calendar.MILLISECOND, afghanOffsetFromUTC);
-    return dateFormat.format(afghanCal.getTime());
-  }
-
-  /**
-   * Gets ssShortName.
-   *
-   * @return the ssShortName
-   */
-  public String getSsShortName() {
-    return ssShortName;
-  }
-
-  /**
-   * Sets ssShortName.
-   *
-   * @param ssShortName the ssShortName
-   */
-  public void setSsShortName(String ssShortName) {
-    LOGGER.debug("Spring setting variable ssShortName to {}", ssShortName);
-
-    this.ssShortName = ssShortName;
-  }
 
   /**
    * Gets content types.
@@ -781,7 +406,352 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
 
     return ssShortName;
   }
+  //endregion
 
+  //region Http Query
+  protected ArrayList<CRSResponse> queryWithParams(Query query, ContextualSearch
+          contextualSearch, TemporalFilter temporalFilter, SpatialFilter spatialFilter) {
+    if (restGetService == null) {
+
+      restGetService = new RestGetService(this, mode,client);
+      LOGGER.debug("Created RestGetService with BaseUrl of {}", ssServiceUrl);
+    }
+
+    LOGGER.debug("Inside Query With Params");
+    List<CRSResponse> results = new ArrayList<CRSResponse>();
+    results = getRestResults((ArrayList<CRSResponse>) results, restGetService, query,
+            contextualSearch, temporalFilter, spatialFilter);
+
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("queryTfr Returning " + results);
+    }
+    return (ArrayList<CRSResponse>) results;
+  }
+  //endregion
+
+  //region Metacard and Results
+  /**
+   * Create result list.
+   *
+   * @param CRSRespons the response objects
+   * @return the list
+   */
+  private List<Result> createResultList(ArrayList<CRSResponse> CRSRespons) {
+
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("CREATING RESULT LIST");
+    }
+    List<Result> results = new ArrayList<Result>();
+    try {
+
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Obtained " + CRSRespons.size() + " CRSResponse " +
+                "Objects");
+      }
+
+      String hitTitle = null;
+      for (CRSResponse fedSourceResponse : CRSRespons) {
+        try {
+          CRSMetacard metaCardData = new CRSMetacard();
+          metaCardData.setSourceId(this.ssShortName);
+          hitTitle = fedSourceResponse.getDisplayTitle();
+          if (hitTitle == null || hitTitle.equals("")) {
+            hitTitle = "Unknown";
+          }
+          Date responseObjectDate = null;
+          if (fedSourceResponse.getDateOccurred() != null) {
+            responseObjectDate = fedSourceResponse.getDateOccurred();
+          }
+          metaCardData.setId(fedSourceResponse.getDisplaySerial());
+
+          String metadataString = null;
+          if (mode == SAX) {
+            metadataString = "<metadata>" + StringEscapeUtils.escapeXml11(fedSourceResponse.getMetaData()) +
+                    "</metadata>";
+            metaCardData.setMetadata("<metadata>" + StringEscapeUtils.escapeXml11(metadataString) + "</metadata>");
+          } else {
+
+            metadataString = "<metadata>" + StringEscapeUtils.escapeXml11(fedSourceResponse.getMetaData()) +
+                    "</metadata>";
+            LOGGER.trace(metadataString);
+            metaCardData.setMetadata(metadataString);
+          }
+          Calendar c = Calendar.getInstance();
+          long now = System.currentTimeMillis();
+          c.setTimeInMillis(now);
+          if (responseObjectDate != null) {
+            metaCardData.setCreatedDate(responseObjectDate);
+            metaCardData.setModifiedDate(responseObjectDate);
+            metaCardData.setEffectiveDate(responseObjectDate);
+          }
+
+          Calendar expiration = Calendar.getInstance();
+          expiration.setTimeInMillis(now + EXPIRATION_OFFSET);
+          metaCardData.setExpirationDate(expiration.getTime());
+          metaCardData.setTitle(hitTitle);
+
+          if(contentTypeName != null){
+            metaCardData.setContentTypeName(contentTypeName);
+
+          }else{
+            metaCardData.setContentTypeName(DEFAULT_TYPE);
+          }
+
+          metaCardData.setContentTypeVersion(DEFAULT_TYPE_VERSION);
+          if (fedSourceResponse.getClassification() != null) {
+            metaCardData.setAttribute(CRSMetacardType.CLASSIFICATION, fedSourceResponse
+                    .getClassification());
+          } else {
+            metaCardData.setAttribute(CRSMetacardType.CLASSIFICATION, "Unknown");
+          }
+          if (fedSourceResponse.getSummary() != null) {
+            metaCardData.setAttribute(CRSMetacardType.SUMMARY, fedSourceResponse.getSummary());
+          } else {
+            metaCardData.setAttribute(CRSMetacardType.SUMMARY, "No ssSummary");
+          }
+          if (fedSourceResponse.getLatitude() != null) {
+            metaCardData.setAttribute(CRSMetacardType.LAT, fedSourceResponse.getLatitude());
+          } else {
+            metaCardData.setAttribute(CRSMetacardType.LAT, 0.0);
+          }
+          if (fedSourceResponse.getLongitude() != null) {
+            metaCardData.setAttribute(CRSMetacardType.LON, fedSourceResponse.getLongitude());
+          } else {
+            metaCardData.setAttribute(CRSMetacardType.LON, 0.0);
+          }
+          if (fedSourceResponse.getOriginatorUnit() != null) {
+            metaCardData.setAttribute(CRSMetacardType.UNIT, fedSourceResponse.getOriginatorUnit());
+          } else {
+            metaCardData.setAttribute(CRSMetacardType.UNIT, "Unknown Unit");
+          }
+          if (fedSourceResponse.getPrimaryEventType() != null) {
+            metaCardData.setAttribute(CRSMetacardType.EVENT_TYPE, fedSourceResponse
+                    .getPrimaryEventType());
+          } else {
+            metaCardData.setAttribute(CRSMetacardType.EVENT_TYPE, "Unknown Event Type");
+          }
+          //  metaCardData.setResourceURI(new URI(CRSResponse.getSsReportLink()));
+          if (fedSourceResponse.getReportLink() != null) {
+            metaCardData.setAttribute(CRSMetacardType.REPORT_LINK, fedSourceResponse
+                    .getReportLink());
+          } else {
+            metaCardData.setAttribute(CRSMetacardType.REPORT_LINK, "No Supplied Link");
+          }
+          if (fedSourceResponse.getLocation() != null) {
+            metaCardData.setLocation(fedSourceResponse.getLocation());
+          } else {
+            if (fedSourceResponse.getLongitude() != 0.0 && fedSourceResponse.getLatitude() != 0.0) {
+              metaCardData.setLocation("POINT (" + Double.parseDouble(decimalFormatter.format(fedSourceResponse
+                      .getLongitude())) + " " + Double.parseDouble(decimalFormatter.format(fedSourceResponse
+                      .getLatitude())) + ")");
+            }
+          }
+
+
+          if (LOGGER.isDebugEnabled()) {
+            if (metaCardData.getId() != null) {
+              LOGGER.trace("Id: " + metaCardData.getId());
+            }
+            if (metaCardData.getMetadata() != null) {
+              LOGGER.trace("Metadata: " + metaCardData.getMetadata());
+            }
+            if (metaCardData.getContentTypeName() != null) {
+              LOGGER.trace("ContentTypeName: " + metaCardData.getContentTypeName());
+            }
+            if (metaCardData.getContentTypeVersion() != null) {
+              LOGGER.trace("ContentTypeVersion: " + metaCardData.getContentTypeVersion());
+            }
+            if (metaCardData.getTitle() != null) {
+              LOGGER.trace("Title: " + metaCardData.getTitle());
+            }
+            if (metaCardData.getEffectiveDate() != null) {
+              LOGGER.trace("Effective: " + metaCardData.getEffectiveDate().toString());
+            }
+            if (metaCardData.getCreatedDate() != null) {
+              LOGGER.trace("Created: " + metaCardData.getCreatedDate().toString());
+            }
+            if (metaCardData.getModifiedDate() != null) {
+              LOGGER.trace("Modified: " + metaCardData.getModifiedDate().toString());
+            }
+            if (metaCardData.getLocation() != null) {
+              LOGGER.trace("Location: " + metaCardData.getLocation());
+            }
+            if (metaCardData.getAttribute(CRSMetacardType.SUMMARY) != null) {
+              LOGGER.trace("Summary:" + metaCardData.getAttribute(CRSMetacardType.SUMMARY)
+                      .toString());
+            }
+          }
+          ResultImpl localEntry = new ResultImpl(metaCardData);
+          localEntry.setRelevanceScore(Double.valueOf(1.0));
+          localEntry.setDistanceInMeters(100.0);
+          results.add(localEntry);
+        } catch (Exception ex) {
+          LOGGER.error("******Error Setting MetaCard Data****************\n" + ex.toString());
+          ex.printStackTrace();
+        }
+      }
+      if (results.size() > 0) {
+        LOGGER.debug("Returning {} results", results.size());
+      } else {
+        LOGGER.debug("Returning 0 results");
+      }
+    } catch (Throwable t) {
+      LOGGER.error("Error during metacard creation of results");
+      t.printStackTrace();
+    }
+    return results;
+  }
+
+  private ArrayList<CRSResponse> getRestResults(ArrayList<CRSResponse>
+                                                                             results, SourceService service, Query
+          query, ContextualSearch contextualSearch, TemporalFilter temporalFilter, SpatialFilter spatialFilter) {
+    HttpUrl httpUrl = HttpUrl.parse(ssServiceUrl);
+
+    HttpUrl.Builder httpBuilder = httpUrl.newBuilder();
+
+    //Create array list to hold query params.
+    //ArrayList<String> queryParams = new ArrayList<String>();
+    String searchParams = null;
+    String startDate = null;
+    String endDate = null;
+    StringBuilder topLeftLatLong = null;
+    StringBuilder bottomRightLatLong = null;
+    try {
+      LOGGER.debug("Creating Filters");
+      if (contextualSearch != null) {
+        LOGGER.debug("Contextual Search = " + contextualSearch.getSelectors() + " search phrase " + contextualSearch
+                .getSearchPhrase());
+        searchParams = contextualSearch.getSearchPhrase();
+      }
+      if (temporalFilter != null) {
+        //sets the date to a specific format "yyyy-MM-dd'T'HH:mm:ssZ"
+        startDate = SourceUtil.transformDateTfr(temporalFilter.getStartDate(), dateFormat);
+        endDate = SourceUtil.transformDateTfr(temporalFilter.getEndDate(), dateFormat);
+
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("UI START: " + temporalFilter.getStartDate());
+          LOGGER.debug("UI START: " + dateFormat.format(temporalFilter.getStartDate()) + "UI END: " + dateFormat
+                  .format(temporalFilter.getEndDate()));
+        }
+        LOGGER.debug("START: " + startDate + " END: " + endDate);
+      } else {
+        //if temporal filter is null then do the exact same thing
+        //NOTE changed this, was unnecessarily checking for null again
+        LOGGER.info("Temporal Filter was null setting start date to 1970 and end date to the current day and time");
+        Calendar c = Calendar.getInstance();
+        c.set(1970, 0, 1);
+        startDate = dateFormat.format(c.getTime());
+        c.setTimeInMillis(System.currentTimeMillis());
+        endDate = dateFormat.format(c.getTime());
+      }
+      //Add variable to queryParams and append a &
+      if (ssTemporalSearchParamStart != null && !ssTemporalSearchParamStart.equalsIgnoreCase("null")) {
+        httpBuilder.addQueryParameter(ssTemporalSearchParamStart, startDate);
+        //queryParams.add(ssTemporalSearchParamStart + "=" + startDate + "&");
+      }
+      if (ssTemporalSearchParamEnd != null && !ssTemporalSearchParamEnd.equalsIgnoreCase("null")) {
+        httpBuilder.addQueryParameter(ssTemporalSearchParamEnd, endDate);
+      }
+      //if Spatial filter isn't null do all of this.
+      if (spatialFilter != null) {
+        //get the location string in Well known text
+        String wktStr = spatialFilter.getGeometryWkt();
+        //Print it to the log.
+        LOGGER.trace("wktStr: " + wktStr);
+        //if the spatial filter is a Distance Filter do all of this
+        if (spatialFilter instanceof SpatialDistanceFilter) {
+          try {
+            //Create the distance filter
+            SpatialDistanceFilter sdf = (SpatialDistanceFilter) spatialFilter;
+            //get the geometry object
+            Geometry geo = sdf.getGeometry();
+            //print it
+            LOGGER.trace("GEO: " + geo);
+            //get the Point
+            Point point = (Point) geo;
+            //print it
+            LOGGER.trace("POINT: " + point);
+            //get the direstPosition
+            DirectPosition dp = point.getDirectPosition();
+            //print it
+            LOGGER.trace("DirectPosition: " + dp);
+            //create a coordinates array based on the direct position
+            double[] coords = dp.getCoordinate();
+            LOGGER.trace("Creating bbox from " + coords[0] + ", " + coords[1] + ", " + sdf.getDistanceInMeters());
+
+
+            //createBBoxFromPointRadius = minX, minY, maxX, maxY
+            double[] bboxCoords = SourceUtil.createBBoxFromPointRadius(coords[0], coords[1], sdf
+                    .getDistanceInMeters());
+            //create string builder for top left
+            topLeftLatLong = new StringBuilder();
+            //create string builder for bottom right
+            bottomRightLatLong = new StringBuilder();
+            //appending the Max X variable  //append Space   //then the Min X variable
+            topLeftLatLong.append(bboxCoords[3]).append(" ").append(bboxCoords[0]);
+            //appending the Max Y variable //append Space  //then the Min Y variable
+            bottomRightLatLong.append(bboxCoords[1]).append(" ").append(bboxCoords[2]);
+            //Add variable to queryParams and append a &
+            if (ssSpatialSearchParamLat != null && !ssSpatialSearchParamLat.equalsIgnoreCase("null")) {
+              httpBuilder.addQueryParameter(ssSpatialSearchParamLat, String.valueOf(topLeftLatLong));
+            }
+            if (ssSpatialSearchParamLong != null && !ssSpatialSearchParamLong.equalsIgnoreCase("null")) {
+              httpBuilder.addQueryParameter(ssSpatialSearchParamLong, String.valueOf(bottomRightLatLong));
+            }
+          } catch (Exception ex) {
+            LOGGER.error(ex.getMessage());
+          }
+        }
+        //if we are not a instance of Spatial Distance Filter
+        else {
+          if (LOGGER.isDebugEnabled()) {
+            LOGGER.trace("WKTSTR: " + wktStr);
+          }
+          if (wktStr.contains("POLYGON")) {
+            String[] polyAry = SourceUtil.createPolyAryFromWKT(wktStr);
+            topLeftLatLong = new StringBuilder();
+            bottomRightLatLong = new StringBuilder();
+            //creating array with bounding box
+            //{minX, minY, maxX, maxY};
+            double[] bboxCoords = SourceUtil.createBBoxFromPolygon(polyAry);
+            //appending the Max X variable  //append Space   //then the Min X variable
+            topLeftLatLong.append(bboxCoords[3]).append(" ").append(bboxCoords[0]);
+            //appending the Max Y variable //append Space  //then the Min Y variable
+            bottomRightLatLong.append(bboxCoords[1]).append(" ").append(bboxCoords[2]);
+            if (ssSpatialSearchParamLat != null && !ssSpatialSearchParamLat.equalsIgnoreCase("null")) {
+              httpBuilder.addQueryParameter(ssSpatialSearchParamLat, String.valueOf(topLeftLatLong));
+            }
+            if (ssSpatialSearchParamLong != null && !ssSpatialSearchParamLong.equalsIgnoreCase("null")) {
+              httpBuilder.addQueryParameter(ssSpatialSearchParamLong, String.valueOf(bottomRightLatLong));
+            }
+          } else {
+            LOGGER.trace("WKT ({}) not supported for SPATIAL search, use POLYGON.", wktStr);
+          }
+        }
+      }
+      if (ssContextSearchParam != null && !ssContextSearchParam.equalsIgnoreCase("null")) {
+        httpBuilder.addQueryParameter(ssContextSearchParam, searchParams);
+      }
+
+      //Make the call to the service
+      LOGGER.debug("CALLING getResultsForQuery(" + httpUrl.url().toString() + ")");
+
+      results = service.getResultsForQuery(httpBuilder.build());
+    } catch (Exception ex) {
+      //LOGGER.warn(ex.getMessage());
+      ex.printStackTrace();
+    }
+    if (results != null) {
+      LOGGER.info("CRSSource  RETURNED {} results", results.size());
+    }
+    return results;
+  }
+  //endregion
+
+  //region Spring Setters and Getters
+  public String getSsDescription() {
+    return ssDescription;
+  }
   /**
    * Sets id.
    *
@@ -790,37 +760,25 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
   public void setId(String id) {
     this.sourceId = id;
   }
-
   /**
-   * Used by DDF to log from here
+   * Gets ssShortName.
+   *
+   * @return the ssShortName
    */
-  private void logElement(Element e) {
-    LOGGER.info(e.getTagName() + " " + e.getNodeName() + ": " + e.getTextContent());
-    NodeList nl = e.getChildNodes();
-    for (int i = 0; i < nl.getLength(); i++) {
-      logNode(nl.item(i));
-    }
+  public String getSsShortName() {
+    return ssShortName;
   }
 
   /**
-   * Used by DDF to log from here
+   * Sets ssShortName.
+   *
+   * @param ssShortName the ssShortName
    */
-  private void logNode(Node n) {
-    if (n instanceof Element) {
-      logElement((Element) n);
-    } else {
-      LOGGER.info(n.getNodeName() + ":" + n.getNodeValue());
-      NodeList nl = n.getChildNodes();
-      for (int i = 0; i < nl.getLength(); i++) {
-        logNode(nl.item(i));
-      }
-    }
-  }
+  public void setSsShortName(String ssShortName) {
+    LOGGER.debug("Spring setting variable ssShortName to {}", ssShortName);
 
-  public String getSsDescription() {
-    return ssDescription;
+    this.ssShortName = ssShortName;
   }
-
   public void setSsDescription(String ssDescription) {
     LOGGER.debug("Spring setting variable ssDescription to {}", ssDescription);
 
@@ -1053,4 +1011,6 @@ public class UniversalFederatedSource implements ddf.catalog.source.FederatedSou
 
     this.ssServiceUrl = ssServiceUrl;
   }
+
+  //endregion
 }

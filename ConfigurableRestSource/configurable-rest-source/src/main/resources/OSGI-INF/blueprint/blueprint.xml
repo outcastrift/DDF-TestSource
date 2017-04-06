@@ -10,9 +10,9 @@
 
 
   <cm:managed-service-factory id="managed-service-factory"
-      factory-pid="com.davis.ddf.crs.UniversalFederatedSource"
+      factory-pid="com.davis.ddf.crs.CRSSource"
       interface="ddf.catalog.source.FederatedSource">
-    <cm:managed-component class="com.davis.ddf.crs.UniversalFederatedSource">
+    <cm:managed-component class="com.davis.ddf.crs.CRSSource">
       <cm:managed-properties persistent-id=""
           update-strategy="container-managed" />
     </cm:managed-component>

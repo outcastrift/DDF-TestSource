@@ -1,7 +1,7 @@
 package test;
 
 
-import com.davis.ddf.crs.UniversalFederatedSource;
+import com.davis.ddf.crs.CRSSource;
 
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
@@ -17,7 +17,7 @@ public class BaseRestTest {
   protected static final String SERVICE_ADRESS = "https://localhost:8993/services/test/";
   private static final Logger logger = LoggerFactory.getLogger(BaseRestTest.class);
   private final static String WADL_ADDRESS = GET_SOURCE_RESULTS + "?_wadl";
-  protected static  UniversalFederatedSource universalFederatedSource;
+  protected static CRSSource CRSSource;
   protected static boolean serverUp = false;
   protected static HashMap<String, String> springVars;
   @BeforeClass
@@ -46,7 +46,7 @@ public class BaseRestTest {
     springVars.put("ssClientCertPath",null);
     springVars.put("ssClientCertPassword",null);
 
-    universalFederatedSource = new UniversalFederatedSource(springVars);
+    CRSSource = new CRSSource(springVars);
 
   }
 }

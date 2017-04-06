@@ -1,6 +1,5 @@
-package com.davis.ddf.crs;
+package com.davis.ddf.crs.filter;
 
-import com.davis.ddf.crs.filter.ContextualSearch;
 import com.vividsolutions.jts.geom.Coordinate;
 
 import org.geotools.filter.AttributeExpressionImpl;
@@ -42,7 +41,7 @@ import ddf.catalog.impl.filter.TemporalFilter;
 /**
  * Created by hduser on 6/2/15.
  */
-public class UniversalSourceFilterVisitor extends DefaultFilterVisitor {
+public class CRSFilterVisitor extends DefaultFilterVisitor {
     private String metacardId = null;
 
 
@@ -50,7 +49,7 @@ public class UniversalSourceFilterVisitor extends DefaultFilterVisitor {
      * The constant logger.
      */
     private static XLogger logger = new XLogger(
-                LoggerFactory.getLogger(UniversalSourceFilterVisitor.class));
+                LoggerFactory.getLogger(CRSFilterVisitor.class));
 
     /**
      * The constant ONLY_AND_MSG.
@@ -102,7 +101,7 @@ public class UniversalSourceFilterVisitor extends DefaultFilterVisitor {
     /**
      * Instantiates a new Test source filter visitor.
      */
-    public UniversalSourceFilterVisitor() {
+    public CRSFilterVisitor() {
 
             super();
 

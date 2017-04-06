@@ -3,8 +3,8 @@ package com.davis.ddf.crs.parsing;
 
 
 
-import com.davis.ddf.crs.UniversalFederatedSource;
-import com.davis.ddf.crs.data.UniversalFederatedSourceResponse;
+import com.davis.ddf.crs.CRSSource;
+import com.davis.ddf.crs.data.CRSResponse;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 
@@ -28,16 +28,16 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-public class UniversalFederatedSourceParser extends DefaultHandler {
+public class CRSParser extends DefaultHandler {
     public static final int JSON = 0;
     public static final int SAX = 1;
     public static final String dateFormatPattern = "yyyy-MM-dd'T'HH:mm:ssZ";
-    private static final Logger LOGGER = LoggerFactory.getLogger(UniversalFederatedSourceParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CRSParser.class);
 
     private static HashMap<String, String> fedResultsMap = new HashMap<String, String>();
-    private UniversalFederatedSourceResponse UniversalFederatedSourceResponse;
+    private CRSResponse CRSResponse;
     private SimpleDateFormat dateFormat;
-    private ArrayList<UniversalFederatedSourceResponse> universalFederatedSourceResponses;
+    private ArrayList<CRSResponse> CRSRespons;
     private Document document;
     private DOMImplementation domImpl;
     private Node myCurrentNode;
@@ -46,10 +46,10 @@ public class UniversalFederatedSourceParser extends DefaultHandler {
     private StringBuilder docAsString;
     private StringBuilder buffer = new StringBuilder();
     private int mode;
-    private UniversalFederatedSource source;
-    public UniversalFederatedSourceParser(int modeForContent, UniversalFederatedSource source) {
+    private CRSSource source;
+    public CRSParser(int modeForContent, CRSSource source) {
         this.source = source;
-        universalFederatedSourceResponses = new ArrayList<UniversalFederatedSourceResponse>();
+        CRSRespons = new ArrayList<CRSResponse>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(false);
         mode = modeForContent;
@@ -62,7 +62,7 @@ public class UniversalFederatedSourceParser extends DefaultHandler {
                 if (domImpl != null) {
                     document = domImpl.createDocument(null, null, null);
                     myCurrentNode = document;
-                    UniversalFederatedSourceResponse = null;
+                    CRSResponse = null;
                     docs = new HashMap<String, Document>();
                 }
             } catch (ParserConfigurationException e) {
@@ -118,8 +118,8 @@ public class UniversalFederatedSourceParser extends DefaultHandler {
 
 
 
-    public ArrayList<UniversalFederatedSourceResponse> getUniversalFederatedSourceResponses() {
-        return universalFederatedSourceResponses;
+    public ArrayList<CRSResponse> getCRSRespons() {
+        return CRSRespons;
     }
 
     // Add a new text PI in the DOM tree, at the right place.
@@ -136,12 +136,12 @@ public class UniversalFederatedSourceParser extends DefaultHandler {
 
 
 
-    public ArrayList<UniversalFederatedSourceResponse> getObjectsFromJson(String filteredJson) {
+    public ArrayList<CRSResponse> getObjectsFromJson(String filteredJson) {
         //Create the POJOs
         Object document = Configuration.defaultConfiguration().jsonProvider().parse(filteredJson);
        // LOGGER.debug("Document = {}", document);
         ResultHolder responseList = getListsFromDocument(document);
-        ArrayList<UniversalFederatedSourceResponse> responses = responseList.buildSourceReponses();
+        ArrayList<CRSResponse> responses = responseList.buildSourceReponses();
         return responses;
 
     }

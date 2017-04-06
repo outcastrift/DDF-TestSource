@@ -1,4 +1,4 @@
-package com.davis.ddf.crs.data.metacard;
+package com.davis.ddf.crs.data;
 
 /**
  * Created by hduser on 6/3/15.
@@ -14,11 +14,11 @@ import ddf.catalog.data.impl.MetacardImpl;
 /**
  * The type Test federated source metacard.
  */
-public class UniversalFederatedSourceMetacard extends MetacardImpl {
+public class CRSMetacard extends MetacardImpl {
     /**
      * The constant LOGGER.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(UniversalFederatedSourceMetacard.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CRSMetacard.class);
     /**
      * The constant serialVersionUID.
      */
@@ -29,8 +29,8 @@ public class UniversalFederatedSourceMetacard extends MetacardImpl {
     /**
      * Instantiates a new Test federated source metacard.
      */
-    public UniversalFederatedSourceMetacard(){
-        super(new UniversalFederatedSourceMetacardType());
+    public CRSMetacard(){
+        super(new CRSMetacardType());
 
     }
 

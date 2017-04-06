@@ -1,43 +1,23 @@
-/**
- * Copyright (c) Codice Foundation
- * <p>
- * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
- * General Public License as published by the Free Software Foundation, either version 3 of the
- * License, or any later version.
- * <p>
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
- * is distributed along with this program and can be found at
- * <http://www.gnu.org/licenses/lgpl.html>.
- */
-package com.davis.ddf.crs.filter;
+package com.davis.ddf.crs.util;
 
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
-import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.security.Principal;
-import java.util.List;
-
-import ddf.catalog.data.Result;
-import ddf.catalog.impl.filter.SpatialDistanceFilter;
-import ddf.catalog.impl.filter.SpatialFilter;
-import ddf.catalog.impl.filter.TemporalFilter;
-import ddf.catalog.operation.Query;
-import ddf.catalog.source.UnsupportedQueryException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
- * Utility helper class that performs much of the translation logic used in CddaOpenSearchSite.
+ * This software was created for
+ * rights to this software belong to
+ * appropriate licenses and restrictions apply.
+ *
+ * @author Samuel Davis created on 4/6/17.
  */
-public final class OpenSearchSiteUtil {
+public class SourceUtil {
+    private static final Logger logger = LoggerFactory.getLogger(SourceUtil.class);
 
     // OpenSearch defined parameters
     public static final String SEARCH_TERMS = "q";
@@ -105,48 +85,6 @@ public final class OpenSearchSiteUtil {
 
     public static final String SORT_TEMPORAL = "date";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OpenSearchSiteUtil.class);
-
-    private OpenSearchSiteUtil() {
-
-    }
-
-
-
-    public static String translateToOpenSearchSort(SortBy ddfSort) {
-        String openSearchSortStr = null;
-        String orderType = null;
-
-        if (ddfSort == null || ddfSort.getSortOrder() == null) {
-            return openSearchSortStr;
-        }
-
-        if (ddfSort.getSortOrder()
-                .equals(SortOrder.ASCENDING)) {
-            orderType = ORDER_ASCENDING;
-        } else {
-            orderType = ORDER_DESCENDING;
-        }
-
-        // QualifiedString type = ddfSort.getType();
-        PropertyName sortByField = ddfSort.getPropertyName();
-
-        if (Result.RELEVANCE.equals(sortByField.getPropertyName())) {
-            // asc relevance not supported by spec
-            openSearchSortStr = SORT_RELEVANCE + SORT_DELIMITER + ORDER_DESCENDING;
-        } else if (Result.TEMPORAL.equals(sortByField.getPropertyName())) {
-            openSearchSortStr = SORT_TEMPORAL + SORT_DELIMITER + orderType;
-        } else {
-            LOGGER.warn(
-                    "Couldn't determine sort policy, not adding sorting in request to federated site.");
-        }
-
-        return openSearchSortStr;
-    }
-
-
-
-
 
 
     /**
@@ -169,17 +107,6 @@ public final class OpenSearchSiteUtil {
     public static String[] createLatLonAryFromWKT(String wkt) {
         String lonLat = wkt.substring(wkt.indexOf('(') + 1, wkt.indexOf(')'));
         return lonLat.split(" ");
-    }
-
-
-
-    private static boolean hasParameter(String parameter, List<String> parameters) {
-        for (String param : parameters) {
-            if (param != null && param.equalsIgnoreCase(parameter)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -239,7 +166,7 @@ public final class OpenSearchSiteUtil {
 
         double curX, curY;
         for (int i = 0; i < polyAry.length - 1; i += 2) {
-            LOGGER.debug("polyToBBox: lon - {} lat - {}", polyAry[i], polyAry[i + 1]);
+            logger.debug("polyToBBox: lon - {} lat - {}", polyAry[i], polyAry[i + 1]);
             curX = Double.parseDouble(polyAry[i]);
             curY = Double.parseDouble(polyAry[i + 1]);
             if (curX < minX) {
@@ -257,5 +184,23 @@ public final class OpenSearchSiteUtil {
         }
         return new double[] {minX, minY, maxX, maxY};
     }
-
+    /**
+     * Transform date string.
+     *
+     * @param date       the date
+     * @param dateFormat the date format
+     * @return the string
+     */
+    public static String transformDateTfr(Date date, SimpleDateFormat dateFormat) {
+        Calendar c = Calendar.getInstance();
+        TimeZone localTimeZone = c.getTimeZone();
+        TimeZone afgTimeZone = TimeZone.getTimeZone("Asia/Kabul");
+        int localOffsetFromUTC = localTimeZone.getRawOffset();
+        int afghanOffsetFromUTC = afgTimeZone.getRawOffset();
+        Calendar afghanCal = Calendar.getInstance(afgTimeZone);
+        afghanCal.setTimeInMillis(date.getTime());
+        afghanCal.add(Calendar.MILLISECOND, (-1 * localOffsetFromUTC));
+        afghanCal.add(Calendar.MILLISECOND, afghanOffsetFromUTC);
+        return dateFormat.format(afghanCal.getTime());
+    }
 }

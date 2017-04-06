@@ -1,4 +1,4 @@
-package com.davis.ddf.crs.data.metacard;
+package com.davis.ddf.crs.data;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -14,7 +14,7 @@ import ddf.catalog.data.impl.BasicTypes;
  * Modernization All rights to this software belong to  appropriate licenses and restrictions apply.
  * Created by Samuel Davis on 3/21/16.
  */
-public class UniversalFederatedSourceMetacardType implements QualifiedMetacardType {
+public class CRSMetacardType implements QualifiedMetacardType {
 
     /**
      * The constant SUMMARY.
@@ -61,7 +61,7 @@ public class UniversalFederatedSourceMetacardType implements QualifiedMetacardTy
     /**
      * Instantiates a new Test federated source metacard type.
      */
-    public UniversalFederatedSourceMetacardType(){
+    public CRSMetacardType(){
         descriptors = new HashSet<AttributeDescriptor>();
         initAttributeDescriptors();
     }

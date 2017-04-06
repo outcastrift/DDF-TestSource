@@ -39,11 +39,22 @@
       <artifactId>catalog-core-api-impl</artifactId>
       <version>${primary.ddf.version}</version>
     </dependency>
-   <!-- <dependency>
+    <dependency>
       <groupId>ddf.catalog.core</groupId>
       <artifactId>catalog-core-commons</artifactId>
       <version>${primary.ddf.version}</version>
-    </dependency>-->
+      <!-- There is a conflict between geotools (specifically gt-xsd-filter)
+          and jscience. Since there is no direct dependency on jscience, rather
+          it calls methods in commons-ddf that use jscience, we can add an exclusion
+          stanza here to omit the transitive jscience dependency from the commons-ddf
+          dependency and resolve its conflict with geotools. -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.jscience</groupId>
+          <artifactId>jscience</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <!--END DDF-->
     <!--START GENERAL -->
 
@@ -69,6 +80,7 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
+      <version>${org-json-version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>

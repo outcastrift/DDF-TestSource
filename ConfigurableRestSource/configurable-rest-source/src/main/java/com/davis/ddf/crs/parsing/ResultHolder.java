@@ -1,6 +1,6 @@
 package com.davis.ddf.crs.parsing;
 
-import com.davis.ddf.crs.data.UniversalFederatedSourceResponse;
+import com.davis.ddf.crs.data.CRSResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,8 +127,8 @@ public class ResultHolder {
     }
 
 
-    public ArrayList<UniversalFederatedSourceResponse> buildSourceReponses() {
-        ArrayList<UniversalFederatedSourceResponse> responseList = new ArrayList<UniversalFederatedSourceResponse>();
+    public ArrayList<CRSResponse> buildSourceReponses() {
+        ArrayList<CRSResponse> responseList = new ArrayList<CRSResponse>();
 
         int maxListSize = getListSize();
         int position =0;
@@ -137,7 +137,7 @@ public class ResultHolder {
             position = position + 1;
         }
         if (serial == null) {
-            for (UniversalFederatedSourceResponse fedResponse : responseList) {
+            for (CRSResponse fedResponse : responseList) {
                 double one = ThreadLocalRandom.current().nextDouble(0, 9999999);
                 double two = ThreadLocalRandom.current().nextDouble(0, 9999999);
                 double three = ThreadLocalRandom.current().nextDouble(0, 9999999);
@@ -151,8 +151,8 @@ public class ResultHolder {
     }
 
 
-    private UniversalFederatedSourceResponse buildResponse(int position) {
-        UniversalFederatedSourceResponse response = new UniversalFederatedSourceResponse();
+    private CRSResponse buildResponse(int position) {
+        CRSResponse response = new CRSResponse();
         if (title != null ) {
             response.setDisplayTitle(title.get(position));
         }

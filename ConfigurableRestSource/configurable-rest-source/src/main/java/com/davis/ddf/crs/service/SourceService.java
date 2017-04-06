@@ -1,6 +1,6 @@
 package com.davis.ddf.crs.service;
 
-import com.davis.ddf.crs.data.UniversalFederatedSourceResponse;
+import com.davis.ddf.crs.data.CRSResponse;
 import java.util.ArrayList;
 import okhttp3.HttpUrl;
 
@@ -13,7 +13,7 @@ import okhttp3.HttpUrl;
 public interface SourceService {
 
 
-/*    public  ArrayList<UniversalFederatedSourceResponse> getResultsByDate(String module,
+/*    public  ArrayList<CRSResponse> getResultsByDate(String module,
                                                                 String reportType,
                                                                 String format,
                                                                 String wsVersion,
@@ -26,7 +26,7 @@ public interface SourceService {
                                                                 String showDep,
                                                                 String searchParams);
 
-    public ArrayList<UniversalFederatedSourceResponse> getTfrObjectsById(String module,
+    public ArrayList<CRSResponse> getTfrObjectsById(String module,
                                                                 String reportType,
                                                                 String format,
                                                                 String wsVersion,
@@ -35,7 +35,7 @@ public interface SourceService {
                                                                 String showDep,
                                                                 String searchParams);
 
-    public ArrayList<UniversalFederatedSourceResponse> getResultsByBoundingBox(String module,
+    public ArrayList<CRSResponse> getResultsByBoundingBox(String module,
                                                                       String reportType,
                                                                       String format,
                                                                       String wsVersion,
@@ -47,7 +47,7 @@ public interface SourceService {
                                                                       String maxReturn,
                                                                       String showDep,
                                                                       String searchParams);*/
-    public ArrayList<UniversalFederatedSourceResponse> getResultsForQuery(HttpUrl httpUrl);
+    public ArrayList<CRSResponse> getResultsForQuery(HttpUrl httpUrl);
 
 
 }

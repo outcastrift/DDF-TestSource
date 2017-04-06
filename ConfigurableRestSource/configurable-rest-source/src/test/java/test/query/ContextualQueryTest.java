@@ -8,7 +8,6 @@ import ddf.catalog.operation.impl.QueryRequestImpl;
 import ddf.catalog.source.UnsupportedQueryException;
 import java.io.IOException;
 import org.geotools.filter.text.cql2.CQLException;
-import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
@@ -23,7 +22,7 @@ public class ContextualQueryTest extends BaseQueryTest {
 
         Query stateQuery = new QueryImpl(contextualFilter);
         QueryRequest stateRequest = new QueryRequestImpl(stateQuery);
-        SourceResponse sourceResponse = universalFederatedSource.query(stateRequest);
+        SourceResponse sourceResponse = CRSSource.query(stateRequest);
 
         assertTrue(sourceResponse.getHits() == 15);
 

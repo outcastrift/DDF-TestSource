@@ -7,9 +7,8 @@ import ddf.catalog.operation.impl.QueryImpl;
 import ddf.catalog.operation.impl.QueryRequestImpl;
 import ddf.catalog.source.UnsupportedQueryException;
 import java.io.IOException;
-import java.net.URISyntaxException;
+
 import org.geotools.filter.text.cql2.CQLException;
-import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
@@ -23,7 +22,7 @@ public class GeospatialQueryTest extends BaseQueryTest {
 
         Query stateQuery = new QueryImpl(geoFilter);
         QueryRequest queryRequest = new QueryRequestImpl(stateQuery);
-        SourceResponse sourceResponse = universalFederatedSource.query(queryRequest);
+        SourceResponse sourceResponse = CRSSource.query(queryRequest);
 
         assertTrue(sourceResponse.getHits() == 10);
 
