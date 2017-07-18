@@ -69,9 +69,6 @@ public class SourceEndpoint {
 
   /** Instantiates a new Geospatial endpoint. */
   public SourceEndpoint() {
-    // String dateFormatPattern = "MM/dd/yyyy HH:mm:ss";
-    //NOTE yyyyMMddHHmmss works every time but we use the ISO format so cant use it.
-    //String dateFormatPattern = "yyyyMMddHHmmss";
     String dateFormatPattern = "yyyy-MM-dd'T'HH:mm:ssZ";
     dateFormat = new SimpleDateFormat(dateFormatPattern);
     Calendar c = Calendar.getInstance();
