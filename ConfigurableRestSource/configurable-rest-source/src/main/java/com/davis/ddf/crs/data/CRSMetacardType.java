@@ -16,6 +16,7 @@ import ddf.catalog.data.impl.BasicTypes;
  */
 public class CRSMetacardType implements QualifiedMetacardType {
 
+    public static final String NIIRS="niirs";
     /**
      * The constant SUMMARY.
      */
@@ -52,7 +53,7 @@ public class CRSMetacardType implements QualifiedMetacardType {
      * The constant REPORT_LINK.
      */
     public static final String REPORT_LINK="report_link";
-    public static final String NIIRS_RATING="NIIRS";
+    public static final String NIIRS_RATING="niirs";
     /**
      * The Descriptors.
      */

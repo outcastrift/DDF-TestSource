@@ -5,6 +5,7 @@ import com.davis.ddf.crs.data.InMemoryDataStore;
 import com.davis.ddf.crs.data.CRSEndpointResponse;
 import com.davis.ddf.crs.jsonapi.JsonApiResponse;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.vividsolutions.jts.geom.Geometry;
@@ -97,7 +98,7 @@ public class SourceEndpoint {
     dataStore = new InMemoryDataStore();
     try {
    //   createCannedResults("cannedResults.json");
-      createCannedResults("usaResults.json");
+      createCannedResults("cannedResults.json");
     } catch (FileNotFoundException e1) {
       logger.error("Unable to create canned Dataset for endpoint. {}", e);
     }
@@ -135,14 +136,22 @@ public class SourceEndpoint {
   }
 
   private void createCannedResults(String fileName) throws FileNotFoundException {
-    Gson gson = new Gson();
+   Gson gson = new GsonBuilder()
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+            .create();
     BufferedReader reader =
         new BufferedReader(
             new InputStreamReader(
                 SourceEndpoint.class.getClassLoader().getResourceAsStream(fileName)));
     JsonReader jsonReader = new JsonReader(reader);
+
     List<CRSEndpointResponse> data = gson.fromJson(jsonReader, RESPONSE_TYPE);
-    cannedResponses.addAll(data);
+    for(CRSEndpointResponse crsEndpointResponse : data){
+      int niirsValue = ThreadLocalRandom.current().nextInt(11);
+      crsEndpointResponse.setNiirs(niirsValue);
+      cannedResponses.add(crsEndpointResponse);
+    }
+   // cannedResponses.addAll(data);
   }
 
   public CRSEndpointResponse createCannedResult(
@@ -631,6 +640,8 @@ public class SourceEndpoint {
     uniResponse.setLocation(wktString);
     Date sigactDate = generateRandomDate(start, end);
     uniResponse.setClassification("UNCLASSIFIED");
+    int niirsValue = ThreadLocalRandom.current().nextInt(11);
+    uniResponse.setNiirs(niirsValue);
     uniResponse.setDisplayTitle(generateTitleBasedOnGeometry(wktString, sigactDate));
     uniResponse.setDateOccurred(sigactDate);
     uniResponse.setDisplaySerial(

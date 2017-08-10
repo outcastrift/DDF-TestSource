@@ -8,6 +8,8 @@ import java.util.Date;
  */
 public class CRSEndpointResponse {
 
+    private Integer niirs;
+
     private String location;
 
     /**
@@ -260,6 +262,23 @@ public class CRSEndpointResponse {
         this.metaData = metaData;
     }*/
 
+
+    public Integer getNiirs() {
+        return niirs;
+    }
+
+    public void setNiirs(Integer niirs) {
+        this.niirs = niirs;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
     public String getMetaData() {
         return addToMetadataResultMap();
     }
@@ -290,6 +309,9 @@ public class CRSEndpointResponse {
         }
         if (this.getClassification() != null) {
             stringBuilder.append("<classification>" + this.getClassification() + "</classification>");
+        }
+        if(this.getNiirs() != null){
+            stringBuilder.append("<niirs>" + this.getNiirs() + "</niirs>");
         }
         if (this.getDateOccurred() != null) {
             stringBuilder.append(

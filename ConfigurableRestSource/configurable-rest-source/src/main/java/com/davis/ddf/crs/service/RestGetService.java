@@ -75,19 +75,20 @@ public class RestGetService implements SourceService {
       LOGGER.debug("JsonPath result length = " + String.valueOf(pathResult.length()));
     } catch (Exception e) {
       LOGGER.warn("Exception occurred during the extraction of the response data from the RestSource getting errors from response if any.");
-
+      //create empty result list to prevents errors
+      finalResultsList = new ArrayList<CRSResponse>();
       try {
         pathResult = parser.extractJSONPath(response, "$.errors[*]");
         LOGGER.warn("Errors contained in the response = {}", pathResult);
       } catch (Exception e1) {
-        //do nothing
+        //create empty result list to prevents errors
+        finalResultsList = new ArrayList<CRSResponse>();
       }
-      //create empty result list to prevents errors
-      finalResultsList = new ArrayList<CRSResponse>();
-      return finalResultsList;
     }
-    //Time to create POJOs
-    finalResultsList = parser.getObjectsFromJson(pathResult);
+    if(finalResultsList == null){
+      //Time to create POJOs
+      finalResultsList = parser.getObjectsFromJson(pathResult);
+    }
     LOGGER.debug("Finished Printing REST Results Received a Total of " + String.valueOf(finalResultsList.size()) + " results.");
     return finalResultsList;
   }

@@ -19,14 +19,13 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class ResultHolder {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResultHolder.class);
-
     public static final String dateFormatPattern = "yyyy-MM-dd'T'HH:mm:ssZ";
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResultHolder.class);
     private SimpleDateFormat dateFormat;
     private List<String> title;
     private List<String> serial;
     private List<String> summary;
+    private List<Integer> niirs;
     private List<String> reportLink;
     private List<String> date;
     private List<String> classification;
@@ -35,17 +34,19 @@ public class ResultHolder {
     private List<Double> lng;
     private List<String> primaryEvent;
     private List<String> location;
+
     public ResultHolder(List<String> title,
-        List<String> serial,
-        List<String> summary,
-        List<String> reportLink,
-        List<String> date,
-        List<String> classification,
-        List<String> unit,
-        List<Double> lat,
-        List<Double> lng,
-        List<String> primaryEvent,
-        List<String> location) {
+                        List<String> serial,
+                        List<String> summary,
+                        List<String> reportLink,
+                        List<String> date,
+                        List<String> classification,
+                        List<String> unit,
+                        List<Double> lat,
+                        List<Double> lng,
+                        List<String> primaryEvent,
+                        List<String> location,
+                        List<Integer> niirs) {
         this.title = title;
         this.serial = serial;
         this.summary = summary;
@@ -57,6 +58,7 @@ public class ResultHolder {
         this.location = location;
         this.lat = lat;
         this.lng = lng;
+        this.niirs = niirs;
         dateFormat = new SimpleDateFormat(dateFormatPattern);
 
     }
@@ -118,9 +120,14 @@ public class ResultHolder {
                 result = reportLink.size();
             }
         }
-        if(location != null){
+        if (location != null) {
             if (result < location.size()) {
                 result = location.size();
+            }
+        }
+        if(niirs != null){
+            if (result < niirs.size()) {
+                result = niirs.size();
             }
         }
         return result;
@@ -131,7 +138,7 @@ public class ResultHolder {
         ArrayList<CRSResponse> responseList = new ArrayList<CRSResponse>();
 
         int maxListSize = getListSize();
-        int position =0;
+        int position = 0;
         while (position < maxListSize) {
             responseList.add(buildResponse(position));
             position = position + 1;
@@ -153,30 +160,30 @@ public class ResultHolder {
 
     private CRSResponse buildResponse(int position) {
         CRSResponse response = new CRSResponse();
-        if (title != null ) {
+        if (title != null) {
             response.setDisplayTitle(title.get(position));
         }
-        if (serial != null ) {
+        if (serial != null) {
             response.setDisplaySerial(serial.get(position));
 
         }
-        if (summary != null ) {
+        if (summary != null) {
             response.setSummary(summary.get(position));
 
         }
-        if (unit != null ) {
+        if (unit != null) {
             response.setOriginatorUnit(unit.get(position));
 
         }
-        if (primaryEvent != null ) {
+        if (primaryEvent != null) {
             response.setPrimaryEventType(primaryEvent.get(position));
 
         }
-        if (classification != null ) {
+        if (classification != null) {
             response.setClassification(classification.get(position));
 
         }
-        if (date != null ) {
+        if (date != null) {
             Date theDate = null;
             try {
                 theDate = dateFormat.parse(date.get(position));
@@ -186,22 +193,33 @@ public class ResultHolder {
             }
             response.setDateOccurred(theDate);
         }
-        if (lat != null ) {
+        if (lat != null) {
             response.setLatitude(lat.get(position));
         }
-        if (lng != null ) {
+        if (lng != null) {
 
             response.setLongitude(lng.get(position));
         }
-        if (reportLink != null ) {
+        if (reportLink != null) {
             response.setReportLink(reportLink.get(position));
         }
-        if(location != null){
+        if (location != null) {
             response.setLocation(location.get(position));
+        }
+        if(niirs != null){
+            response.setNiirs(niirs.get(position));
         }
         return response;
     }
 
+
+    public List<Integer> getNiirs() {
+        return niirs;
+    }
+
+    public void setNiirs(List<Integer> niirs) {
+        this.niirs = niirs;
+    }
 
     public List<String> getTitle() {
         return this.title;

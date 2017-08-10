@@ -1,16 +1,36 @@
 package com.davis.ddf.crs;
 
 import com.davis.ddf.crs.client.TrustingOkHttpClient;
-import com.davis.ddf.crs.data.CRSResponse;
 import com.davis.ddf.crs.data.CRSMetacard;
 import com.davis.ddf.crs.data.CRSMetacardType;
-
+import com.davis.ddf.crs.data.CRSResponse;
 import com.davis.ddf.crs.filter.CRSFilterVisitor;
-import com.davis.ddf.crs.service.SourceService;
 import com.davis.ddf.crs.service.RestGetService;
-
+import com.davis.ddf.crs.service.SourceService;
 import com.davis.ddf.crs.util.SourceUtil;
+import ddf.catalog.CatalogFramework;
+import ddf.catalog.data.ContentType;
+import ddf.catalog.data.Metacard;
+import ddf.catalog.data.MetacardTypeRegistry;
+import ddf.catalog.data.Result;
 import ddf.catalog.data.impl.ContentTypeImpl;
+import ddf.catalog.data.impl.ResultImpl;
+import ddf.catalog.impl.filter.SpatialDistanceFilter;
+import ddf.catalog.impl.filter.SpatialFilter;
+import ddf.catalog.impl.filter.TemporalFilter;
+import ddf.catalog.operation.Query;
+import ddf.catalog.operation.QueryRequest;
+import ddf.catalog.operation.ResourceResponse;
+import ddf.catalog.operation.SourceResponse;
+import ddf.catalog.operation.impl.SourceResponseImpl;
+import ddf.catalog.resource.ResourceNotFoundException;
+import ddf.catalog.resource.ResourceNotSupportedException;
+import ddf.catalog.source.IngestException;
+import ddf.catalog.source.SourceMonitor;
+import ddf.catalog.source.UnsupportedQueryException;
+import ddf.mime.MimeTypeMapper;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.opengis.geometry.DirectPosition;
 import org.opengis.geometry.Geometry;
@@ -37,29 +57,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ddf.catalog.CatalogFramework;
-import ddf.catalog.data.ContentType;
-import ddf.catalog.data.Metacard;
-import ddf.catalog.data.MetacardTypeRegistry;
-import ddf.catalog.data.Result;
-import ddf.catalog.data.impl.ResultImpl;
-import ddf.catalog.impl.filter.SpatialDistanceFilter;
-import ddf.catalog.impl.filter.SpatialFilter;
-import ddf.catalog.impl.filter.TemporalFilter;
-import ddf.catalog.operation.Query;
-import ddf.catalog.operation.QueryRequest;
-import ddf.catalog.operation.ResourceResponse;
-import ddf.catalog.operation.SourceResponse;
-import ddf.catalog.operation.impl.SourceResponseImpl;
-import ddf.catalog.resource.ResourceNotFoundException;
-import ddf.catalog.resource.ResourceNotSupportedException;
-import ddf.catalog.source.IngestException;
-import ddf.catalog.source.SourceMonitor;
-import ddf.catalog.source.UnsupportedQueryException;
-import ddf.mime.MimeTypeMapper;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-
 public class CRSSource implements ddf.catalog.source.FederatedSource {
 
   //region Class Variables
@@ -74,6 +71,7 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
   /** Spring set variables */
   private String ssWktStringParam;
 
+  private String ssNiirs;
   private String ssContextSearchParam;
   private String ssSpatialSearchParamLat;
   private String ssSpatialSearchParamLong;
@@ -114,6 +112,7 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
   //endregion
 
   //region Constructors
+
   /** Test Constructor */
   public CRSSource(HashMap<String, String> springVars) {
     setSsShortName(springVars.get("ssShortName"));
@@ -201,6 +200,7 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
   //endregion
 
   //region Federated Source Methods
+
   /**
    * Retrieve resource resource response.
    *
@@ -556,6 +556,11 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
                 CRSMetacardType.REPORT_LINK, fedSourceResponse.getReportLink());
           } else {
             metaCardData.setAttribute(CRSMetacardType.REPORT_LINK, "No Supplied Link");
+          }
+          if (fedSourceResponse.getNiirs() != null) {
+            metaCardData.setAttribute(CRSMetacardType.NIIRS_RATING, fedSourceResponse.getNiirs());
+          } else {
+            metaCardData.setAttribute(CRSMetacardType.NIIRS_RATING, 0);
           }
           if (fedSourceResponse.getLocation() != null) {
             metaCardData.setLocation(fedSourceResponse.getLocation());
@@ -1053,6 +1058,15 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
     LOGGER.debug("Spring setting variable ssServiceUrl to {}", ssServiceUrl);
 
     this.ssServiceUrl = ssServiceUrl;
+  }
+
+  public String getSsNiirs() {
+    return this.ssNiirs;
+  }
+
+  public void setSsNiirs(String ssNiirs) {
+    LOGGER.debug("Spring setting variable ssNiirs to {}", ssNiirs);
+    this.ssNiirs = ssNiirs;
   }
 
   //endregion

@@ -96,7 +96,11 @@
         name="Metacard Data Fields : Display Serial" id="ssDisplaySerial" required="true"
         type="String"
         default="$[*].displaySerial"/>
-
+    <AD description="Metacard Data Fields : Match these fields to correspond to elements within the returned object if the element does not exist type the word null.
+            Niirs Value For the Metacard"
+        name="Metacard Data Fields : Niirs Value" id="ssNiirs" required="true"
+        type="String"
+        default="$[*].niirs"/>
 
     <AD description="Metacard Data Fields : Match these fields to correspond to elements within the returned object if the element does not exist type the word null.
            Summary For the Metacard"
