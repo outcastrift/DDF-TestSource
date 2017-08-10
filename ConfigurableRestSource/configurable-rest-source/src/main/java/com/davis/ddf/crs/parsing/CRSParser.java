@@ -171,8 +171,8 @@ public class CRSParser extends DefaultHandler {
         && !source.getSsNiirs().equalsIgnoreCase("null")
         && !source.getSsNiirs().trim().equalsIgnoreCase("")) {
       LOGGER.trace("getSsNiirs {}", source.getSsNiirs());
-      List<String> niirsArray = JsonPath.read(document, source.getSsNiirs());
-      List<Integer> niirsIntegerArray = new ArrayList<>();
+      List<Integer> niirsArray = JsonPath.read(document, source.getSsNiirs());
+      /*List<Integer> niirsIntegerArray = new ArrayList<>();
       for (String s : niirsArray) {
         Integer integer = null;
         try {
@@ -181,8 +181,8 @@ public class CRSParser extends DefaultHandler {
           integer = 0;
         }
         niirsIntegerArray.add(integer);
-      }
-      results.setNiirs(niirsIntegerArray);
+      }*/
+      results.setNiirs(niirsArray);
     }
     if (source.getSsSummary() != null
         && !source.getSsSummary().equalsIgnoreCase("null")
