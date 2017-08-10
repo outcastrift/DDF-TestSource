@@ -50,11 +50,11 @@ public class SourceEndpoint {
   private static final String TOP_LEFT = "90 -180";
   private static final String BOTTOM_RIGHT = "-90 180";
   private static final int POLYGON = 0;
-  private static final int MULTIPOLYGON = 1;
-  private static final int POINT = 2;
-  private static final int MULTIPOINT = 3;
-  private static final int LINESTRING = 4;
-  private static final int MULTILINESTRING = 5;
+  private static final int POINT = 1;
+  private static final int MULTIPOINT = 2;
+  private static final int LINESTRING = 3;
+  private static final int MULTILINESTRING = 4;
+  private static final int MULTIPOLYGON = 5;
   private static final DecimalFormat decFormat = new DecimalFormat("#.#####");
   /** The constant TAG. */
   private static final Logger logger = LoggerFactory.getLogger(SourceEndpoint.class);
@@ -664,7 +664,7 @@ public class SourceEndpoint {
           }
         }
         break;
-      case MULTIPOLYGON:
+      /*case MULTIPOLYGON:
         {
           try {
             result =
@@ -673,7 +673,7 @@ public class SourceEndpoint {
             logger.error("Wkt Creation Failed For MULTIPOLYGON");
           }
         }
-        break;
+        break;*/
       case POINT:
         {
           try {
@@ -683,7 +683,7 @@ public class SourceEndpoint {
           }
         }
         break;
-      case MULTIPOINT:
+      /*case MULTIPOINT:
         {
           try {
             result =
@@ -692,7 +692,7 @@ public class SourceEndpoint {
             logger.error("Wkt Creation Failed For MULTIPOINT");
           }
         }
-        break;
+        break;*/
         //Removed because these lines look like ass on the map, until i can customize better they are staying off.
         /*case LINESTRING: {
           try {
