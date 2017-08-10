@@ -487,12 +487,14 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
                 "<metadata>" + StringEscapeUtils.escapeXml11(metadataString) + "</metadata>");
           } else {
 
-            metadataString =
-                "<metadata>"
-                    + StringEscapeUtils.escapeXml11(fedSourceResponse.getMetaData())
-                    + "</metadata>";
+            //metadataString =
+            //    "<metadata>"
+            //        + StringEscapeUtils.escapeXml11(fedSourceResponse.getMetaData())
+            //        + "</metadata>";
             LOGGER.trace(metadataString);
-            metaCardData.setMetadata(metadataString);
+
+            //metaCardData.setMetadata(metadataString);
+            metaCardData.setMetadata(fedSourceResponse.getMetaData());
           }
           Calendar c = Calendar.getInstance();
           long now = System.currentTimeMillis();

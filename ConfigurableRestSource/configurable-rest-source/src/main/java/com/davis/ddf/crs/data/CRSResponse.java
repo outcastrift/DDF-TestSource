@@ -268,7 +268,7 @@ public class CRSResponse {
         String displaySerial = null;
         stringBuilder = new StringBuilder();
 
-        stringBuilder.append("<Result " + String.valueOf(this.getDisplaySerial()) + ">");
+        stringBuilder.append("<Result>");
         if (this.getDisplaySerial() != null) {
             stringBuilder.append("<displaySerial>" + this.getDisplaySerial() + "</displaySerial>");
         }
