@@ -331,8 +331,8 @@ public class SourceEndpoint {
     } else {
       bottomRight = BOTTOM_RIGHT;
     }
-
-    results = searchCannedForResult(amount, buildTextQuery(amount));
+    results = searchCannedForResult(amount, null);
+    List<CRSEndpointResponse> test = searchCannedForResult(amount, buildTextQuery(amount));
     //results = checkForResults(start, end, bottomRight, topLeft, amount);
 
     JsonApiResponse response = new JsonApiResponse();
@@ -523,7 +523,7 @@ public class SourceEndpoint {
         if (term.contains("!")) {
           whatType = BooleanClause.Occur.MUST_NOT;
         } else {
-          whatType = BooleanClause.Occur.SHOULD;
+          whatType = BooleanClause.Occur.MUST;
         }
         try {
           summQ = summParser.parse(term);
