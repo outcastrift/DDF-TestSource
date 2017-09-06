@@ -49,6 +49,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -96,7 +97,7 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
 
   /** End Spring set variables */
   private NumberFormat decimalFormatter = new DecimalFormat("#0.0000");
-
+  private static final String OR_CLAUSES_FOR_QUERY = "OrClausesForQuery";
   private String version = "v10";
   private String org = "AFRL";
   private MimeTypeMapper mimeTypeMapper;
@@ -284,17 +285,24 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
       }
       CRSFilterVisitor visitor = new CRSFilterVisitor();
       query.accept(visitor, null);
-      String searchPhrase = visitor.getSearchPhrase();
       TemporalFilter temporalFilter = visitor.getTemporalSearch();
       SpatialFilter spatialFilter = visitor.getSpatialSearch();
       long elapsed = System.currentTimeMillis();
+      String searchPhrase = visitor.getSearchPhrase();
       ArrayList<CRSResponse> operationsCRSResponseReports = null;
+      List<String> searchPhrases = getSearchClausesFromQueryRequest(queryRequest, searchPhrase);
+
       if (mode == SAX) {
         LOGGER.debug("SAX mode enabled entering queryWithSax ");
       } else if (mode == REST) {
         LOGGER.debug("REST mode enabled entering queryWithParams ");
-        operationsCRSResponseReports =
-            queryWithParams(query, searchPhrase, temporalFilter, spatialFilter);
+        List<CRSResponse> phraseResponse = null;
+        for(String seachPhrase : searchPhrases){
+          phraseResponse =  queryWithParams(query, seachPhrase, temporalFilter, spatialFilter);
+          operationsCRSResponseReports.addAll(phraseResponse);
+        }
+       /* operationsCRSResponseReports =
+            queryWithParams(query, searchPhrase, temporalFilter, spatialFilter);*/
         LOGGER.debug("REST :: exiting queryWithParams ");
       }
 
@@ -314,7 +322,29 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
     LOGGER.info("Returning null for configured source");
     return null;
   }
+  /**
+   * Gets the OR clauses stored within the query request object if there is any. Takes the search
+   * parameter from the query and appends it to the same list.
+   *
+   * @param queryRequest the query request
+   * @param searchPhrase the search phrase
+   * @return the search clauses from query request
+   */
+  public ArrayList<String> getSearchClausesFromQueryRequest(
+          QueryRequest queryRequest, String searchPhrase) {
 
+    ArrayList<String> searchClauses = new ArrayList<>();
+    if (searchPhrase != null) {
+      searchClauses.add(searchPhrase);
+    }
+    String[] orClausesList = null;
+    if (queryRequest.getProperties() != null
+            && queryRequest.getProperties().get(OR_CLAUSES_FOR_QUERY) != null) {
+      orClausesList = (String[]) queryRequest.getProperties().get(OR_CLAUSES_FOR_QUERY);
+      searchClauses.addAll(Arrays.asList(orClausesList));
+    }
+    return searchClauses;
+  }
   /**
    * Gets content types.
    *
