@@ -4,13 +4,15 @@
     <facet type="Osmorc" name="OSGi">
       <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="configurable-rest-source-test-endpoint-1.0.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="" bundleSymbolicName="com.davis.configurable-rest-source-test-endpoint" bundleVersion="1.0.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
-          <property key="Embed-Dependency" value="gson,commons-lang3,commons-lang,jts" />
-          <property key="Import-Package" value="*" />
+          <property key="Private-Package" value="org.tartarus.snowball.*" />
+          <property key="Embed-Dependency" value="gson,commons-lang3,commons-lang,jts,lucene-core,lucene-analyzers-common,lucene-analyzers-morfologik,lucene-analyzers-phonetic,lucene-highlighter,lucene-join,lucene-memory,lucene-misc,lucene-queryparser,lucene-suggest,lucene-grouping,lucene-queries,lucene-spatial" />
+          <property key="Embed-Transitive" value="true" />
+          <property key="Import-Package" value="!org.apache.lucene.*,*;resolution:=optional" />
           <property key="Export-Package" value="com.davis.ddf.crs.*" />
           <property key="Bundle-Name" value="Configurable Rest Source:: Test Endpoint" />
-          <property key="Bundle-ClassPath" value=".,gson-2.3.1.jar,commons-lang3-3.4.jar,commons-lang-2.6.jar,jts-1.13.jar" />
-          <property key="Include-Resource" value="gson-2.3.1.jar=$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.3.1/gson-2.3.1.jar,commons-lang3-3.4.jar=$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.4/commons-lang3-3.4.jar,commons-lang-2.6.jar=$MAVEN_REPOSITORY$/commons-lang/commons-lang/2.6/commons-lang-2.6.jar,jts-1.13.jar=$MAVEN_REPOSITORY$/com/vividsolutions/jts/1.13/jts-1.13.jar" />
-          <property key="Embedded-Artifacts" value="gson-2.3.1.jar;g=&quot;com.google.code.gson&quot;;a=&quot;gson&quot;;v=&quot;2.3.1&quot;,commons-lang3-3.4.jar;g=&quot;org.apache.commons&quot;;a=&quot;commons-lang3&quot;;v=&quot;3.4&quot;,commons-lang-2.6.jar;g=&quot;commons-lang&quot;;a=&quot;commons-lang&quot;;v=&quot;2.6&quot;,jts-1.13.jar;g=&quot;com.vividsolutions&quot;;a=&quot;jts&quot;;v=&quot;1.13&quot;" />
+          <property key="Bundle-ClassPath" value=".,gson-2.3.1.jar,commons-lang3-3.4.jar,commons-lang-2.6.jar,jts-1.13.jar,lucene-core-6.3.0.jar,lucene-analyzers-common-6.3.0.jar,lucene-analyzers-morfologik-6.3.0.jar,lucene-analyzers-phonetic-6.3.0.jar,lucene-highlighter-6.3.0.jar,lucene-join-6.3.0.jar,lucene-memory-6.3.0.jar,lucene-misc-6.3.0.jar,lucene-queryparser-6.3.0.jar,lucene-suggest-6.3.0.jar,lucene-grouping-6.3.0.jar,lucene-queries-6.3.0.jar,lucene-spatial-6.3.0.jar" />
+          <property key="Include-Resource" value="gson-2.3.1.jar=$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.3.1/gson-2.3.1.jar,commons-lang3-3.4.jar=$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.4/commons-lang3-3.4.jar,commons-lang-2.6.jar=$MAVEN_REPOSITORY$/commons-lang/commons-lang/2.6/commons-lang-2.6.jar,jts-1.13.jar=$MAVEN_REPOSITORY$/com/vividsolutions/jts/1.13/jts-1.13.jar,lucene-core-6.3.0.jar=$MAVEN_REPOSITORY$/org/apache/lucene/lucene-core/6.3.0/lucene-core-6.3.0.jar,lucene-analyzers-common-6.3.0.jar=$MAVEN_REPOSITORY$/org/apache/lucene/lucene-analyzers-common/6.3.0/lucene-analyzers-common-6.3.0.jar,lucene-analyzers-morfologik-6.3.0.jar=$MAVEN_REPOSITORY$/org/apache/lucene/lucene-analyzers-morfologik/6.3.0/lucene-analyzers-morfologik-6.3.0.jar,lucene-analyzers-phonetic-6.3.0.jar=$MAVEN_REPOSITORY$/org/apache/lucene/lucene-analyzers-phonetic/6.3.0/lucene-analyzers-phonetic-6.3.0.jar,lucene-highlighter-6.3.0.jar=$MAVEN_REPOSITORY$/org/apache/lucene/lucene-highlighter/6.3.0/lucene-highlighter-6.3.0.jar,lucene-join-6.3.0.jar=$MAVEN_REPOSITORY$/org/apache/lucene/lucene-join/6.3.0/lucene-join-6.3.0.jar,lucene-memory-6.3.0.jar=$MAVEN_REPOSITORY$/org/apache/lucene/lucene-memory/6.3.0/lucene-memory-6.3.0.jar,lucene-misc-6.3.0.jar=$MAVEN_REPOSITORY$/org/apache/lucene/lucene-misc/6.3.0/lucene-misc-6.3.0.jar,lucene-queryparser-6.3.0.jar=$MAVEN_REPOSITORY$/org/apache/lucene/lucene-queryparser/6.3.0/lucene-queryparser-6.3.0.jar,lucene-suggest-6.3.0.jar=$MAVEN_REPOSITORY$/org/apache/lucene/lucene-suggest/6.3.0/lucene-suggest-6.3.0.jar,lucene-grouping-6.3.0.jar=$MAVEN_REPOSITORY$/org/apache/lucene/lucene-grouping/6.3.0/lucene-grouping-6.3.0.jar,lucene-queries-6.3.0.jar=$MAVEN_REPOSITORY$/org/apache/lucene/lucene-queries/6.3.0/lucene-queries-6.3.0.jar,lucene-spatial-6.3.0.jar=$MAVEN_REPOSITORY$/org/apache/lucene/lucene-spatial/6.3.0/lucene-spatial-6.3.0.jar" />
+          <property key="Embedded-Artifacts" value="gson-2.3.1.jar;g=&quot;com.google.code.gson&quot;;a=&quot;gson&quot;;v=&quot;2.3.1&quot;,commons-lang3-3.4.jar;g=&quot;org.apache.commons&quot;;a=&quot;commons-lang3&quot;;v=&quot;3.4&quot;,commons-lang-2.6.jar;g=&quot;commons-lang&quot;;a=&quot;commons-lang&quot;;v=&quot;2.6&quot;,jts-1.13.jar;g=&quot;com.vividsolutions&quot;;a=&quot;jts&quot;;v=&quot;1.13&quot;,lucene-core-6.3.0.jar;g=&quot;org.apache.lucene&quot;;a=&quot;lucene-core&quot;;v=&quot;6.3.0&quot;,lucene-analyzers-common-6.3.0.jar;g=&quot;org.apache.lucene&quot;;a=&quot;lucene-analyzers-common&quot;;v=&quot;6.3.0&quot;,lucene-analyzers-morfologik-6.3.0.jar;g=&quot;org.apache.lucene&quot;;a=&quot;lucene-analyzers-morfologik&quot;;v=&quot;6.3.0&quot;,lucene-analyzers-phonetic-6.3.0.jar;g=&quot;org.apache.lucene&quot;;a=&quot;lucene-analyzers-phonetic&quot;;v=&quot;6.3.0&quot;,lucene-highlighter-6.3.0.jar;g=&quot;org.apache.lucene&quot;;a=&quot;lucene-highlighter&quot;;v=&quot;6.3.0&quot;,lucene-join-6.3.0.jar;g=&quot;org.apache.lucene&quot;;a=&quot;lucene-join&quot;;v=&quot;6.3.0&quot;,lucene-memory-6.3.0.jar;g=&quot;org.apache.lucene&quot;;a=&quot;lucene-memory&quot;;v=&quot;6.3.0&quot;,lucene-misc-6.3.0.jar;g=&quot;org.apache.lucene&quot;;a=&quot;lucene-misc&quot;;v=&quot;6.3.0&quot;,lucene-queryparser-6.3.0.jar;g=&quot;org.apache.lucene&quot;;a=&quot;lucene-queryparser&quot;;v=&quot;6.3.0&quot;,lucene-suggest-6.3.0.jar;g=&quot;org.apache.lucene&quot;;a=&quot;lucene-suggest&quot;;v=&quot;6.3.0&quot;,lucene-grouping-6.3.0.jar;g=&quot;org.apache.lucene&quot;;a=&quot;lucene-grouping&quot;;v=&quot;6.3.0&quot;,lucene-queries-6.3.0.jar;g=&quot;org.apache.lucene&quot;;a=&quot;lucene-queries&quot;;v=&quot;6.3.0&quot;,lucene-spatial-6.3.0.jar;g=&quot;org.apache.lucene&quot;;a=&quot;lucene-spatial&quot;;v=&quot;6.3.0&quot;" />
         </additionalProperties>
         <additionalJARContents />
       </configuration>
@@ -31,6 +33,25 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-core:6.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-analyzers-common:6.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-analyzers-morfologik:6.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.carrot2:morfologik-fsa:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.carrot2:morfologik-polish:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.carrot2:morfologik-stemming:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-analyzers-phonetic:6.3.0" level="project" />
+    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.10" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-highlighter:6.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-join:6.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-memory:6.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-misc:6.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queryparser:6.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-sandbox:6.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-suggest:6.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-grouping:6.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queries:6.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-spatial:6.3.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.regexp:com.springsource.org.apache.regexp:1.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.cxf:cxf-rt-frontend-jaxrs:3.0.4" level="project" />
     <orderEntry type="library" name="Maven: org.apache.cxf:cxf-core:3.0.4" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.woodstox:woodstox-core-asl:4.4.1" level="project" />

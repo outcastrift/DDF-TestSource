@@ -17,7 +17,7 @@
     </jaxrs:serviceBeans>
   </jaxrs:server>
 
-  <bean id="testSource" class="com.davis.ddf.crs.SourceEndpoint"/>
+  <bean id="testSource" class="com.davis.ddf.crs.SourceEndpoint" init-method="init" destroy-method="shutdown"/>
 
 
 

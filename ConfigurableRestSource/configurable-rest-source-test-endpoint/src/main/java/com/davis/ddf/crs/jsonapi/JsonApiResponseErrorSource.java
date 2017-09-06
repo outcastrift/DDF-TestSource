@@ -1,17 +1,11 @@
 package com.davis.ddf.crs.jsonapi;
 
-/**
- * The type Json api response error source.
- */
+/** The type Json api response error source. */
 public class JsonApiResponseErrorSource {
 
-  /**
-   * The Pointer.
-   */
+  /** The Pointer. */
   private String pointer;
-  /**
-   * The Parameter.
-   */
+  /** The Parameter. */
   private String parameter;
 
   /**

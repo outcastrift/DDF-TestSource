@@ -1,5 +1,6 @@
 package test;
 
+import com.davis.ddf.crs.RandomUtil;
 import com.davis.ddf.crs.SourceEndpoint;
 import com.davis.ddf.crs.data.CRSEndpointResponse;
 import com.davis.ddf.crs.data.InMemoryDataStore;
@@ -11,12 +12,9 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * This software was created for
@@ -42,7 +40,7 @@ public class CreateCannedDataSet {
         InMemoryDataStore dataStore = new InMemoryDataStore();
         ArrayList<CRSEndpointResponse> responses = new ArrayList<>();
         for (int x = 0; x < dataStore.getOriginateUnit().size(); x++) {
-            responses.add(sourceEndpoint.createCannedResult(dataStore, x, 0));
+            responses.add(RandomUtil.createRandomResult(dataStore, x, 0));
         }
         try {
             writeDataObjectsToJsonFile(responses, "usaResults.json");

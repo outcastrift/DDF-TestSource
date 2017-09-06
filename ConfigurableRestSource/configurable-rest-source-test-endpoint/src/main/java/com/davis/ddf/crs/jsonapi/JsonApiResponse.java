@@ -9,34 +9,22 @@ import java.util.List;
 /**
  * This class will encompass the values that should be returned to the calling application. Look at
  *
- * http://jsonapi.org/format
+ * <p>http://jsonapi.org/format
  */
 public class JsonApiResponse {
-  /**
-   * The constant dateFormatPattern.
-   */
+  /** The constant dateFormatPattern. */
   public static final String dateFormatPattern = "yyyy-MM-dd'T'HH:mm:ssZ";
 
-  /**
-   * The Version.
-   */
+  /** The Version. */
   private String version;
-  /**
-   * The Data.
-   */
+  /** The Data. */
   private Object data;
-  /**
-   * The Errors.
-   */
+  /** The Errors. */
   private List<JsonApiResponseError> errors;
-  /**
-   * The Meta.
-   */
+  /** The Meta. */
   private String meta;
 
-  /**
-   * Instantiates a new Json api response.
-   */
+  /** Instantiates a new Json api response. */
   public JsonApiResponse() {
     errors = new ArrayList<JsonApiResponseError>();
   }

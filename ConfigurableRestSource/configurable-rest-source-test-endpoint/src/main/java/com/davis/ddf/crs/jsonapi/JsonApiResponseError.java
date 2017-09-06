@@ -2,47 +2,27 @@ package com.davis.ddf.crs.jsonapi;
 
 import java.util.List;
 
-/**
- * The type Json api response error.
- */
+/** The type Json api response error. */
 public class JsonApiResponseError {
 
-  /**
-   * The Id.
-   */
+  /** The Id. */
   private int id;
-  /**
-   * The Links.
-   */
+  /** The Links. */
   private List<JsonApiResponseErrorLink> links;
-  /**
-   * The Status.
-   */
+  /** The Status. */
   private int status;
-  /**
-   * The Code.
-   */
+  /** The Code. */
   private String code;
-  /**
-   * The Title.
-   */
+  /** The Title. */
   private String title;
-  /**
-   * The Detail.
-   */
+  /** The Detail. */
   private String detail;
-  /**
-   * The Source.
-   */
+  /** The Source. */
   private JsonApiResponseErrorSource source;
-  /**
-   * The Meta.
-   */
+  /** The Meta. */
   private JsonApiResponseErrorMeta meta;
 
-  /**
-   * Instantiates a new Json api response error.
-   */
+  /** Instantiates a new Json api response error. */
   public JsonApiResponseError() {
     super();
   }

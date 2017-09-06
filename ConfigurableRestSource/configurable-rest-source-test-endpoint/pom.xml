@@ -24,7 +24,80 @@
 
     </properties>
     <dependencies>
+        <!--LUCENE-->
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>6.3.0</version>
+        </dependency>
 
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-common</artifactId>
+            <version>6.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-morfologik</artifactId>
+            <version>6.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-phonetic</artifactId>
+            <version>6.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-highlighter</artifactId>
+            <version>6.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-join</artifactId>
+            <version>6.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-memory</artifactId>
+            <version>6.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-misc</artifactId>
+            <version>6.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-queryparser</artifactId>
+            <version>6.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-suggest</artifactId>
+            <version>6.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-grouping</artifactId>
+            <version>6.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-queries</artifactId>
+            <version>6.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-spatial</artifactId>
+            <version>6.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.regexp</groupId>
+            <artifactId>com.springsource.org.apache.regexp</artifactId>
+            <version>1.5.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--END LUCENE-->
         <!--START ENDPOINT RELATED-->
         <dependency>
             <groupId>org.apache.cxf</groupId>
@@ -138,13 +211,30 @@
                         <Bundle-SymbolicName>
                             ${project.groupId}.${project.artifactId}
                         </Bundle-SymbolicName>
+                        <Private-Package>
+                            org.tartarus.snowball.*
+                        </Private-Package>
                         <Embed-Dependency>
                             gson,
                             commons-lang3,
                             commons-lang,
-                            jts
+                            jts,
+                            lucene-core,
+                            lucene-analyzers-common,
+                            lucene-analyzers-morfologik,
+                            lucene-analyzers-phonetic,
+                            lucene-highlighter,
+                            lucene-join,
+                            lucene-memory,
+                            lucene-misc,
+                            lucene-queryparser,
+                            lucene-suggest,
+                            lucene-grouping,
+                            lucene-queries,
+                            lucene-spatial
                         </Embed-Dependency>
-                        <Import-Package>*</Import-Package>
+                        <Embed-Transitive>true</Embed-Transitive>
+                        <Import-Package>!org.apache.lucene.*,*;resolution:=optional</Import-Package>
                         <Export-Package>
                             com.davis.ddf.crs.*
                         </Export-Package>

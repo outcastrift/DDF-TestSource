@@ -1,25 +1,15 @@
 package com.davis.ddf.crs.jsonapi;
 
-/**
- * The type Json api response error link.
- */
+/** The type Json api response error link. */
 public class JsonApiResponseErrorLink {
 
-  /**
-   * The Url.
-   */
+  /** The Url. */
   private String url;
-  /**
-   * The Href.
-   */
+  /** The Href. */
   private String href;
-  /**
-   * The Meta.
-   */
+  /** The Meta. */
   private String meta;
-  /**
-   * The Self.
-   */
+  /** The Self. */
   private String self;
 
   /**

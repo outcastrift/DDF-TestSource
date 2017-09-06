@@ -1,63 +1,88 @@
 package com.davis.ddf.crs;
 
-import com.davis.ddf.crs.data.GroovyResponseObject;
-import com.davis.ddf.crs.data.InMemoryDataStore;
 import com.davis.ddf.crs.data.CRSEndpointResponse;
+import com.davis.ddf.crs.data.GroovyResponseObject;
 import com.davis.ddf.crs.jsonapi.JsonApiResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.io.WKTReader;
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.LegacyDoubleField;
+import org.apache.lucene.document.LegacyIntField;
+import org.apache.lucene.document.LegacyLongField;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.RAMDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.lang.reflect.Type;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.TreeMap;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
-/** The type Geospatial endpoint. */
+import static com.davis.ddf.crs.RandomUtil.genRandomResponse;
+import static com.davis.ddf.crs.utils.Utils.transformDate;
+
 @Path("/")
 @Consumes("application/json")
 public class SourceEndpoint {
-  /**
-   * An unmodifiable set containing some common English words that are not usually useful for
-   * searching.
-   */
-  public static final List<String> stopWords =
-      Arrays.asList(
-          "a", "an", "and", "are", "as", "at", "be", "but", "by", "for", "if", "in", "into", "is",
-          "it", "no", "not", "of", "on", "or", "such", "that", "the", "their", "then", "there",
-          "these", "they", "this", "to", "was", "will", "with");
 
-  private static final Double MAX_LAT = Double.valueOf(90); //Y variable
-  private static final Double MIN_LAT = Double.valueOf(-90); //Y variable
-  private static final Double MAX_LON = Double.valueOf(180); //X variable
-  private static final Double MIN_LON = Double.valueOf(-180); //X Variable
+  private static final String NIIRS = "niirs";
+  private static final String LOCATION = "location";
+  private static final String REPORT_LINK = "reportLink";
+  private static final String DISPLAY_TITLE = "displayTitle";
+  private static final String DISPLAY_SERIAL = "displaySerial";
+  private static final String SUMMARY = "summary";
+  private static final String ORIGINATOR_UNIT = "originatorUnit";
+  private static final String PRIMARY_EVENT_TYPE = "primaryEventType";
+  private static final String CLASSIFICATION = "classification";
+  private static final String DATE_OCCURRED = "dateOccurred";
+  private static final String LATITUDE = "latitude";
+  private static final String LONGITUDE = "longitude";
   private static final String TOP_LEFT = "90 -180";
   private static final String BOTTOM_RIGHT = "-90 180";
-  private static final int POLYGON = 0;
-  private static final int POINT = 1;
-  private static final int MULTIPOINT = 2;
-  private static final int LINESTRING = 3;
-  private static final int MULTILINESTRING = 4;
-  private static final int MULTIPOLYGON = 5;
   private static final DecimalFormat decFormat = new DecimalFormat("#.#####");
-  /** The constant TAG. */
   private static final Logger logger = LoggerFactory.getLogger(SourceEndpoint.class);
 
   private static final Type RESPONSE_TYPE = new TypeToken<List<CRSEndpointResponse>>() {}.getType();
@@ -65,80 +90,54 @@ public class SourceEndpoint {
   private Date DEFAULT_START;
   private Date DEFAULT_END;
   private Date LAST_THREE_YEARS;
-  private InMemoryDataStore dataStore;
-  private List<CRSEndpointResponse> cannedResponses = new ArrayList<>();
-
+  //private List<CRSEndpointResponse> cannedResponses = new ArrayList<>();
+  private TreeMap<String, CRSEndpointResponse> cannedResponses = new TreeMap<>();
+  private List<Document> cannedDocuments = new ArrayList<>();
+  private MultiFieldQueryParser queryParser;
+  private Directory ramDirectory;
+  private Analyzer analyzer;
   /** Instantiates a new Geospatial endpoint. */
-  public SourceEndpoint() {
+  public SourceEndpoint() {}
+
+  public void init() {
     String dateFormatPattern = "yyyy-MM-dd'T'HH:mm:ssZ";
     dateFormat = new SimpleDateFormat(dateFormatPattern);
-    Calendar c = Calendar.getInstance();
-    c.set(1970, 0, 1);
-    String s = dateFormat.format(c.getTime());
+
     try {
+      Calendar c = Calendar.getInstance();
+      c.set(1970, 0, 1);
+      String s = dateFormat.format(c.getTime());
       DEFAULT_START = dateFormat.parse(s);
-    } catch (ParseException e) {
-    }
-    c.setTimeInMillis(System.currentTimeMillis());
-    String e = dateFormat.format(c.getTime());
-    try {
+      c.setTimeInMillis(System.currentTimeMillis());
+      String e = dateFormat.format(c.getTime());
       DEFAULT_END = dateFormat.parse(e);
-    } catch (ParseException e2) {
-    }
-    Calendar cy = Calendar.getInstance();
-
-    cy.set(2014, 0, 1);
-    String lastThreeYears = dateFormat.format(cy.getTime());
-    try {
+      Calendar cy = Calendar.getInstance();
+      cy.set(2014, 0, 1);
+      String lastThreeYears = dateFormat.format(cy.getTime());
       LAST_THREE_YEARS = dateFormat.parse(lastThreeYears);
-    } catch (ParseException ey) {
-      logger.error("error countered parsing date {}", ey.getMessage());
+    } catch (ParseException e) {
+      logger.error("Unable to parse");
     }
 
-    dataStore = new InMemoryDataStore();
     try {
-   //   createCannedResults("cannedResults.json");
       createCannedResults("cannedResults.json");
     } catch (FileNotFoundException e1) {
-      logger.error("Unable to create canned Dataset for endpoint. {}", e);
+      logger.error("Unable to create canned Dataset for endpoint. {}", e1);
     }
+    createSearchIndexer(false);
   }
 
-  /**
-   * Transform date string.
-   *
-   * @param date the date
-   * @param dateFormat the date format
-   * @return the string
-   */
-  public static String transformDate(Date date, SimpleDateFormat dateFormat) {
-    Calendar c = Calendar.getInstance();
-    TimeZone localTimeZone = c.getTimeZone();
-    TimeZone afgTimeZone = TimeZone.getTimeZone("Asia/Kabul");
-    int localOffsetFromUTC = localTimeZone.getRawOffset();
-    int afghanOffsetFromUTC = afgTimeZone.getRawOffset();
-    Calendar afghanCal = Calendar.getInstance(afgTimeZone);
-    afghanCal.setTimeInMillis(date.getTime());
-    afghanCal.add(Calendar.MILLISECOND, (-1 * localOffsetFromUTC));
-    afghanCal.add(Calendar.MILLISECOND, afghanOffsetFromUTC);
-    return dateFormat.format(afghanCal.getTime());
-  }
-
-  /**
-   * Get random element from array list.
-   *
-   * @param <T> the array list you want a random entry from.
-   * @return the random entry.
-   */
-  public static <T> T getRandomizedField(ArrayList<T> list) {
-    Random random = new Random();
-    return list.get(random.nextInt(list.size()));
+  public void shutdown() {
+    try {
+      ramDirectory.close();
+    } catch (Exception e) {
+      logger.error("Unable to close ramdirectory {}", e);
+    }
+    analyzer.close();
   }
 
   private void createCannedResults(String fileName) throws FileNotFoundException {
-   Gson gson = new GsonBuilder()
-            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-            .create();
+    Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create();
     BufferedReader reader =
         new BufferedReader(
             new InputStreamReader(
@@ -146,50 +145,13 @@ public class SourceEndpoint {
     JsonReader jsonReader = new JsonReader(reader);
 
     List<CRSEndpointResponse> data = gson.fromJson(jsonReader, RESPONSE_TYPE);
-    for(CRSEndpointResponse crsEndpointResponse : data){
+    for (CRSEndpointResponse crsEndpointResponse : data) {
       int niirsValue = ThreadLocalRandom.current().nextInt(11);
       crsEndpointResponse.setNiirs(niirsValue);
-      cannedResponses.add(crsEndpointResponse);
+      cannedResponses.put(crsEndpointResponse.getDisplaySerial(), crsEndpointResponse);
+      //cannedResponses.add(crsEndpointResponse);
+      cannedDocuments.add(buildDoc(crsEndpointResponse));
     }
-   // cannedResponses.addAll(data);
-  }
-
-  public CRSEndpointResponse createCannedResult(
-      InMemoryDataStore dataStore, int itemId, int idOffset) {
-
-    //Works for USA
-    double topLeftLat = 47.5531;
-    double topLeftLng = -124.3574;
-    double bottomRightLat = 29.8240;
-    double bottomRightLng = -66.3350;
-   /* double topLeftLat = 90;
-    double topLeftLng = -180;
-    double bottomRightLat = -90 ;
-    double bottomRightLng = 180;*/
-    CRSEndpointResponse uniResponse = new CRSEndpointResponse();
-    int whichGeom = ThreadLocalRandom.current().nextInt(6);
-    //logger.info("Array Number = {}", whichGeom);
-    String wktString =
-        constructWktString(whichGeom, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
-    uniResponse.setLocation(wktString);
-
-    Date sigactDate = generateRandomDate(LAST_THREE_YEARS, DEFAULT_END);
-    uniResponse.setClassification("UNCLASSIFIED");
-    uniResponse.setDisplayTitle(generateTitleBasedOnGeometry(wktString, sigactDate));
-    uniResponse.setDateOccurred(sigactDate);
-    double lat = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
-    lat = Double.parseDouble(decFormat.format(lat));
-    //logger.debug("Entering always successful lng. Origin = {} Bound = {}",topLeftLng,bottomRightLng);
-    double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
-    lng = Double.parseDouble(decFormat.format(lng));
-    uniResponse.setDisplaySerial("CRS-" + String.valueOf(itemId + idOffset));
-    uniResponse.setLatitude(lat);
-    uniResponse.setLongitude(lng);
-    uniResponse.setOriginatorUnit(dataStore.getOriginateUnit().get(itemId));
-    uniResponse.setPrimaryEventType(getRandomizedField(dataStore.getEventTypes()));
-    uniResponse.setReportLink(getRandomizedField(dataStore.getReportLinks()));
-    uniResponse.setSummary(dataStore.getSummaries().get(itemId));
-    return uniResponse;
   }
 
   @HEAD
@@ -218,7 +180,7 @@ public class SourceEndpoint {
     Response.ResponseBuilder builder = null;
     if (amount != null) {
 
-      resultsList = buildObjects(Integer.parseInt(amount));
+      resultsList = RandomUtil.buildRandomGroovyResponses(Integer.parseInt(amount));
       response.setData(resultsList);
     }
 
@@ -232,33 +194,6 @@ public class SourceEndpoint {
     }
 
     return builder.build();
-  }
-
-  /**
-   * Build objects list.
-   *
-   * @param amount the amount
-   * @return the list
-   */
-  private List<GroovyResponseObject> buildObjects(int amount) {
-    List<GroovyResponseObject> results = new ArrayList<GroovyResponseObject>();
-    while (amount > 0) {
-      GroovyResponseObject restResponseObject = new GroovyResponseObject();
-
-      /*The valid range of latitude in degrees is -90 and +90 for the southern and northern hemisphere respectively.
-      Longitude is in the range -180 and +180 specifying the east-west position.*/
-      double lat = ThreadLocalRandom.current().nextDouble(MIN_LAT, MAX_LAT);
-      double lng = ThreadLocalRandom.current().nextDouble(MIN_LON, MAX_LON);
-      //POINT(73.0166738279393 33.6788721326803)
-      restResponseObject.setTitle("TestObject" + String.valueOf(amount));
-      restResponseObject.setLat(lat);
-      restResponseObject.setLng(lng);
-      restResponseObject.setLocation("POINT(" + lng + " " + lat + ")");
-      // GroovyResponseObject.setSummary("RandomGeneratedPoint");
-      results.add(restResponseObject);
-      amount = amount - 1;
-    }
-    return results;
   }
 
   /**
@@ -317,7 +252,7 @@ public class SourceEndpoint {
 
     if (amount != null) {
       intAmount = getIntegerFromString(amount, 10);
-      results = generateDataForResponse(intAmount, start, end, topLeft, bottomRight);
+      results = generateDataForRandomResponse(intAmount, start, end, topLeft, bottomRight);
     }
 
     JsonApiResponse response = new JsonApiResponse();
@@ -397,8 +332,8 @@ public class SourceEndpoint {
       bottomRight = BOTTOM_RIGHT;
     }
 
-    results=  checkForResults(start, end, bottomRight, topLeft, amount);
-
+    results = searchCannedForResult(amount, buildTextQuery(amount));
+    //results = checkForResults(start, end, bottomRight, topLeft, amount);
 
     JsonApiResponse response = new JsonApiResponse();
     Response.ResponseBuilder builder = null;
@@ -422,122 +357,6 @@ public class SourceEndpoint {
     return here;
   }
 
-  private List<CRSEndpointResponse> checkForResults(
-      Date start, Date end, String bottomRight, String topLeft, String queryString) {
-    List<CRSEndpointResponse> result = new ArrayList<>();
-    String latSegments[] = StringUtils.split(topLeft);
-    String lngSegments[] = StringUtils.split(bottomRight);
-    double topLeftLat = Double.parseDouble(latSegments[0]);
-
-    double topLeftLng = Double.parseDouble(latSegments[1]);
-
-    double bottomRightLat = Double.parseDouble(lngSegments[0]);
-
-    double bottomRightLng = Double.parseDouble(lngSegments[1]);
-
-    for (CRSEndpointResponse e : cannedResponses) {
-      if (checkResultForMatching(
-          topLeftLat, topLeftLng, bottomRightLat, bottomRightLng, queryString, start, end, e)) {
-        result.add(e);
-      }
-    }
-
-    return result;
-  }
-
-  private boolean checkResultForMatching(
-      double topLeftLat,
-      double topLeftLng,
-      double bottomRightLat,
-      double bottomRightLng,
-      String queryString,
-      Date start,
-      Date end,
-      CRSEndpointResponse e) {
-    boolean result = false;
-    boolean dateMatched = checkDateInRange(start, end, e);
-    if (dateMatched) {
-      boolean locationMatched =
-          checkDoubleInRange(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng, e);
-      if (locationMatched) {
-        boolean contextualMatched = checkQueryString(queryString, e);
-        if (contextualMatched) {
-          result = true;
-        }
-      }
-    }
-    return result;
-  }
-
-  private boolean checkQueryString(String queryString, CRSEndpointResponse item) {
-    boolean result = false;
-    if(queryString != null && !queryString.equalsIgnoreCase("%")){
-      String[] queryParams = queryString.split(" ");
-      String itemRollUp =
-              item.getClassification()
-                      + " "
-                      + item.getOriginatorUnit()
-                      + " "
-                      + item.getSummary()
-                      + " "
-                      + item.getReportLink()
-                      + " "
-                      + item.getDisplayTitle();
-      for (String param : queryParams) {
-
-        if (!stopWords.contains(param)) {
-          if (itemRollUp.contains(param)) {
-            result = true;
-            break;
-          }
-        }
-      }
-    }else{
-      result = true;
-    }
-
-
-    return result;
-  }
-
-  private boolean checkDateInRange(Date from, Date to, CRSEndpointResponse item) {
-    boolean result = false;
-    Long itemDate = item.getDateOccurred().getTime();
-
-    if (itemDate > from.getTime() && itemDate < to.getTime()) {
-      result = true;
-    }
-    return result;
-  }
-
-  private boolean checkDoubleInRange(
-      double topLeftLat,
-      double topLeftLng,
-      double bottomRightLat,
-      double bottomRightLng,
-      CRSEndpointResponse item) {
-    boolean result = false;
-    String itemLocation = item.getLocation();
-    WKTReader reader = new WKTReader();
-    try {
-      Geometry geometry = reader.read(itemLocation);
-      Point center = geometry.getCentroid();
-      double lat = item.getLatitude();
-      double lng = item.getLongitude();
-
-      if (lat > bottomRightLat && lat < topLeftLat) {
-        if (lng < bottomRightLng && lng > topLeftLng) {
-          result = true;
-        }
-      }
-
-    } catch (com.vividsolutions.jts.io.ParseException e) {
-      logger.error("Unable to parse WKT determining the item to be false.");
-    }
-
-    return result;
-  }
-
   /**
    * Get integer from string int.
    *
@@ -554,7 +373,7 @@ public class SourceEndpoint {
     return value;
   }
 
-  private ArrayList<CRSEndpointResponse> generateDataForResponse(
+  private ArrayList<CRSEndpointResponse> generateDataForRandomResponse(
       int amount, Date start, Date end, String topLeft, String bottomRight) {
 
     String latSegments[] = StringUtils.split(topLeft);
@@ -581,7 +400,8 @@ public class SourceEndpoint {
     }
 
     ArrayList<CRSEndpointResponse> results =
-        buildObjectsForSource(amount, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng, s, e);
+        buildObjectsForRandomResponse(
+            amount, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng, s, e);
     if (results.size() > 0 && results != null) {
       return results;
     } else {
@@ -589,7 +409,7 @@ public class SourceEndpoint {
     }
   }
 
-  private ArrayList<CRSEndpointResponse> buildObjectsForSource(
+  private ArrayList<CRSEndpointResponse> buildObjectsForRandomResponse(
       int amount,
       Double topLeftLat,
       Double topLeftLng,
@@ -610,7 +430,7 @@ public class SourceEndpoint {
       lng = Double.parseDouble(decFormat.format(lng));
 
       CRSEndpointResponse uniResponse =
-          generateRandomMetacard(
+          genRandomResponse(
               lat, lng, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng, start, end);
 
       results.add(uniResponse);
@@ -619,372 +439,329 @@ public class SourceEndpoint {
     return results;
   }
 
-  private CRSEndpointResponse generateRandomMetacard(
-      double lat,
-      double lng,
-      Double topLeftLat,
-      Double topLeftLng,
-      Double bottomRightLat,
-      Double bottomRightLng,
-      Date start,
-      Date end) {
-    /*logger.debug("topLeftLat {}",topLeftLat);
-    logger.debug("topLeftLng {}",topLeftLng);
-    logger.debug("bottomRightLat {}",bottomRightLat);
-    logger.debug("bottomRightLng {}",bottomRightLng);*/
-    CRSEndpointResponse uniResponse = new CRSEndpointResponse();
-    int whichGeom = ThreadLocalRandom.current().nextInt(6);
-    //logger.info("Array Number = {}", whichGeom);
-    String wktString =
-        constructWktString(whichGeom, topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
-    uniResponse.setLocation(wktString);
-    Date sigactDate = generateRandomDate(start, end);
-    uniResponse.setClassification("UNCLASSIFIED");
-    int niirsValue = ThreadLocalRandom.current().nextInt(11);
-    uniResponse.setNiirs(niirsValue);
-    uniResponse.setDisplayTitle(generateTitleBasedOnGeometry(wktString, sigactDate));
-    uniResponse.setDateOccurred(sigactDate);
-    uniResponse.setDisplaySerial(
-        String.valueOf(topLeftLat)
-            + String.valueOf(bottomRightLng)
-            + String.valueOf(lat)
-            + String.valueOf(lng));
-    uniResponse.setLatitude(lat);
-    uniResponse.setLongitude(lng);
-    uniResponse.setOriginatorUnit(getRandomizedField(dataStore.getOriginateUnit()));
-    uniResponse.setPrimaryEventType(getRandomizedField(dataStore.getEventTypes()));
-    uniResponse.setReportLink(getRandomizedField(dataStore.getReportLinks()));
-    uniResponse.setSummary(getRandomizedField(dataStore.getSummaries()));
-    return uniResponse;
-  }
+  private boolean createSearchIndexer(boolean caseSensitive) {
+    boolean result = true;
 
-  public String constructWktString(
-      int wktType,
-      Double topLeftLat,
-      Double topLeftLng,
-      Double bottomRightLat,
-      Double bottomRightLng) {
-    String result = null;
-    switch (wktType) {
-      case POLYGON:
-        {
-          try {
-            result = createRandomWktPolygon(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
-          } catch (Exception e) {
-            logger.error("Wkt Creation Failed For POLYGON {}", e);
-          }
-        }
-        break;
-      /*case MULTIPOLYGON:
-        {
-          try {
-            result =
-                createRandomWktMultiPolygon(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
-          } catch (Exception e) {
-            logger.error("Wkt Creation Failed For MULTIPOLYGON");
-          }
-        }
-        break;*/
-      case POINT:
-        {
-          try {
-            result = createRandomWktPoint(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
-          } catch (Exception e) {
-            logger.error("Wkt Creation Failed For POINT");
-          }
-        }
-        break;
-      /*case MULTIPOINT:
-        {
-          try {
-            result =
-                createRandomWktMultiPoint(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
-          } catch (Exception e) {
-            logger.error("Wkt Creation Failed For MULTIPOINT");
-          }
-        }
-        break;*/
-        //Removed because these lines look like ass on the map, until i can customize better they are staying off.
-        /*case LINESTRING: {
-          try {
-            result = createRandomWktLine(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
-          } catch (Exception e) {
-            logger.error("Wkt Creation Failed For LINESTRING");
-          }
-        }
-        break;
-        case MULTILINESTRING: {
-          try {
-            result = createRandomWktMultiLine(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
-          } catch (Exception e) {
-            logger.error("Wkt Creation Failed For MULTILINESTRING");
-          }
-        }
-        break;
-        */
-      default:
-        {
-          try {
-            result = createRandomWktPoint(topLeftLat, topLeftLng, bottomRightLat, bottomRightLng);
-          } catch (Exception e) {
-            logger.error("Wkt Creation Failed For Default Type of Point");
-          }
-        }
-    }
-    return result;
-  }
+    try {
+      //Required otherwise lucene wont work, gotta love OSGI classloaders.
+      Thread.currentThread().setContextClassLoader(SourceEndpoint.class.getClassLoader());
 
-  public Date generateRandomDate(Date dMin, Date dMax) {
-    long MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
-    GregorianCalendar s = new GregorianCalendar();
-    s.setTimeInMillis(dMin.getTime());
-    GregorianCalendar e = new GregorianCalendar();
-    e.setTimeInMillis(dMax.getTime());
+      if (caseSensitive) {
 
-    // Get difference in milliseconds
-    long endL = e.getTimeInMillis() + e.getTimeZone().getOffset(e.getTimeInMillis());
-    long startL = s.getTimeInMillis() + s.getTimeZone().getOffset(s.getTimeInMillis());
-    long dayDiff = (endL - startL) / MILLIS_PER_DAY;
-    //int year  = dMax.getYear() - dMin.getYear();
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(dMin);
-    cal.add(Calendar.DATE, new Random().nextInt((int) dayDiff));
-    //int year  = (int) ThreadLocalRandom.current().nextDouble(1970, 2017);
-    //cal.add(Calendar.YEAR, year);
-    return cal.getTime();
-  }
-
-  public String generateTitleBasedOnGeometry(String geom, Date date) {
-    String name = null;
-    if (geom.contains("MULTIPOINT")) {
-      name = "SIGACT-COLLECTION" + date;
-    } else if (geom.contains("POINT")) {
-      name = "SIGACT-" + date;
-    } else if (geom.contains("MULTILINESTRING")) {
-      name = "ROUTE-COLLECTION-" + date;
-    } else if (geom.contains("LINESTRING")) {
-      name = "ROUTE-" + date;
-
-    } else if (geom.contains("MULTIPOLYGON")) {
-      name = "NAI-COLLECTION-" + date;
-
-    } else if (geom.contains("POLYGON")) {
-      name = "NAI-" + date;
-    }
-    return name;
-  }
-
-  //Verified and tested this method creates valid WKT Polygons
-  private String createRandomWktPolygon(
-      Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng) {
-    StringBuilder result = new StringBuilder();
-    double lat = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
-    lat = Double.parseDouble(decFormat.format(lat));
-    double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
-    lng = Double.parseDouble(decFormat.format(lng));
-    double decision = genRandomLevel();
-    result.append("POLYGON ((");
-    //upper left
-    result.append(lng + " " + lat + ", ");
-    //upper Right
-    result.append(generateUpperRight(lng, decision) + " " + lat + ", ");
-    //Lower right
-    result.append(
-        generateUpperRight(lng, decision) + " " + generateLowerRight(lat, decision) + ", ");
-    //lower left
-    result.append(lng + " " + generateLowerLeft(lat, decision) + ", ");
-    result.append(lng + " " + lat + " ))");
-    String wkt = result.toString();
-    return wkt;
-  }
-
-  //Verified and tested this method creates valid WKT MultiPolygons
-  private String createRandomWktMultiPolygon(
-      Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng) {
-    StringBuilder result = new StringBuilder();
-    int numberOfPolygons = ThreadLocalRandom.current().nextInt(4) + 1;
-
-    result.append("MULTIPOLYGON (");
-
-    for (int y = 0; y < numberOfPolygons; y++) {
-      StringBuilder inner = new StringBuilder();
-      double lat = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
-      lat = Double.parseDouble(decFormat.format(lat));
-      double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
-      lng = Double.parseDouble(decFormat.format(lng));
-      double levelOf = genRandomLevel();
-      inner.append("((");
-      //upper left
-      inner.append(lng + " " + lat + ", ");
-      //upper Right
-      inner.append(generateUpperRight(lng, levelOf) + " " + lat + ", ");
-      //Lower right
-      inner.append(
-          generateUpperRight(lng, levelOf) + " " + generateLowerRight(lat, levelOf) + ", ");
-      //lower left
-      inner.append(lng + " " + generateLowerLeft(lat, levelOf) + ", ");
-      inner.append(lng + " " + lat + " )),");
-      String wkt = inner.toString();
-      result.append(wkt);
-    }
-    String fix = result.toString();
-    fix = fix.substring(0, fix.length() - 1);
-    fix = fix + ")";
-    return fix;
-  }
-
-  //Verified and tested this method produces valid points
-  private String createRandomWktPoint(
-      Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng) {
-    String result = null;
-    //logger.debug("Entering generate lat. Origin = {} Bound = {}",bottomRightLat,topLeftLat);
-    double lat = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
-    //logger.debug("Exit generate lat. lat = {} ",lat);
-    lat = Double.parseDouble(decFormat.format(lat));
-    //logger.debug("Lat after decimal format lat = {} ",lat);
-    //logger.debug("Entering generate lng. Origin = {} Bound = {}",bottomRightLng,topLeftLng);
-    double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
-    //logger.debug("Exit generate lng. lng = {} ",lng);
-    lng = Double.parseDouble(decFormat.format(lng));
-    //logger.debug("Lng after decimal format lng = {} ",lat);
-    result = "POINT(" + lng + " " + lat + ")";
-    return result;
-  }
-
-  //Verified this method produces valid multipoints.
-  private String createRandomWktMultiPoint(
-      Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng) {
-    StringBuilder result = new StringBuilder();
-    int numberOfPoints = ThreadLocalRandom.current().nextInt(20) + 1;
-    double lat = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
-    lat = Double.parseDouble(decFormat.format(lat));
-    double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
-    lng = Double.parseDouble(decFormat.format(lng));
-    result.append("MULTIPOINT (");
-    result.append("(" + lng + " " + lat + "), ");
-    for (int x = 0; x < numberOfPoints; x++) {
-      double latInner = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
-      latInner = Double.parseDouble(decFormat.format(latInner));
-      double lngInner = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
-      lngInner = Double.parseDouble(decFormat.format(lngInner));
-      result.append("(" + lngInner + " " + latInner + "), ");
-    }
-    String fix = result.toString();
-    fix = fix.substring(0, fix.length() - 2);
-    fix = fix + ")";
-    return fix;
-  }
-
-  private double genRandomLevel() {
-    double result = 0.0;
-    int decide = ThreadLocalRandom.current().nextInt(4);
-    if (decide == 0) {
-      result = 0.27;
-    } else if (decide == 1) {
-      result = 0.1;
-    } else if (decide == 2) {
-      result = 0.2;
-    } else if (decide == 3) {
-      result = 0.3;
-    }
-    return result;
-  }
-
-  private double generateUpperRight(double lng, double amount) {
-    double newLong = lng + amount;
-    if (newLong > 180) {
-      newLong = 180;
-    } else if (newLong < -180) {
-      newLong = -180;
-    }
-    return newLong;
-  }
-
-  private double generateLowerRight(double lat, double amount) {
-    double newLat = lat - amount;
-    if (newLat > 90) {
-      newLat = 90;
-    } else if (newLat < -90) {
-      newLat = -90;
-    }
-    return newLat;
-  }
-
-  private double generateLowerLeft(double lat, double amount) {
-    double newLat = lat - amount;
-    if (newLat > 90) {
-      newLat = 90;
-    } else if (newLat < -90) {
-      newLat = -90;
-    }
-    return newLat;
-  }
-
-  //Verified this method returns valid line.
-  private String createRandomWktLine(
-      Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng) {
-    StringBuilder result = new StringBuilder();
-    int numberOfPoints = ThreadLocalRandom.current().nextInt(4) + 1;
-    double lat = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
-    lat = Double.parseDouble(decFormat.format(lat));
-    double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
-    lng = Double.parseDouble(decFormat.format(lng));
-    result.append("LINESTRING (");
-    result.append(lng + " " + lat + ",");
-    for (int x = 0; x < numberOfPoints; x++) {
-      int upOrDown = ThreadLocalRandom.current().nextInt(50);
-      if (upOrDown % 2 == 0) {
-        result.append((lng + (lng * 0.3)) + " " + lat + ",");
-
+        analyzer = new StandardAnalyzer();
+        //analyzer = new CaseSensitiveStandardAnalyzer();
       } else {
-        result.append(lng + " " + (lat + (lat * 0.3)) + ",");
+        analyzer = new StandardAnalyzer();
       }
-    }
-    String fix = result.toString();
-    fix = fix.substring(0, fix.length() - 1);
-    fix = fix + ")";
-    return fix;
-  }
 
-  //Verified and tested this method creates valid MultiLineStrings
-  private String createRandomWktMultiLine(
-      Double topLeftLat, Double topLeftLng, Double bottomRightLat, Double bottomRightLng) {
-    StringBuilder result = new StringBuilder();
-    int numberOfLines = ThreadLocalRandom.current().nextInt(4) + 1;
-    result.append("MULTILINESTRING (");
+      ramDirectory = new RAMDirectory();
+      IndexWriterConfig config = new IndexWriterConfig(analyzer);
+      IndexWriter indexWriter = null;
+      List<IndexableField> fields = new ArrayList<>();
 
-    for (int y = 0; y < numberOfLines; y++) {
-      StringBuilder innerLoop = new StringBuilder();
-      innerLoop.append("(");
-      int numberOfPoints = ThreadLocalRandom.current().nextInt(4) + 1;
-      double lat = ThreadLocalRandom.current().nextDouble(bottomRightLat, topLeftLat);
-      lat = Double.parseDouble(decFormat.format(lat));
-      double lng = ThreadLocalRandom.current().nextDouble(topLeftLng, bottomRightLng);
-      lng = Double.parseDouble(decFormat.format(lng));
-
-      innerLoop.append(lng + " " + lat + ", ");
-      for (int x = 0; x < numberOfPoints; x++) {
-        int upOrDown = ThreadLocalRandom.current().nextInt(50);
-        if (upOrDown % 2 == 0) {
-          innerLoop.append(lng + (lng * 0.3) + " " + lat + ", ");
-        } else {
-          innerLoop.append(lng + " " + (lat + (lat * 0.3)) + ", ");
-        }
+      //they all have the same fields so it doesnt matter if i only do this once
+      for (IndexableField field : cannedDocuments.get(0).getFields()) {
+        fields.add(field);
       }
-      String fix = innerLoop.toString();
-      fix = fix.substring(0, fix.length() - 2);
-      fix = fix + "), ";
-      result.append(fix);
-    }
-    String fix = result.toString();
-    fix = fix.substring(0, fix.length() - 2);
-    fix = fix + ")";
-    return fix;
-  }
+      logger.debug("LUCENE SEARCH :: Creating index...");
+      indexWriter = new IndexWriter(ramDirectory, config);
+      for (Document metaDoc : cannedDocuments) {
+        indexWriter.addDocument(metaDoc);
+        indexWriter.flush();
+      }
+      //close the index writer all documents have been added.
+      indexWriter.commit();
+      indexWriter.close();
+      logger.debug("LUCENE SEARCH :: Index created.");
 
-  private Double genRandomDoubleInRange(Double origin, Double bounds) {
-    double result = ThreadLocalRandom.current().nextDouble(origin, bounds);
-    result = Double.parseDouble(decFormat.format(result));
+      //query logic
+      List<String> fieldNames =
+          fields.stream().map(field -> field.name()).collect(Collectors.toList());
+      //Create the String[] requirement for the MultiFieldQueryParser
+      String[] allFields = (String[]) fieldNames.toArray(new String[fieldNames.size()]);
+      //Create a new multifield query parser.
+      queryParser = new MultiFieldQueryParser(allFields, analyzer);
+      //Set allow leading wildcard to true.
+      queryParser.setAllowLeadingWildcard(true);
+      //Set the default operator to AND
+      //queryParser.setDefaultOperator(QueryParser.Operator.OR);
+      queryParser.setDefaultOperator(QueryParser.Operator.AND);
+    } catch (Exception e) {
+      //catching everything
+      logger.error("Unable to create the lucene in memory config for canned respones. {}", e);
+      result = false;
+    }
     return result;
   }
+
+  private BooleanQuery buildTextQuery(String query) {
+    QueryParser summParser = new QueryParser(SUMMARY, analyzer);
+    QueryParser primEventParser = new QueryParser(PRIMARY_EVENT_TYPE, analyzer);
+    QueryParser classParser = new QueryParser(CLASSIFICATION, analyzer);
+    QueryParser displayParser = new QueryParser(DISPLAY_TITLE, analyzer);
+    QueryParser reportParser = new QueryParser(REPORT_LINK, analyzer);
+    Query summQ = null;
+    Query primQ = null;
+    Query classQ = null;
+    Query titleQ = null;
+    Query reportQ = null;
+    List<BooleanClause> clauses = new ArrayList<>();
+    boolean allNots = false;
+    String[] queryArray = query.split(" ");
+    int notCount = 0;
+    for (String term : queryArray) {
+      if (term.contains("!")) {
+        notCount = notCount + 1;
+      }
+    }
+    if (notCount >= queryArray.length) {
+      allNots = true;
+    }
+    if (!allNots) {
+      for (String term : queryArray) {
+        BooleanClause.Occur whatType = null;
+        if (term.contains("!")) {
+          whatType = BooleanClause.Occur.MUST_NOT;
+        } else {
+          whatType = BooleanClause.Occur.SHOULD;
+        }
+        try {
+          summQ = summParser.parse(term);
+          primQ = primEventParser.parse(term);
+          classQ = classParser.parse(term);
+          titleQ = displayParser.parse(term);
+          reportQ = reportParser.parse(term);
+          clauses.add(new BooleanClause(summQ, whatType));
+          clauses.add(new BooleanClause(primQ, whatType));
+          clauses.add(new BooleanClause(classQ, whatType));
+          clauses.add(new BooleanClause(titleQ, whatType));
+          clauses.add(new BooleanClause(reportQ, whatType));
+        } catch (org.apache.lucene.queryparser.classic.ParseException e) {
+          logger.error("Error in parsing the supplied query {}", e);
+        }
+      }
+      BooleanQuery.Builder booleanBuilder = new BooleanQuery.Builder();
+      for (BooleanClause clause : clauses) {
+        booleanBuilder.add(clause);
+      }
+      return booleanBuilder.build();
+    } else {
+      return null;
+    }
+  }
+
+  /*public void searchIndexWithQueryParser(String whichField, String searchString)
+      throws IOException, ParseException {
+    System.out.println("\nSearching for '" + searchString + "' using QueryParser");
+    IndexReader indexReader = DirectoryReader.open(ramDirectory);
+    IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+    int hitsPerPage = 10000;
+    QueryParser queryParser = new QueryParser(whichField, analyzer);
+    Query query = null;
+    try {
+      query = queryParser.parse(searchString);
+    } catch (org.apache.lucene.queryparser.classic.ParseException e) {
+      logger.error(
+          "Error in parsing query for field of {} with query String of {} reason given was {}",
+          whichField,
+          searchString,
+          e);
+    }
+    System.out.println("Type of query: " + query.getClass().getSimpleName());
+    TopDocs hits = indexSearcher.search(query, hitsPerPage);
+  }*/
+
+  /*public void searchIndexWithRangeQuery(
+      String whichField, String start, String end, boolean inclusive)
+      throws IOException, ParseException {
+    System.out.println("\nSearching for range '" + start + " to " + end + "' using RangeQuery");
+    IndexReader indexReader = DirectoryReader.open(ramDirectory);
+    int hitsPerPage = 10000;
+    IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+    Term startTerm = new Term(whichField, start);
+    Term endTerm = new Term(whichField, end);
+    Query query = new TermRangeQuery(startTerm, endTerm, inclusive);
+    TopDocs hits = indexSearcher.search(query);
+    displayHits(hits);
+  }*/
+
+  private Query createQueryForParams(
+      String textQuery, Date dateStart, Date dateEnd, Double lat, Double lon) {
+
+    return null;
+  }
+
+  public List<CRSEndpointResponse> searchCannedForResult(
+      String queryString, BooleanQuery booleanQuery) {
+    IndexReader indexReader = null;
+    IndexSearcher indexSearcher = null;
+    TopDocs searchResultsFromLucene = null;
+    ScoreDoc[] topResultsFromLucene = null;
+    List<CRSEndpointResponse> returnResults = new ArrayList<>();
+    TreeMap<String, CRSEndpointResponse> luceneResultMap = new TreeMap<>();
+    //Create our query string for lucene
+    logger.debug("LUCENE SEARCH :: Creating parser for query [{}]", queryString);
+    Query q = null;
+    try {
+      if (booleanQuery != null) {
+        q = booleanQuery;
+      } else {
+        q = queryParser.parse(queryString);
+      }
+
+      //Set our hits per page to a very large number
+      int hitsPerPage = 10000;
+      //Create our index reader for us to search
+      logger.debug("LUCENE SEARCH :: Opening index...");
+      try {
+        indexReader = DirectoryReader.open(ramDirectory);
+        logger.debug("LUCENE SEARCH :: Index contains {} documents", indexReader.numDocs());
+        //Create our index searcher to actually search the index
+        indexSearcher = new IndexSearcher(indexReader);
+        //Represents hits returned by the search
+        logger.debug("LUCENE SEARCH :: Searching index...");
+        try {
+          searchResultsFromLucene = indexSearcher.search(q, hitsPerPage);
+          logger.debug(
+              "LUCENE SEARCH :: Search complete. {} total hits.",
+              searchResultsFromLucene.totalHits);
+          //The top results from the search.
+          topResultsFromLucene = searchResultsFromLucene.scoreDocs;
+
+          int hits = 0;
+          for (ScoreDoc result : topResultsFromLucene) {
+            //Retrieve the document from the indexSearcher
+            Document d = null;
+            try {
+              d = indexSearcher.doc(result.doc);
+            } catch (IOException e) {
+              logger.error("Unable to retrieve document for result {} error was {}", result.doc, e);
+              continue;
+            }
+            if (d != null && d.getField(DISPLAY_SERIAL) != null) {
+              String metacardId = d.getField(DISPLAY_SERIAL).stringValue();
+              if (luceneResultMap.get(metacardId) == null) {
+                luceneResultMap.put(metacardId, cannedResponses.get(metacardId));
+                logger.trace(
+                    "Found a result within a metacard with ID of {} adding to result set .... .",
+                    metacardId);
+                logger.trace("Document matched Lucene criteria, adding to result set ... ");
+                hits++;
+              }
+            }
+          }
+          returnResults.addAll(luceneResultMap.values());
+          // We no longer need to access the documents so we close the indexReader
+          // This can only be done after all reasons for accessing the documents is gone, if you attempt otherwise
+          // Exceptions will occur.
+          try {
+            indexReader.close();
+          } catch (IOException e) {
+            logger.error("Unable to close the Index reader {}", e);
+          }
+          logger.debug("LUCENE SEARCH :: Added {} documents to the results.", hits);
+        } catch (IOException e) {
+          logger.error("Unable to search the index {}", e);
+        }
+      } catch (IOException e) {
+        logger.error("Index reader was unable to open the ram directory. {}", e);
+      }
+
+    } catch (org.apache.lucene.queryparser.classic.ParseException e) {
+      logger.error("Unable to parse the query string supplied to the endpoint. {}", e);
+    }
+    if (returnResults == null) {
+      returnResults = new ArrayList<>();
+    }
+    return returnResults;
+  }
+
+  /**
+   * Construct document from result document.
+   *
+   * @param r the r
+   * @return the document
+   */
+  public Document buildDoc(CRSEndpointResponse r) {
+
+    Document doc = new Document();
+    if (r.getDisplayTitle() != null) {
+      doc.add(
+          new org.apache.lucene.document.TextField(
+              DISPLAY_TITLE, String.valueOf(r.getDisplayTitle()), Field.Store.YES));
+    }
+    if (r.getNiirs() != null) {
+      doc.add(new LegacyIntField(NIIRS, r.getNiirs(), Field.Store.YES));
+      /* doc.add(
+      new org.apache.lucene.document.TextField(
+              NIIRS,
+              String.valueOf(r.getNiirs()),
+              Field.Store.YES));*/
+    }
+    if (r.getSummary() != null) {
+      doc.add(
+          new org.apache.lucene.document.TextField(
+              SUMMARY, String.valueOf(r.getSummary()), Field.Store.YES));
+    }
+    if (r.getLatitude() != null && r.getLongitude() != null) {
+      doc.add(new LegacyDoubleField(LATITUDE, r.getLatitude(), Field.Store.YES));
+      doc.add(new LegacyDoubleField(LONGITUDE, r.getLongitude(), Field.Store.YES));
+      /*
+      doc.add(
+              new LatLonDocValuesField(LATITUDE, r.getLatitude(), r.getLongitude()));
+      doc.add(
+              new LatLonDocValuesField(LONGITUDE, r.getLatitude(), r.getLongitude()));*/
+
+    }
+    if (r.getLocation() != null) {
+      doc.add(
+          new org.apache.lucene.document.TextField(
+              LOCATION, String.valueOf(r.getLocation()), Field.Store.YES));
+    }
+    if (r.getClassification() != null) {
+      doc.add(
+          new org.apache.lucene.document.TextField(
+              CLASSIFICATION, String.valueOf(r.getClassification()), Field.Store.YES));
+    }
+    if (r.getOriginatorUnit() != null) {
+      doc.add(
+          new org.apache.lucene.document.TextField(
+              ORIGINATOR_UNIT, String.valueOf(r.getOriginatorUnit()), Field.Store.YES));
+    }
+    if (r.getDisplaySerial() != null) {
+      doc.add(
+          new org.apache.lucene.document.TextField(
+              DISPLAY_SERIAL, String.valueOf(r.getDisplaySerial()), Field.Store.YES));
+    }
+    if (r.getPrimaryEventType() != null) {
+      doc.add(
+          new org.apache.lucene.document.TextField(
+              PRIMARY_EVENT_TYPE, String.valueOf(r.getPrimaryEventType()), Field.Store.YES));
+    }
+    if (r.getReportLink() != null) {
+      doc.add(
+          new org.apache.lucene.document.TextField(
+              REPORT_LINK, String.valueOf(r.getReportLink()), Field.Store.YES));
+    }
+    if (r.getDateOccurred() != null) {
+      doc.add(new LegacyLongField(DATE_OCCURRED, r.getDateOccurred().getTime(), Field.Store.YES));
+    }
+    return doc;
+  }
+
+  /*static final class CaseSensitiveStandardAnalyzer extends StopwordAnalyzerBase {
+    @Override
+    protected TokenStreamComponents createComponents(String string) {
+      final StandardTokenizer src;
+      TokenStream tok;
+
+      try (StandardAnalyzer standardAnalyzer = new StandardAnalyzer()) {
+        src = new StandardTokenizer();
+        src.setMaxTokenLength(standardAnalyzer.getMaxTokenLength());
+        tok = new StandardFilter(src);
+        tok = new StopFilter(tok, stopwords);
+      }
+      return new TokenStreamComponents(src, tok);
+    }
+  }*/
 }

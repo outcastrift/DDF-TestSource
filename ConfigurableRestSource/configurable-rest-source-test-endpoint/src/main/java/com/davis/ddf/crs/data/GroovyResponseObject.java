@@ -2,38 +2,24 @@ package com.davis.ddf.crs.data;
 
 /**
  * This software was created for the Open Architecture Distributed Common Ground System
- * Modernization All rights to this software belong to  appropriate licenses and restrictions apply.
+ * Modernization All rights to this software belong to appropriate licenses and restrictions apply.
  * Created by Samuel Davis on 3/21/16.
  */
 public class GroovyResponseObject {
 
-  /**
-   * The constant serialVersionUID.
-   */
+  /** The constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
-  /**
-   * The Title.
-   */
+  /** The Title. */
   private String title;
-  /**
-   * The Lat.
-   */
+  /** The Lat. */
   private double lat;
-  /**
-   * The Lng.
-   */
+  /** The Lng. */
   private double lng;
-  /**
-   * The Location.
-   */
+  /** The Location. */
   private String location;
 
-  /**
-   * Instantiates a new Rest response object.
-   */
-  public GroovyResponseObject() {
-
-  }
+  /** Instantiates a new Rest response object. */
+  public GroovyResponseObject() {}
 
   /**
    * Gets lat.
@@ -106,6 +92,4 @@ public class GroovyResponseObject {
   public void setLocation(String location) {
     this.location = location;
   }
-
-
 }

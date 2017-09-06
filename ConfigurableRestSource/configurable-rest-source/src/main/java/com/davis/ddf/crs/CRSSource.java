@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -783,6 +784,8 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
         httpBuilder.addQueryParameter(ssContextSearchParam, contextualSearch);
       }
 
+
+
       //Make the call to the service
       LOGGER.debug("CALLING getResultsForQuery(" + httpUrl.url().toString() + ")");
 
@@ -794,6 +797,7 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
     if (results != null) {
       LOGGER.info("CRSSource  RETURNED {} results", results.size());
     }
+
     return results;
   }
   //endregion
