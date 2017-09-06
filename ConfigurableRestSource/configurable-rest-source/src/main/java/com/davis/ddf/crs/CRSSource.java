@@ -440,7 +440,7 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
             spatialFilter);
 
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("queryTfr Returning " + results);
+      LOGGER.trace("queryTfr Returning " + results);
     }
     return (ArrayList<CRSResponse>) results;
   }
@@ -495,7 +495,12 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
             LOGGER.trace(metadataString);
 
             //metaCardData.setMetadata(metadataString);
-            metaCardData.setMetadata(fedSourceResponse.getMetaData());
+            //metaCardData.setMetadata(fedSourceResponse.getMetaData());
+            metadataString =
+                    "<metadata>"
+                            + StringEscapeUtils.escapeXml11(fedSourceResponse.getMetaData())
+                            + "</metadata>";
+            metaCardData.setMetadata(metadataString);
           }
           Calendar c = Calendar.getInstance();
           long now = System.currentTimeMillis();
