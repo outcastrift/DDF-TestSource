@@ -297,6 +297,7 @@ public class CRSSource implements ddf.catalog.source.FederatedSource {
       } else if (mode == REST) {
         LOGGER.debug("REST mode enabled entering queryWithParams ");
         List<CRSResponse> phraseResponse = null;
+        operationsCRSResponseReports = new ArrayList<>();
         for(String seachPhrase : searchPhrases){
           phraseResponse =  queryWithParams(query, seachPhrase, temporalFilter, spatialFilter);
           operationsCRSResponseReports.addAll(phraseResponse);
