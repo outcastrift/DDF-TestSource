@@ -190,7 +190,7 @@ public class SourceEndpoint {
 
     JsonApiResponse response = new JsonApiResponse();
     StoredSequentialQuery storedSequentialQuery = null;
-    Map<Integer, GroovyResponseObject> results = new HashMap<>();
+   List<GroovyResponseObject> results = new ArrayList<>();
     Response.ResponseBuilder builder = null;
     SequentialResponse sequentialResponse = null;
     boolean allPagesHaveBeenRead = false;
@@ -211,10 +211,10 @@ public class SourceEndpoint {
             GroovyResponseObject object = null;
             for (int x = 1; x < endRow; x++) {
               object = storedSequentialQuery.getObjectInStoredQuery(x);
-              results.put(x, object);
+              results.add(object);
             }
             object = storedSequentialQuery.getObjectInStoredQuery(endRow);
-            results.put(endRow, object);
+            results.add(object);
             sequentialResponse =
                 new SequentialResponse(
                     startRow,
@@ -266,10 +266,10 @@ public class SourceEndpoint {
       GroovyResponseObject object = null;
       for (int x = 1; x < returnEndRow; x++) {
         object = storedSequentialQuery.getObjectInStoredQuery(x);
-        results.put(x, object);
+        results.add(object);
       }
       object = storedSequentialQuery.getObjectInStoredQuery(returnEndRow);
-      results.put(returnEndRow, object);
+      results.add(object);
       String modQueryUri =
           queryUri
               + "&requestId="

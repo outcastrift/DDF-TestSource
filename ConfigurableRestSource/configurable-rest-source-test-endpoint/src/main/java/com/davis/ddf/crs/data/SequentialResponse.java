@@ -1,5 +1,6 @@
 package com.davis.ddf.crs.data;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -9,7 +10,7 @@ import java.util.Map;
  * @author Samuel Davis created on 9/7/17.
  */
 public class SequentialResponse {
-  private Map<Integer, GroovyResponseObject> results;
+  private List<GroovyResponseObject> results;
   private Integer startRow;
   private Integer endRow;
   private String queryUri;
@@ -34,7 +35,7 @@ public class SequentialResponse {
       String requestId,
       Integer pageSize,
       Integer totalResults,
-      Map<Integer, GroovyResponseObject> results) {
+      List<GroovyResponseObject> results) {
     setResults(results);
     setRequestId(requestId);
     setEndRow(endRow);
@@ -70,21 +71,11 @@ public class SequentialResponse {
     this.pageSize = pageSize;
   }
 
-  /**
-   * Gets results.
-   *
-   * @return the results
-   */
-  public Map<Integer, GroovyResponseObject> getResults() {
+  public List<GroovyResponseObject> getResults() {
     return results;
   }
 
-  /**
-   * Sets results.
-   *
-   * @param results the results
-   */
-  public void setResults(Map<Integer, GroovyResponseObject> results) {
+  public void setResults(List<GroovyResponseObject> results) {
     this.results = results;
   }
 
