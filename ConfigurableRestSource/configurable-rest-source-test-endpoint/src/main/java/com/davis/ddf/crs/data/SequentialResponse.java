@@ -38,6 +38,7 @@ public class SequentialResponse {
     setEndRow(endRow);
     setStartRow(startRow);
     setQueryUri(queryUri);
+    setPageSize(pageSize);
   }
 
   /**
