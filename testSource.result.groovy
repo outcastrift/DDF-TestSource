@@ -147,6 +147,10 @@ println(inputObj)
 logger.info("inputObj = " + inputObj)
 boolean performAdditionalQuery = false
 if (inputObj?.data != null) {
+    int pageSize = inputObj.data.pageSize
+    int beginningRow = inputObj.data.startRow
+    int endingRow = inputObj.data.endRow
+    int
     CloseableHttpClient client = getUnsafeClient(30000, 30000, "etc/certs/localhost.p12", "changeit")
     inputObj.data?.eachWithIndex { queryResult, resultIdx ->
         //for each item do a get request against some more items

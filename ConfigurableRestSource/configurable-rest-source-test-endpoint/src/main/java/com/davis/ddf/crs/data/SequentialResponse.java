@@ -15,6 +15,7 @@ public class SequentialResponse {
   private String queryUri;
   private String requestId;
   private Integer pageSize;
+  private Integer totalResults;
 
   /**
    * Instantiates a new Sequential response.
@@ -39,6 +40,15 @@ public class SequentialResponse {
     setStartRow(startRow);
     setQueryUri(queryUri);
     setPageSize(pageSize);
+    setTotalResults(results.size());
+  }
+
+  public Integer getTotalResults() {
+    return totalResults;
+  }
+
+  public void setTotalResults(Integer totalResults) {
+    this.totalResults = totalResults;
   }
 
   /**
