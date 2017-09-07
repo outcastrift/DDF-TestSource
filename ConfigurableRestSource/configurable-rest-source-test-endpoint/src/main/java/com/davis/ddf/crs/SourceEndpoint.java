@@ -182,7 +182,6 @@ public class SourceEndpoint {
       @QueryParam("startRow") Integer startRow,
       @QueryParam("endRow") Integer endRow) {
     String queryUri = requestUriInfo.getRequestUri().toASCIIString();
-
     JsonApiResponse response = new JsonApiResponse();
     StoredSequentialQuery storedSequentialQuery = null;
     Map<Integer, GroovyResponseObject> results = new HashMap<>();
@@ -211,7 +210,7 @@ public class SourceEndpoint {
             object = storedSequentialQuery.getObjectInStoredQuery(endRow);
             results.put(endRow, object);
             sequentialResponse =
-                new SequentialResponse(startRow, endRow, queryUri, requestId, results);
+                new SequentialResponse(startRow, endRow, queryUri, requestId, PAGE_SIZE, results);
             response.setData(sequentialResponse);
             if (allPagesHaveBeenRead) {
               queryMap.remove(requestId);
@@ -267,7 +266,8 @@ public class SourceEndpoint {
               + "&endRow="
               + returnEndRow;
       sequentialResponse =
-          new SequentialResponse(returnStartRow, returnEndRow, modQueryUri, returnRequestId, results);
+          new SequentialResponse(
+              returnStartRow, returnEndRow, modQueryUri, returnRequestId, PAGE_SIZE, results);
       response.setData(sequentialResponse);
     }
 

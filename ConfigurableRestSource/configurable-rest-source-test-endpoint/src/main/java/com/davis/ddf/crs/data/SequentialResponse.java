@@ -14,18 +14,48 @@ public class SequentialResponse {
   private Integer endRow;
   private String queryUri;
   private String requestId;
+  private Integer pageSize;
 
+  /**
+   * Instantiates a new Sequential response.
+   *
+   * @param startRow the start row
+   * @param endRow the end row
+   * @param queryUri the query uri
+   * @param requestId the request id
+   * @param pageSize the page size
+   * @param results the results
+   */
   public SequentialResponse(
       Integer startRow,
       Integer endRow,
       String queryUri,
       String requestId,
+      Integer pageSize,
       Map<Integer, GroovyResponseObject> results) {
     setResults(results);
     setRequestId(requestId);
     setEndRow(endRow);
     setStartRow(startRow);
     setQueryUri(queryUri);
+  }
+
+  /**
+   * Gets page size.
+   *
+   * @return the page size
+   */
+  public Integer getPageSize() {
+    return pageSize;
+  }
+
+  /**
+   * Sets page size.
+   *
+   * @param pageSize the page size
+   */
+  public void setPageSize(Integer pageSize) {
+    this.pageSize = pageSize;
   }
 
   /**
