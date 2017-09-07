@@ -40,24 +40,6 @@
     <orderEntry type="library" name="Maven: org.carrot2:morfologik-polish:2.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.carrot2:morfologik-stemming:2.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-analyzers-phonetic:6.3.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-highlighter:6.3.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-join:6.3.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-memory:6.3.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-misc:6.3.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queryparser:6.3.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-sandbox:6.3.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-suggest:6.3.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-grouping:6.3.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queries:6.3.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-spatial:6.3.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.regexp:com.springsource.org.apache.regexp:1.5.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-core:6.3.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-analyzers-common:6.3.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-analyzers-morfologik:6.3.0" level="project" />
-    <orderEntry type="library" name="Maven: org.carrot2:morfologik-fsa:2.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.carrot2:morfologik-polish:2.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.carrot2:morfologik-stemming:2.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-analyzers-phonetic:6.3.0" level="project" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.10" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-highlighter:6.3.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-join:6.3.0" level="project" />

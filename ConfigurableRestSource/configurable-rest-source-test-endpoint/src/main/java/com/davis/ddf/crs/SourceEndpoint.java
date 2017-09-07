@@ -181,7 +181,13 @@ public class SourceEndpoint {
       @QueryParam("requestId") String requestId,
       @QueryParam("startRow") Integer startRow,
       @QueryParam("endRow") Integer endRow) {
-    String queryUri = requestUriInfo.getRequestUri().toASCIIString();
+    String queryUri = null;
+    if (requestUriInfo == null) {
+      queryUri = "https://localhost:8993/services/test/getResultsSequential?amount=5&startRow=1&endRow=10&requestId=4b196d6717e148c9998d0d75cfa9525c";
+    } else {
+      queryUri = requestUriInfo.getRequestUri().toASCIIString();
+    }
+
     JsonApiResponse response = new JsonApiResponse();
     StoredSequentialQuery storedSequentialQuery = null;
     Map<Integer, GroovyResponseObject> results = new HashMap<>();

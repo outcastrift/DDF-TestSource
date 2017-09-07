@@ -1,4 +1,4 @@
-package test;
+package com.davis.crs;
 
 
 import org.junit.Test;

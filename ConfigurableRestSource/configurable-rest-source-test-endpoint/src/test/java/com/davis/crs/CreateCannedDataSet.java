@@ -1,4 +1,4 @@
-package test;
+package com.davis.crs;
 
 import com.davis.ddf.crs.utils.RandomUtil;
 import com.davis.ddf.crs.SourceEndpoint;

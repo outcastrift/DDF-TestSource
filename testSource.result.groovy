@@ -140,22 +140,72 @@ KeyStore readKeyStore(String keyStorePath, String clientCertPassword) {
 output = []
 def metacard = [:]
 def jsonSlurper = new JsonSlurper()
-
+logger.info("Input JSON = {}", input)
 def inputObj = jsonSlurper.parseText(input)
-println(input)
-println(inputObj)
-logger.info("inputObj = " + inputObj)
+logger.info("Groovy Object = {} ", inputObj)
 boolean performAdditionalQuery = false
 if (inputObj?.data != null) {
-    int pageSize = inputObj.data.pageSize
-    int beginningRow = inputObj.data.startRow
-    int endingRow = inputObj.data.endRow
-    int
     CloseableHttpClient client = getUnsafeClient(30000, 30000, "etc/certs/localhost.p12", "changeit")
-    inputObj.data?.eachWithIndex { queryResult, resultIdx ->
-        //for each item do a get request against some more items
-        def url = "https://localhost:8993/services/test/getGroovyResults?amount=10"
-        HttpGet request = new HttpGet(url)
+    int startIndex =inputObj.data.startRow
+    logger.info("startRow = {}", startIndex)
+    int endIndex =inputObj.data.endRow
+    logger.info("endRow = {}", endIndex)
+    int pageSize = inputObj.data.pageSize
+    logger.info("pageSize = {}", pageSize)
+    int totalResults = inputObj.data.totalResults
+    logger.info("totalResults = {}", totalResults)
+    String queryUri = inputObj.data.queryUri
+    URI uri = new URI(queryUri)
+    logger.info("URI = {}", uri)
+    //build query URL
+    String base = uri.toString()
+    String[] baseSplit = base.split("\\?")
+    String baseQuery = baseSplit[0]
+    String queryString = baseSplit[1]
+    String[] queryParts = queryString.split("&")
+    boolean firstPart = true
+    for (String part : queryParts) {
+        if (!part.contains("startRow") && part.contains("endRow")) {
+            if (firstPart) {
+                baseQuery = baseQuery + "?" + part
+                firstPart = false
+            } else {
+                baseQuery = baseQuery + "&" + part
+            }
+        }
+    }
+    //handles initial results returned
+    inputObj?.data?.results?.eachWithIndex { queryResult, resultIdx ->
+        logger.info("RESULT ${queryResult}")
+        metacard = [:]
+        metacard['id'] = "testResult_metacard" + queryResult['lat'] + queryResult['lng']
+        metacard['title'] = queryResult['title']
+        metacard['location'] = queryResult['location']
+
+        metacard['Summary'] = ""
+        if (result.title) {
+            metacard['Summary'] += "Title: ${queryResult.title}<br/>"
+        }
+        if (result.lat) {
+            metacard['Summary'] += "Latitude: ${queryResult.lat}<br/>"
+        }
+        if (result.lng) {
+            metacard['Summary'] += "Longitude: ${queryResult.lng}<br/>"
+        }
+        JSONObject wJson = new JSONObject(JsonOutput.toJson(result))
+        metacard.metadata = "<metacard><metadata>" + XML.toString(wJson) + "</metadata></metacard>"
+        output.push(metacard)
+    }
+
+    while (totalResults > metacard.size()) {
+        int requestStartRow = startIndex + pageSize
+        int requestEndingRow = endIndex + pageSize
+        startIndex = requestStartRow
+        endIndex = requestEndingRow
+
+        String callUrl = baseQuery + "&startRow=" + requestStartRow + "&endRow=" + requestEndingRow
+        logger.info("Additional Query URL to Call = {}", callUrl)
+        HttpGet request = new HttpGet(callUrl)
         HttpResponse response = client.execute(request)
         if (response.getStatusLine().getStatusCode() == 200) {
 
@@ -165,8 +215,8 @@ if (inputObj?.data != null) {
                             "UTF-8")
             )
             logger.info("New Query = {} ", getResponse)
-            if (getResponse?.data != null) {
-                getResponse?.data?.eachWithIndex { result, id ->
+            if (getResponse?.data?.results != null) {
+                getResponse?.data?.results?.eachWithIndex { result, id ->
                     logger.info("RESULT ${result}")
                     metacard = [:]
                     metacard['id'] = "testResult_metacard" + result['lat'] + result['lng']
@@ -183,24 +233,24 @@ if (inputObj?.data != null) {
                     if (result.lng) {
                         metacard['Summary'] += "Longitude: ${result.lng}<br/>"
                     }
-
-
                     JSONObject wJson = new JSONObject(JsonOutput.toJson(result))
                     metacard.metadata = "<metacard><metadata>" + XML.toString(wJson) + "</metadata></metacard>"
                     output.push(metacard)
                 }
-
             } else {
                 logger.info("Http Get response was NULL")
             }
         } else {
             logger.info("Http Get Response failed with error code of {}", response.getStatusLine().getStatusCode())
         }
-
-
     }
+
+
 } else {
     logger.debug("results was null")
 }
+
+
+
 
 output = (JsonOutput.toJson(output))
