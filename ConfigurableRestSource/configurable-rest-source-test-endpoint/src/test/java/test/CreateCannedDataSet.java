@@ -1,6 +1,6 @@
 package test;
 
-import com.davis.ddf.crs.RandomUtil;
+import com.davis.ddf.crs.utils.RandomUtil;
 import com.davis.ddf.crs.SourceEndpoint;
 import com.davis.ddf.crs.data.CRSEndpointResponse;
 import com.davis.ddf.crs.data.InMemoryDataStore;

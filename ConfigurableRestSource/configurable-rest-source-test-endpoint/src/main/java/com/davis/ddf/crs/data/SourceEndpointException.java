@@ -11,7 +11,7 @@
  * License is distributed along with this program and can be found at
  * <http://www.gnu.org/licenses/lgpl.html>.
  */
-package com.davis.ddf.crs;
+package com.davis.ddf.crs.data;
 
 import com.davis.ddf.crs.jsonapi.JsonApiResponse;
 import com.davis.ddf.crs.jsonapi.JsonApiResponseError;

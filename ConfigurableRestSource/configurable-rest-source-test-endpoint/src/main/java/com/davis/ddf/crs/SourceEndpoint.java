@@ -2,7 +2,11 @@ package com.davis.ddf.crs;
 
 import com.davis.ddf.crs.data.CRSEndpointResponse;
 import com.davis.ddf.crs.data.GroovyResponseObject;
+import com.davis.ddf.crs.data.SequentialResponse;
+import com.davis.ddf.crs.data.SourceEndpointException;
+import com.davis.ddf.crs.data.StoredSequentialQuery;
 import com.davis.ddf.crs.jsonapi.JsonApiResponse;
+import com.davis.ddf.crs.utils.RandomUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -56,12 +60,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import static com.davis.ddf.crs.RandomUtil.genRandomResponse;
+import static com.davis.ddf.crs.utils.RandomUtil.genRandomResponse;
 import static com.davis.ddf.crs.utils.Utils.transformDate;
 
 @Path("/")
@@ -86,6 +93,8 @@ public class SourceEndpoint {
   private static final Logger logger = LoggerFactory.getLogger(SourceEndpoint.class);
 
   private static final Type RESPONSE_TYPE = new TypeToken<List<CRSEndpointResponse>>() {}.getType();
+  private static final int PAGE_SIZE = 10;
+  private static final String ERROR_STRING = "There was a error handling the request.";
   private SimpleDateFormat dateFormat;
   private Date DEFAULT_START;
   private Date DEFAULT_END;
@@ -96,6 +105,8 @@ public class SourceEndpoint {
   private MultiFieldQueryParser queryParser;
   private Directory ramDirectory;
   private Analyzer analyzer;
+  private Map<String, StoredSequentialQuery> queryMap = new HashMap<>();
+
   /** Instantiates a new Geospatial endpoint. */
   public SourceEndpoint() {}
 
@@ -159,6 +170,114 @@ public class SourceEndpoint {
   public Response getResultsForSource(@Context UriInfo requestUriInfo) {
     Response.ResponseBuilder builder = null;
     builder = Response.ok();
+    return builder.build();
+  }
+
+  @GET
+  @Path("/getResultsSequential")
+  public Response getResultsSequential(
+      @Context UriInfo requestUriInfo,
+      @QueryParam("amount") String amount,
+      @QueryParam("requestId") String requestId,
+      @QueryParam("startRow") Integer startRow,
+      @QueryParam("endRow") Integer endRow) {
+    String queryUri = requestUriInfo.getRequestUri().toASCIIString();
+
+    JsonApiResponse response = new JsonApiResponse();
+    StoredSequentialQuery storedSequentialQuery = null;
+    Map<Integer, GroovyResponseObject> results = new HashMap<>();
+    Response.ResponseBuilder builder = null;
+    SequentialResponse sequentialResponse = null;
+    boolean allPagesHaveBeenRead = false;
+    if (requestId != null && !requestId.trim().equalsIgnoreCase("")) {
+      storedSequentialQuery = queryMap.get(requestId);
+      if (storedSequentialQuery != null) {
+        if (startRow != null && endRow != null && startRow > 0 && endRow > 0) {
+          if (startRow > endRow) {
+            throw new SourceEndpointException(
+                ERROR_STRING,
+                "StartRow cannot be greater than EndRow ",
+                Response.Status.BAD_REQUEST);
+          } else {
+            if (endRow.equals(storedSequentialQuery.getQuery().size())) {
+              allPagesHaveBeenRead = true;
+            }
+
+            GroovyResponseObject object = null;
+            for (int x = 1; x < endRow; x++) {
+              object = storedSequentialQuery.getObjectInStoredQuery(x);
+              results.put(x, object);
+            }
+            object = storedSequentialQuery.getObjectInStoredQuery(endRow);
+            results.put(endRow, object);
+            sequentialResponse =
+                new SequentialResponse(startRow, endRow, queryUri, requestId, results);
+            response.setData(sequentialResponse);
+            if (allPagesHaveBeenRead) {
+              queryMap.remove(requestId);
+            }
+          }
+
+        } else {
+          throw new SourceEndpointException(
+              ERROR_STRING,
+              "StartRow and EndRow cannot be Null, and they must be greater than 0.",
+              Response.Status.BAD_REQUEST);
+        }
+      } else {
+        throw new SourceEndpointException(
+            ERROR_STRING,
+            "You supplied a Bad RequestID to the endpoint",
+            Response.Status.BAD_REQUEST);
+      }
+
+    } else {
+      Integer returnStartRow = 1;
+      Integer returnEndRow = 10;
+      String returnRequestId = UUID.randomUUID().toString().replaceAll("-", "");
+      Integer intAmount = null;
+
+      try {
+        intAmount = Integer.parseInt(amount);
+      } catch (NumberFormatException e) {
+        logger.error(
+            "Amount specified to the sequential endpoint was not a valid integer values must be a whole digit integer."
+                + " Value specified was  {} Error report was {}",
+            amount,
+            e);
+      }
+      if (intAmount == null || intAmount <= 0) {
+        intAmount = 10;
+      }
+      storedSequentialQuery = RandomUtil.buildStoredSequentialQuery(intAmount, PAGE_SIZE);
+      queryMap.put(returnRequestId, storedSequentialQuery);
+      GroovyResponseObject object = null;
+      for (int x = 1; x < returnEndRow; x++) {
+        object = storedSequentialQuery.getObjectInStoredQuery(x);
+        results.put(x, object);
+      }
+      object = storedSequentialQuery.getObjectInStoredQuery(returnEndRow);
+      results.put(returnEndRow, object);
+      String modQueryUri =
+          queryUri
+              + "&requestId="
+              + returnRequestId
+              + "&startRow="
+              + returnStartRow
+              + "&endRow="
+              + returnEndRow;
+      sequentialResponse =
+          new SequentialResponse(returnStartRow, returnEndRow, modQueryUri, returnRequestId, results);
+      response.setData(sequentialResponse);
+    }
+
+    if (response.getData() != null) {
+      builder = Response.ok(response.getSanitizedJson(), MediaType.APPLICATION_JSON);
+    } else {
+      throw new SourceEndpointException(
+          ERROR_STRING, "Something went Wrong", Response.Status.INTERNAL_SERVER_ERROR);
+    }
+
     return builder.build();
   }
 

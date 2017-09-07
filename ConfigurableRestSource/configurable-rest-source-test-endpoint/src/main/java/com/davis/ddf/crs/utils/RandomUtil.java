@@ -1,8 +1,9 @@
-package com.davis.ddf.crs;
+package com.davis.ddf.crs.utils;
 
 import com.davis.ddf.crs.data.CRSEndpointResponse;
 import com.davis.ddf.crs.data.GroovyResponseObject;
 import com.davis.ddf.crs.data.InMemoryDataStore;
+import com.davis.ddf.crs.data.StoredSequentialQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,14 +15,15 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.davis.ddf.crs.LocUtil.DECIMAL_FORMAT;
-import static com.davis.ddf.crs.LocUtil.MAX_LAT;
-import static com.davis.ddf.crs.LocUtil.MAX_LON;
-import static com.davis.ddf.crs.LocUtil.MIN_LAT;
-import static com.davis.ddf.crs.LocUtil.MIN_LON;
-import static com.davis.ddf.crs.LocUtil.constructWktString;
+import static com.davis.ddf.crs.utils.LocUtil.DECIMAL_FORMAT;
+import static com.davis.ddf.crs.utils.LocUtil.MAX_LAT;
+import static com.davis.ddf.crs.utils.LocUtil.MAX_LON;
+import static com.davis.ddf.crs.utils.LocUtil.MIN_LAT;
+import static com.davis.ddf.crs.utils.LocUtil.MIN_LON;
+import static com.davis.ddf.crs.utils.LocUtil.constructWktString;
 
 /**
  * This software was created for rights to this software belong to appropriate licenses and
@@ -38,7 +40,6 @@ public class RandomUtil {
   private static InMemoryDataStore DATA_STORE = new InMemoryDataStore();
 
   static {
-
     String dateFormatPattern = "yyyy-MM-dd'T'HH:mm:ssZ";
     dateFormat = new SimpleDateFormat(dateFormatPattern);
     try {
@@ -130,6 +131,36 @@ public class RandomUtil {
   }
 
   /**
+   * Build Stored Sequential Query
+   *
+   * @param amount the amount
+   * @param pagesize the amount
+   * @return a stored query contained X number of results where x is equal to amount * pagesize
+   */
+  public static StoredSequentialQuery buildStoredSequentialQuery(int amount, int pagesize) {
+    StoredSequentialQuery storedSequentialQuery = new StoredSequentialQuery();
+    List<GroovyResponseObject> results = new ArrayList<GroovyResponseObject>();
+    GroovyResponseObject restResponseObject = null;
+    for (int x = 1; x < (amount * pagesize) + 1; x++) {
+      restResponseObject = new GroovyResponseObject();
+      /*The valid range of latitude in degrees is -90 and +90 for the southern and northern hemisphere respectively.
+      Longitude is in the range -180 and +180 specifying the east-west position.*/
+      double lat = ThreadLocalRandom.current().nextDouble(MIN_LAT, MAX_LAT);
+      double lng = ThreadLocalRandom.current().nextDouble(MIN_LON, MAX_LON);
+      //POINT(73.0166738279393 33.6788721326803)
+      restResponseObject.setTitle("TestObject" + String.valueOf(amount));
+      String id = UUID.randomUUID().toString().replaceAll("-", "");
+      restResponseObject.setId(id);
+      restResponseObject.setLat(lat);
+      restResponseObject.setLng(lng);
+      restResponseObject.setLocation("POINT(" + lng + " " + lat + ")");
+      results.add(restResponseObject);
+      storedSequentialQuery.addObjectToQuery(x, restResponseObject);
+    }
+    return storedSequentialQuery;
+  }
+
+  /**
    * Build objects list.
    *
    * @param amount the amount
@@ -146,10 +177,11 @@ public class RandomUtil {
       double lng = ThreadLocalRandom.current().nextDouble(MIN_LON, MAX_LON);
       //POINT(73.0166738279393 33.6788721326803)
       restResponseObject.setTitle("TestObject" + String.valueOf(amount));
+      String id = UUID.randomUUID().toString().replaceAll("-", "");
+      restResponseObject.setId(id);
       restResponseObject.setLat(lat);
       restResponseObject.setLng(lng);
       restResponseObject.setLocation("POINT(" + lng + " " + lat + ")");
-      // GroovyResponseObject.setSummary("RandomGeneratedPoint");
       results.add(restResponseObject);
       amount = amount - 1;
     }
@@ -176,7 +208,7 @@ public class RandomUtil {
     return cal.getTime();
   }
 
-  public static  CRSEndpointResponse genRandomResponse(
+  public static CRSEndpointResponse genRandomResponse(
       double lat,
       double lng,
       Double topLeftLat,

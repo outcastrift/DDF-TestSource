@@ -6,9 +6,7 @@ package com.davis.ddf.crs.data;
  * Created by Samuel Davis on 3/21/16.
  */
 public class GroovyResponseObject {
-
-  /** The constant serialVersionUID. */
-  private static final long serialVersionUID = 1L;
+  private String id;
   /** The Title. */
   private String title;
   /** The Lat. */
@@ -91,5 +89,23 @@ public class GroovyResponseObject {
    */
   public void setLocation(String location) {
     this.location = location;
+  }
+
+  /**
+   * Gets id.
+   *
+   * @return the id
+   */
+  public String getId() {
+    return id;
+  }
+
+  /**
+   * Sets id.
+   *
+   * @param id the id
+   */
+  public void setId(String id) {
+    this.id = id;
   }
 }
