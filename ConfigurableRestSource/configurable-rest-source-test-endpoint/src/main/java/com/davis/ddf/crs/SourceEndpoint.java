@@ -210,7 +210,14 @@ public class SourceEndpoint {
             object = storedSequentialQuery.getObjectInStoredQuery(endRow);
             results.put(endRow, object);
             sequentialResponse =
-                new SequentialResponse(startRow, endRow, queryUri, requestId, PAGE_SIZE, results);
+                new SequentialResponse(
+                    startRow,
+                    endRow,
+                    queryUri,
+                    requestId,
+                    PAGE_SIZE,
+                    storedSequentialQuery.getQuery().size(),
+                    results);
             response.setData(sequentialResponse);
             if (allPagesHaveBeenRead) {
               queryMap.remove(requestId);
@@ -267,7 +274,13 @@ public class SourceEndpoint {
               + returnEndRow;
       sequentialResponse =
           new SequentialResponse(
-              returnStartRow, returnEndRow, modQueryUri, returnRequestId, PAGE_SIZE, results);
+              returnStartRow,
+              returnEndRow,
+              modQueryUri,
+              returnRequestId,
+              PAGE_SIZE,
+              storedSequentialQuery.getQuery().size(),
+              results);
       response.setData(sequentialResponse);
     }
 

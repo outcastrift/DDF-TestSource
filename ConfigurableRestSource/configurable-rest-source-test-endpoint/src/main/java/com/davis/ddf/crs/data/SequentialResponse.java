@@ -33,6 +33,7 @@ public class SequentialResponse {
       String queryUri,
       String requestId,
       Integer pageSize,
+      Integer totalResults,
       Map<Integer, GroovyResponseObject> results) {
     setResults(results);
     setRequestId(requestId);
@@ -40,7 +41,7 @@ public class SequentialResponse {
     setStartRow(startRow);
     setQueryUri(queryUri);
     setPageSize(pageSize);
-    setTotalResults(results.size());
+    setTotalResults(totalResults);
   }
 
   public Integer getTotalResults() {
