@@ -145,10 +145,12 @@ def inputObj = jsonSlurper.parseText(input)
 logger.info("Groovy Object = {} ", inputObj)
 boolean performAdditionalQuery = false
 if (inputObj?.data != null) {
+    long startTime = System.currentTimeMillis()
+    long killTime = startTime + 30000
     CloseableHttpClient client = getUnsafeClient(30000, 30000, "etc/certs/localhost.p12", "changeit")
-    int startIndex =inputObj.data.startRow
+    int startIndex = inputObj.data.startRow
     logger.info("startRow = {}", startIndex)
-    int endIndex =inputObj.data.endRow
+    int endIndex = inputObj.data.endRow
     logger.info("endRow = {}", endIndex)
     int pageSize = inputObj.data.pageSize
     logger.info("pageSize = {}", pageSize)
@@ -165,7 +167,7 @@ if (inputObj?.data != null) {
     String[] queryParts = queryString.split("&")
     boolean firstPart = true
     for (String part : queryParts) {
-        if (!part.contains("startRow") && part.contains("endRow")) {
+        if (!part.contains("startRow") && !part.contains("endRow")) {
             if (firstPart) {
                 baseQuery = baseQuery + "?" + part
                 firstPart = false
@@ -175,29 +177,33 @@ if (inputObj?.data != null) {
         }
     }
     //handles initial results returned
-    inputObj?.data?.results?.eachWithIndex { queryResult, resultIdx ->
-        logger.info("RESULT ${queryResult}")
+    inputObj?.data?.results?.eachWithIndex { result, index ->
+        logger.info("RESULT ${result}")
         metacard = [:]
-        metacard['id'] = "testResult_metacard" + queryResult['lat'] + queryResult['lng']
-        metacard['title'] = queryResult['title']
-        metacard['location'] = queryResult['location']
+        metacard['id'] = result['id']
+        metacard['title'] = result['title']
+        metacard['location'] = result['location']
 
         metacard['Summary'] = ""
         if (result.title) {
-            metacard['Summary'] += "Title: ${queryResult.title}<br/>"
+            metacard['Summary'] += "Title: ${result.title}<br/>"
         }
         if (result.lat) {
-            metacard['Summary'] += "Latitude: ${queryResult.lat}<br/>"
+            metacard['Summary'] += "Latitude: ${result.lat}<br/>"
         }
         if (result.lng) {
-            metacard['Summary'] += "Longitude: ${queryResult.lng}<br/>"
+            metacard['Summary'] += "Longitude: ${result.lng}<br/>"
         }
         JSONObject wJson = new JSONObject(JsonOutput.toJson(result))
         metacard.metadata = "<metacard><metadata>" + XML.toString(wJson) + "</metadata></metacard>"
         output.push(metacard)
     }
 
-    while (totalResults > metacard.size()) {
+
+    while (totalResults > output.size()) {
+        if (System.currentTimeMillis() > killTime) {
+            break
+        }
         int requestStartRow = startIndex + pageSize
         int requestEndingRow = endIndex + pageSize
         startIndex = requestStartRow
@@ -219,7 +225,7 @@ if (inputObj?.data != null) {
                 getResponse?.data?.results?.eachWithIndex { result, id ->
                     logger.info("RESULT ${result}")
                     metacard = [:]
-                    metacard['id'] = "testResult_metacard" + result['lat'] + result['lng']
+                    metacard['id'] = result['id']
                     metacard['title'] = result['title']
                     metacard['location'] = result['location']
 

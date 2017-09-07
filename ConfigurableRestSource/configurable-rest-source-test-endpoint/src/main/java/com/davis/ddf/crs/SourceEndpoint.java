@@ -209,7 +209,7 @@ public class SourceEndpoint {
             }
 
             GroovyResponseObject object = null;
-            for (int x = 1; x < endRow; x++) {
+            for (int x = startRow; x < endRow; x++) {
               object = storedSequentialQuery.getObjectInStoredQuery(x);
               results.add(object);
             }

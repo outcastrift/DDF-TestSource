@@ -1,1 +1,83 @@
-1={id=c111ad399fb241b2934b8471c454e646, lat=-49.71689370664175, lng=-80.46796848661992, location=POINT(-80.46796848661992 -49.71689370664175), title=TestObject5}
+{
+  "data": {
+    "results": [
+      {
+        "id": "934cc3acbe8c4d7fac8897fa39ef8dbd",
+        "title": "TestObject5",
+        "lat": 89.69421850504077,
+        "lng": -60.77060117104797,
+        "location": "POINT(-60.77060117104797 89.69421850504077)"
+      },
+      {
+        "id": "de486539eddc4138b0b954dc7681547b",
+        "title": "TestObject5",
+        "lat": 33.32784634373698,
+        "lng": 109.69147283433074,
+        "location": "POINT(109.69147283433074 33.32784634373698)"
+      },
+      {
+        "id": "d98a60e4e3e5403dab387505e0bdfd62",
+        "title": "TestObject5",
+        "lat": 64.8400909347028,
+        "lng": -112.34961667500674,
+        "location": "POINT(-112.34961667500674 64.8400909347028)"
+      },
+      {
+        "id": "496676340f554730a01ba7defe03d796",
+        "title": "TestObject5",
+        "lat": 73.80675114576559,
+        "lng": 66.22729462346496,
+        "location": "POINT(66.22729462346496 73.80675114576559)"
+      },
+      {
+        "id": "925fd5fc68ff4565b8c665de56ee1139",
+        "title": "TestObject5",
+        "lat": 77.7485411056901,
+        "lng": 13.011031802742508,
+        "location": "POINT(13.011031802742508 77.7485411056901)"
+      },
+      {
+        "id": "610ae96f8eb742948093d6e103c1709c",
+        "title": "TestObject5",
+        "lat": -83.2963812622241,
+        "lng": 76.04906617327919,
+        "location": "POINT(76.04906617327919 -83.2963812622241)"
+      },
+      {
+        "id": "997ca3bf27d04c0f9864090488cb2e50",
+        "title": "TestObject5",
+        "lat": 6.129745868391296,
+        "lng": -108.47067664397451,
+        "location": "POINT(-108.47067664397451 6.129745868391296)"
+      },
+      {
+        "id": "1f696af7e4ef49bdba97a1b6ce94b2e1",
+        "title": "TestObject5",
+        "lat": -24.545824278453935,
+        "lng": 155.0915421159528,
+        "location": "POINT(155.0915421159528 -24.545824278453935)"
+      },
+      {
+        "id": "c4fb560bb3af41b4a1e645e12cfc0cfe",
+        "title": "TestObject5",
+        "lat": 84.80160667239403,
+        "lng": -52.40500350238237,
+        "location": "POINT(-52.40500350238237 84.80160667239403)"
+      },
+      {
+        "id": "f0701a77f793448eb28efa60eeda47f1",
+        "title": "TestObject5",
+        "lat": 62.586628671636475,
+        "lng": -37.767605055954505,
+        "location": "POINT(-37.767605055954505 62.586628671636475)"
+      }
+    ],
+    "startRow": 1,
+    "endRow": 10,
+    "queryUri": "https://localhost:8993/services/test/getResultsSequential?amount\u003d5\u0026requestId\u003d2250f6b2723e4b2cbecb50bc6fe761fe\u0026startRow\u003d1\u0026endRow\u003d10",
+    "requestId": "2250f6b2723e4b2cbecb50bc6fe761fe",
+    "pageSize": 10,
+    "totalResults": 50
+  },
+  "errors": []
+}
